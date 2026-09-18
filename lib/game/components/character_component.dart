@@ -4,6 +4,7 @@ import 'package:fighting_game/enums/character_state.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/player_sprite_settings.dart';
 import 'package:fighting_game/player_stats.dart';
+import 'package:fighting_game/game/components/fireball_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -44,6 +45,7 @@ class CharacterComponent extends PositionComponent
   // Action states
   bool _isAttacking = false;
   bool _hasDealtDamage = false;
+  bool _hasSpawnedProjectile = false;
   double _attackTimer = 0;
   double _currentAttackDuration = 0;
 
@@ -249,13 +251,16 @@ class CharacterComponent extends PositionComponent
     final dx = opponent!.position.x - position.x;
     final dist = dx.abs();
 
-    if (dist > 190) {
+    final atkReach = stats.getAttackReach(CharacterState.attack1);
+    final runThreshold = atkReach + 60.0;
+
+    if (dist > runThreshold) {
       // Dash / Run towards player when far away
       _velocityX = (dx > 0 ? 1 : -1) * stats.runSpeed * 100;
       facingRight = dx > 0;
       if (_onGround) _switchState(CharacterState.run);
-    } else if (dist > 120) {
-      // Walk when getting closer
+    } else if (dist > atkReach) {
+      // Walk when getting closer into attack range
       _velocityX = (dx > 0 ? 1 : -1) * stats.walkSpeed * 100;
       facingRight = dx > 0;
       if (_onGround) _switchState(CharacterState.walk);
@@ -320,6 +325,7 @@ class CharacterComponent extends PositionComponent
   void _startAttack(CharacterState attackState) {
     _isAttacking = true;
     _hasDealtDamage = false;
+    _hasSpawnedProjectile = false;
     _velocityX = 0;
     _switchState(attackState, forceReset: true);
   }
@@ -328,7 +334,16 @@ class CharacterComponent extends PositionComponent
     if (!_isAttacking) return;
     _attackTimer -= dt;
 
-    // Trigger damage at the apex of attack
+    // Fire Wizard Special spawns a real projectile at apex of cast
+    if (_state == CharacterState.special &&
+        characterType == CharacterType.fireWizard &&
+        !_hasSpawnedProjectile &&
+        _attackTimer <= _currentAttackDuration * 0.55) {
+      _hasSpawnedProjectile = true;
+      _spawnFireball();
+    }
+
+    // Trigger melee/sweep damage at the apex of attack
     if (!_hasDealtDamage && _attackTimer <= _currentAttackDuration / 2) {
       _tryDealDamage();
     }
@@ -340,29 +355,46 @@ class CharacterComponent extends PositionComponent
     }
   }
 
+  void _spawnFireball() {
+    if (parent == null || opponent == null) return;
+    final spawnX = position.x + (facingRight ? 45.0 : -45.0);
+    final spawnY = position.y - 75.0;
+
+    final fireball = FireballComponent(
+      caster: this,
+      target: opponent!,
+      startPos: Vector2(spawnX, spawnY),
+      facingRight: facingRight,
+      damage: stats.getAttackPower(CharacterState.special) * 8.0,
+    );
+    parent!.add(fireball);
+  }
+
   void _tryDealDamage() {
     if (opponent == null || opponent!.isDead) return;
+
+    // Fire Wizard special damage is dealt upon projectile impact
+    if (_state == CharacterState.special && characterType == CharacterType.fireWizard) {
+      return;
+    }
+
     final dx = (opponent!.position.x - position.x).abs();
 
-    // Check attack reach & power based on state
-    double reach = 130;
-    double multiplier = 3;
+    // Check reach dynamically per character archetype from PlayerStats
+    final reach = stats.getAttackReach(_state);
 
+    double multiplier = 3;
     switch (_state) {
       case CharacterState.attack1:
-        reach = 130;
         multiplier = 3;
         break;
       case CharacterState.attack2:
-        reach = 150;
         multiplier = 4;
         break;
       case CharacterState.attack3:
-        reach = 220; // Long-range (Fire breath / spin attack)
         multiplier = 6;
         break;
       case CharacterState.special:
-        reach = 260; // Ultimate skill
         multiplier = 8;
         break;
       default:
