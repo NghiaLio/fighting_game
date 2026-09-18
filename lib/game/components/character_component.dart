@@ -114,6 +114,37 @@ class CharacterComponent extends PositionComponent
     await _switchState(CharacterState.idle);
   }
 
+  void resetCharacter({required double startX, required bool faceRight}) {
+    hp = maxHp;
+    position.x = startX;
+    position.y = groundY;
+    facingRight = faceRight;
+    _velocityX = 0;
+    _velocityY = 0;
+    _onGround = true;
+    _isAttacking = false;
+    _hasDealtDamage = false;
+    _hasSpawnedProjectile = false;
+    _attackTimer = 0;
+    _isHurt = false;
+    _hurtTimer = 0;
+    _isLanding = false;
+    _landingTimer = 0;
+    _isDying = false;
+    isDeadCompleted = false;
+    _deadTimer = 0;
+    _aiTimer = 0;
+    movingLeft = false;
+    movingRight = false;
+    sprinting = false;
+    wantsJump = false;
+    wantsAttack1 = false;
+    wantsAttack2 = false;
+    wantsAttack3 = false;
+    wantsSpecial = false;
+    _switchState(CharacterState.idle, forceReset: true);
+  }
+
   Future<void> _switchState(CharacterState newState, {bool forceReset = false}) async {
     if (!forceReset && _state == newState && _animComp?.animation != null) return;
     _state = newState;

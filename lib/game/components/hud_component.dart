@@ -1,8 +1,9 @@
 import 'package:fighting_game/game/components/character_component.dart';
+import 'package:fighting_game/game/fighting_game.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
-class HudComponent extends Component with HasGameReference {
+class HudComponent extends Component with HasGameReference<FightingGame> {
   final CharacterComponent player;
   final CharacterComponent enemy;
 
@@ -177,22 +178,35 @@ class HudComponent extends Component with HasGameReference {
 
     // Check win condition (wait for death animation to fully finish)
     if (player.isDeadCompleted) {
-      _showWin('ENEMY WINS!');
+      _showWin(victory: false, msg: 'ENEMY WINS!');
     } else if (enemy.isDeadCompleted) {
-      _showWin('YOU WIN!');
+      _showWin(victory: true, msg: 'YOU WIN!');
     } else if (_matchTime <= 0) {
       if (player.hp > enemy.hp) {
-        _showWin('YOU WIN!');
+        _showWin(victory: true, msg: 'YOU WIN!');
       } else if (enemy.hp > player.hp) {
-        _showWin('ENEMY WINS!');
+        _showWin(victory: false, msg: 'ENEMY WINS!');
       } else {
-        _showWin('DRAW!');
+        _showWin(victory: false, msg: 'DRAW!');
       }
     }
   }
 
-  void _showWin(String msg) {
+  void _showWin({required bool victory, required String msg}) {
+    if (_matchOver) return;
     _matchOver = true;
     _winText.text = msg;
+    Future.delayed(const Duration(milliseconds: 700), () {
+      if (isMounted) {
+        game.onMatchEnd(victory: victory, message: msg);
+      }
+    });
+  }
+
+  void resetHud() {
+    _matchTime = 99.0;
+    _matchOver = false;
+    _winText.text = '';
+    _timerText.text = '99';
   }
 }

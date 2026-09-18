@@ -81,6 +81,7 @@ flutter:
 
   assets:
     - assets/valor/
+    - assets/images/Bg_homes/
     - assets/images/Backgrounds/
     - assets/images/Buttons/
     - assets/images/Fire_Wizard/

@@ -20,6 +20,10 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   CharacterComponent? player;
   CharacterComponent? enemy;
+  late HudComponent hud;
+
+  bool isVictory = false;
+  String endMessage = '';
 
   @override
   Color backgroundColor() => const Color(0xFF1a1a2e);
@@ -107,8 +111,25 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     stage.position.x = -cameraX;
 
     // 3. UI overlays (HUD & Controls) stay fixed on screen
-    await add(HudComponent(player: p1, enemy: e1)..priority = 10);
+    hud = HudComponent(player: p1, enemy: e1)..priority = 10;
+    await add(hud);
     await add(GameControls(player: p1)..priority = 10);
+  }
+
+  void onMatchEnd({required bool victory, required String message}) {
+    isVictory = victory;
+    endMessage = message;
+    overlays.add('GameOver');
+  }
+
+  void restartMatch() {
+    overlays.remove('GameOver');
+    if (player == null || enemy == null) return;
+    player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);
+    enemy!.resetCharacter(startX: mapWidth * 0.55, faceRight: false);
+    hud.resetHud();
+    cameraX = (player!.position.x - size.x / 2).clamp(0.0, mapWidth - size.x);
+    stage.position.x = -cameraX;
   }
 
   @override

@@ -1,5 +1,4 @@
-import 'package:fighting_game/game/fighting_game.dart';
-import 'package:flame/game.dart';
+import 'package:fighting_game/screens/home_loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -23,38 +22,10 @@ class FightingGameApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fighting Game',
+      title: 'Valor Awakening',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: const _GameScreen(),
-    );
-  }
-}
-
-class _GameScreen extends StatefulWidget {
-  const _GameScreen();
-
-  @override
-  State<_GameScreen> createState() => _GameScreenState();
-}
-
-class _GameScreenState extends State<_GameScreen> {
-  late FightingGame _game;
-
-  @override
-  void initState() {
-    super.initState();
-    _game = FightingGame();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FlutterNativeSplash.remove();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: GameWidget(game: _game),
+      home: const HomeLoadingScreen(),
     );
   }
 }
