@@ -37,17 +37,36 @@ dependencies:
   flame: ^1.38.2
   flame_audio: ^2.12.2
   google_fonts: ^8.2.1
+  flutter_native_splash: ^2.4.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+# Launcher Icon Configuration
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/valor/1024.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "assets/valor/res/mipmap-xxxhdpi/valor_adaptive_back.png"
+  adaptive_icon_foreground: "assets/valor/res/mipmap-xxxhdpi/valor_adaptive_fore.png"
+
+# Native Splash Screen Configuration
+flutter_native_splash:
+  color: "#111113"
+  image: "assets/valor/play_store_512.png"
+  android_screen_orientation: landscape
+  android_12:
+    image: "assets/valor/res/mipmap-xxxhdpi/valor_adaptive_fore.png"
+    color: "#111113"
+    icon_background_color: "#111113"
+  fullscreen: true
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -61,6 +80,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/valor/
     - assets/images/Backgrounds/
     - assets/images/Buttons/
     - assets/images/Fire_Wizard/
