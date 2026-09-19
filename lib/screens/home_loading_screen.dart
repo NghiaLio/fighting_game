@@ -1,8 +1,10 @@
 import 'dart:async';
-import 'package:fighting_game/screens/game_play_screen.dart';
+import 'package:fighting_game/screens/home_screen.dart';
+import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeLoadingScreen extends StatefulWidget {
   const HomeLoadingScreen({super.key});
@@ -96,11 +98,14 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
 
   Future<void> _preloadGameAssets() async {
     // Step 1: Initialize
-    await Future.delayed(const Duration(milliseconds: 300));
+    try {
+      await UiTileset.load();
+    } catch (_) {}
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!mounted) return;
     setState(() {
       _targetProgress = 0.18;
-      _statusText = 'Khởi tạo tài nguyên đồ họa...';
+      _statusText = 'Khởi tạo giao diện Tileset & đồ họa...';
     });
 
     // Step 2: Preload UI Buttons and Arena Background
@@ -197,7 +202,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 700),
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const GamePlayScreen(),
+            const HomeScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: CurvedAnimation(
@@ -321,11 +326,11 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
                         ),
                         Text(
                           '$progressPercent%',
-                          style: TextStyle(
+                          style: GoogleFonts.cinzel(
                             color: Colors.amber.shade400,
                             fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
                             shadows: const [
                               Shadow(
                                 color: Colors.black,
@@ -450,9 +455,9 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
                               ),
                             ],
                           ),
-                          child: const Text(
+                          child: Text(
                             'CHẠM ĐỂ BẮT ĐẦU',
-                            style: TextStyle(
+                            style: GoogleFonts.cinzel(
                               color: Colors.black,
                               fontSize: 13,
                               fontWeight: FontWeight.w900,

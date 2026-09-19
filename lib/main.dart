@@ -2,6 +2,7 @@ import 'package:fighting_game/screens/home_loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,9 @@ class FightingGameApp extends StatelessWidget {
     return MaterialApp(
       title: 'Valor Awakening',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
+      theme: ThemeData.dark().copyWith(
+        textTheme: GoogleFonts.cinzelTextTheme(ThemeData.dark().textTheme),
+      ),
       home: const HomeLoadingScreen(),
     );
   }

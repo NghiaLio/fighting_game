@@ -1,8 +1,9 @@
 import 'dart:ui';
 import 'package:fighting_game/game/fighting_game.dart';
-import 'package:fighting_game/screens/home_loading_screen.dart';
+import 'package:fighting_game/screens/home_screen.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GamePlayScreen extends StatefulWidget {
   const GamePlayScreen({super.key});
@@ -134,11 +135,11 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                   // Title: CHIẾN THẮNG / THẤT BẠI
                   Text(
                     isVictory ? 'CHIẾN THẮNG!' : 'THẤT BẠI!',
-                    style: TextStyle(
+                    style: GoogleFonts.cinzel(
                       color: primaryColor,
-                      fontSize: 32,
+                      fontSize: 30,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0,
+                      letterSpacing: 2.5,
                       shadows: [
                         Shadow(
                           color: glowColor,
@@ -178,7 +179,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                           onPressed: () {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                builder: (_) => const HomeLoadingScreen(),
+                                builder: (_) => const HomeScreen(),
                               ),
                             );
                           },
@@ -187,13 +188,13 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                             size: 20,
                             color: Colors.white,
                           ),
-                          label: const Text(
+                          label: Text(
                             'TRANG CHỦ',
-                            style: TextStyle(
+                            style: GoogleFonts.cinzel(
                               color: Colors.white,
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              letterSpacing: 0.8,
+                              letterSpacing: 1.0,
                             ),
                           ),
                           style: OutlinedButton.styleFrom(
@@ -246,11 +247,11 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                             ),
                             label: Text(
                               'CHƠI LẠI',
-                              style: TextStyle(
+                              style: GoogleFonts.cinzel(
                                 color: isVictory ? Colors.black : Colors.white,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w900,
-                                letterSpacing: 0.8,
+                                letterSpacing: 1.0,
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
