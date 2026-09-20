@@ -3,6 +3,7 @@ import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
 import 'package:fighting_game/screens/home_screen.dart';
 import 'package:fighting_game/services/audio_service.dart';
+import 'package:fighting_game/utils/select_per_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,9 +15,9 @@ class HeroInfo {
   final String name;
   final String title;
   final String role;
-  final String pillarAsset;
-  final String badgeAsset;
-  final String gemAsset;
+  final SelectPerTile pillarTile;
+  final SelectPerTile badgeTile;
+  final SelectPerTile gemTile;
   final Color primaryColor;
   final double atkRating;
   final double defRating;
@@ -31,9 +32,9 @@ class HeroInfo {
     required this.name,
     required this.title,
     required this.role,
-    required this.pillarAsset,
-    required this.badgeAsset,
-    required this.gemAsset,
+    required this.pillarTile,
+    required this.badgeTile,
+    required this.gemTile,
     required this.primaryColor,
     required this.atkRating,
     required this.defRating,
@@ -55,9 +56,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'HỎA DIỆM PHÁP SƯ',
     title: 'Hỏa Long Tôn Giả (Ignis)',
     role: 'Pháp Sư - Hỏa Lực',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_red.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_crown.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/ruby_diamond.png',
+    pillarTile: SelectPerTile.pillarRed,
+    badgeTile: SelectPerTile.badgeCrown,
+    gemTile: SelectPerTile.gemRuby,
     primaryColor: Color(0xFFFF5722),
     atkRating: 0.95,
     defRating: 0.50,
@@ -72,9 +73,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'LÔI ĐIỆN PHÁP SƯ',
     title: 'Cuồng Lôi Tiên Sinh (Voltis)',
     role: 'Pháp Sư - Khống Chế',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_blue.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_crown.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/sapphire_diamond.png',
+    pillarTile: SelectPerTile.pillarBlue,
+    badgeTile: SelectPerTile.badgeCrown,
+    gemTile: SelectPerTile.gemSapphire,
     primaryColor: Color(0xFF00E5FF),
     atkRating: 0.90,
     defRating: 0.55,
@@ -89,9 +90,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'LÃNG KHÁCH PHÁP SƯ',
     title: 'Bí Ẩn Hư Không (Aether)',
     role: 'Pháp Sư - Hư Không',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_purple.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_crown.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/ruby_diamond.png',
+    pillarTile: SelectPerTile.pillarPurple,
+    badgeTile: SelectPerTile.badgeCrown,
+    gemTile: SelectPerTile.gemRuby,
     primaryColor: Color(0xFFAB47BC),
     atkRating: 0.85,
     defRating: 0.60,
@@ -106,9 +107,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'THÁNH HIỆP SĨ',
     title: 'Kỵ Sĩ Ánh Sáng (Arthur)',
     role: 'Đỡ Đòn - Toàn Diện',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_red.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_shield.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/ruby_diamond.png',
+    pillarTile: SelectPerTile.pillarRed,
+    badgeTile: SelectPerTile.badgeShield,
+    gemTile: SelectPerTile.gemRuby,
     primaryColor: Color(0xFFFFD54F),
     atkRating: 0.80,
     defRating: 0.92,
@@ -123,9 +124,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'HOÀNG GIA HIỆP SĨ',
     title: 'Thanh Kiếm Vương Triều (Galahad)',
     role: 'Đấu Sĩ - Tiên Phong',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_blue.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_shield.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/sapphire_diamond.png',
+    pillarTile: SelectPerTile.pillarBlue,
+    badgeTile: SelectPerTile.badgeShield,
+    gemTile: SelectPerTile.gemSapphire,
     primaryColor: Color(0xFF42A5F5),
     atkRating: 0.85,
     defRating: 0.80,
@@ -140,9 +141,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'HẮC HIỆP SĨ',
     title: 'Hắc Giáp Tử Thần (Mordred)',
     role: 'Đấu Sĩ - Bạo Lực',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_purple.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_shield.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/ruby_diamond.png',
+    pillarTile: SelectPerTile.pillarPurple,
+    badgeTile: SelectPerTile.badgeShield,
+    gemTile: SelectPerTile.gemRuby,
     primaryColor: Color(0xFF8E24AA),
     atkRating: 0.92,
     defRating: 0.85,
@@ -159,9 +160,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'SAMURAI ĐỘC HÀNH',
     title: 'Phong Kiếm Tuyệt Luân (Kenji)',
     role: 'Sát Thủ - Bão Kiếm',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_red.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_swords.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/ruby_diamond.png',
+    pillarTile: SelectPerTile.pillarRed,
+    badgeTile: SelectPerTile.badgeSwords,
+    gemTile: SelectPerTile.gemRuby,
     primaryColor: Color(0xFFFF1744),
     atkRating: 0.96,
     defRating: 0.58,
@@ -176,9 +177,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'SAMURAI CUNG THỦ',
     title: 'Tật Phong Thần Tiễn (Hanzo)',
     role: 'Xạ Thủ - Tầm Xa',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_green.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_swords.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/emerald_diamond.png',
+    pillarTile: SelectPerTile.pillarGreen,
+    badgeTile: SelectPerTile.badgeSwords,
+    gemTile: SelectPerTile.gemEmerald,
     primaryColor: Color(0xFF00E676),
     atkRating: 0.88,
     defRating: 0.50,
@@ -193,9 +194,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'SAMURAI THỐNG LĨNH',
     title: 'Chiến Tướng Bá Đạo (Nobunaga)',
     role: 'Đấu Sĩ - Uy Áp',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_blue.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_swords.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/sapphire_diamond.png',
+    pillarTile: SelectPerTile.pillarBlue,
+    badgeTile: SelectPerTile.badgeSwords,
+    gemTile: SelectPerTile.gemSapphire,
     primaryColor: Color(0xFF1E88E5),
     atkRating: 0.90,
     defRating: 0.78,
@@ -210,9 +211,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'TỬ LINH CHIẾN BINH',
     title: 'Hài Cốt Trỗi Dậy (Krag)',
     role: 'Đấu Sĩ - Bất Tử',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_purple.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_skull.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/ruby_diamond.png',
+    pillarTile: SelectPerTile.pillarPurple,
+    badgeTile: SelectPerTile.badgeSkull,
+    gemTile: SelectPerTile.gemRuby,
     primaryColor: Color(0xFF9C27B0),
     atkRating: 0.82,
     defRating: 0.75,
@@ -227,9 +228,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'TỬ LINH XẠ THỦ',
     title: 'Tử Xạ Hư Không (Skel\'Arch)',
     role: 'Xạ Thủ - Độc Dược',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_green.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_skull.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/emerald_diamond.png',
+    pillarTile: SelectPerTile.pillarGreen,
+    badgeTile: SelectPerTile.badgeSkull,
+    gemTile: SelectPerTile.gemEmerald,
     primaryColor: Color(0xFF43A047),
     atkRating: 0.85,
     defRating: 0.45,
@@ -244,9 +245,9 @@ final List<HeroInfo> kHeroRoster = [
     name: 'TỬ LINH THƯƠNG THỦ',
     title: 'Trường Thương Địa Ngục (Spearhead)',
     role: 'Đấu Sĩ - Đột Kích',
-    pillarAsset: 'assets/images/Bg_homes/ui2/hero_pillar_red.png',
-    badgeAsset: 'assets/images/Bg_homes/ui2/badge_skull.png',
-    gemAsset: 'assets/images/Bg_homes/ui2/ruby_diamond.png',
+    pillarTile: SelectPerTile.pillarRed,
+    badgeTile: SelectPerTile.badgeSkull,
+    gemTile: SelectPerTile.gemRuby,
     primaryColor: Color(0xFFE53935),
     atkRating: 0.86,
     defRating: 0.70,
@@ -258,7 +259,7 @@ final List<HeroInfo> kHeroRoster = [
   ),
 ];
 
-/// Màn hình chọn tướng thiết kế từ nguyên mẫu Tileset 2
+/// Màn hình chọn tướng thiết kế từ nguyên mẫu Tileset select_per.png kết hợp cờ từ UI_tileset_2.png
 class CharacterSelectScreen extends StatefulWidget {
   const CharacterSelectScreen({super.key});
 
@@ -267,9 +268,16 @@ class CharacterSelectScreen extends StatefulWidget {
 }
 
 class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
-  int _selectedIndex = 6; // Mặc định chọn Kiếm Khách Samurai (hoặc 0)
+  int _selectedIndex = 6; // Mặc định chọn Samurai Độc Hành
 
   HeroInfo get _selectedHero => kHeroRoster[_selectedIndex];
+
+  @override
+  void initState() {
+    super.initState();
+    // Nạp sẵn toàn bộ hình ảnh tileset vào bộ nhớ GPU
+    SelectPerTileset.preload();
+  }
 
   void _onSelectHero(int index) {
     if (_selectedIndex == index) return;
@@ -320,15 +328,15 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
             ),
           ),
 
-          // 3. Rèm lụa đỏ trang trí đỉnh màn hình (red_drapery.png)
+          // 3. Rèm lụa đỏ trang trí đỉnh màn hình từ UI_tileset_2
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Center(
-              child: Image.asset(
-                'assets/images/Bg_homes/ui2/red_drapery.png',
-                height: 24,
+              child: Ui2FlagWidget(
+                tile: Ui2FlagTile.redDrapery,
+                height: 22,
                 fit: BoxFit.fitHeight,
               ),
             ),
@@ -343,7 +351,7 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Nút quay lại Trang chủ (Sử dụng double_slot.png từ tileset)
+                // Nút quay lại Trang chủ (Sử dụng slenderBarShort từ select_per)
                 GamePressable(
                   onTap: () {
                     AudioService.playButtonClick();
@@ -353,86 +361,20 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
                   },
                   pressDepth: 2.0,
                   pressScale: 0.94,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/Bg_homes/ui2/double_slot.png',
-                        height: 34,
-                        width: 110,
-                        fit: BoxFit.fill,
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(
-                            'assets/images/Bg_homes/ui2/arrow_left.png',
-                            height: 14,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'TRANG CHỦ',
-                            style: GoogleFonts.cinzel(
-                              color: const Color(0xFFFFD54F),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.8,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Tiêu đề trung tâm: Cánh chim chữ V hoàng gia (valor_wings_crest.png)
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/Bg_homes/ui2/valor_wings_crest.png',
-                      height: 48,
-                      fit: BoxFit.contain,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        'CHỌN ANH HÙNG',
-                        style: GoogleFonts.cinzel(
-                          color: const Color(0xFFFFD54F),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2.0,
-                          shadows: const [
-                            Shadow(color: Colors.black, blurRadius: 6),
-                            Shadow(color: Color(0xFFE65100), blurRadius: 10),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Chế độ thi đấu (Sử dụng double_slot.png từ tileset)
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/Bg_homes/ui2/double_slot.png',
-                      height: 34,
-                      width: 120,
-                      fit: BoxFit.fill,
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
+                  child: SelectPerWidget(
+                    tile: SelectPerTile.slenderBarShort,
+                    width: 115,
+                    height: 32,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset(
-                          hero.gemAsset,
-                          height: 16,
+                        const Ui2FlagWidget(
+                          tile: Ui2FlagTile.arrowLeft,
+                          height: 14,
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          '1 VS 1 TỬ CHIẾN',
+                          'TRANG CHỦ',
                           style: GoogleFonts.cinzel(
                             color: const Color(0xFFFFD54F),
                             fontSize: 10,
@@ -442,7 +384,57 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
                         ),
                       ],
                     ),
-                  ],
+                  ),
+                ),
+
+                // Tiêu đề trung tâm: Cánh chim chữ V hoàng gia (wingsCrest từ select_per)
+                SelectPerWidget(
+                  tile: SelectPerTile.wingsCrest,
+                  height: 44,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        'CHỌN ANH HÙNG',
+                        style: GoogleFonts.cinzel(
+                          color: const Color(0xFFFFD54F),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2.0,
+                          shadows: const [
+                            Shadow(color: Colors.black, blurRadius: 6),
+                            Shadow(color: Color(0xFFE65100), blurRadius: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Chế độ thi đấu (Sử dụng slenderBarShort từ select_per)
+                SelectPerWidget(
+                  tile: SelectPerTile.slenderBarShort,
+                  width: 125,
+                  height: 32,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SelectPerWidget(
+                        tile: hero.gemTile,
+                        height: 15,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '1 VS 1 TỬ CHIẾN',
+                        style: GoogleFonts.cinzel(
+                          color: const Color(0xFFFFD54F),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -450,103 +442,87 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
 
           // 5. Khu Vực Chính 3 Phần Hài Hòa (Landscape Stage)
           Positioned(
-            top: 56,
-            bottom: 58,
-            left: 14,
-            right: 14,
+            top: 50,
+            bottom: 56,
+            left: 12,
+            right: 12,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // =============================================================
-                // PHẦN 1 (TRÁI): BẢNG GOTHIC ROSTER BOARD TỪ TILESET (2 HÀNG x 6 Ô)
+                // PHẦN 1 (TRÁI): BẢNG GOTHIC ROSTER CHAMBER TỪ SELECT_PER (2 HÀNG x 6 Ô)
                 // =============================================================
                 Expanded(
                   flex: 38,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      // Khung đá lớn chính gốc từ tileset (roster_grid_board.png)
-                      Image.asset(
-                        'assets/images/Bg_homes/ui2/roster_grid_board.png',
-                        fit: BoxFit.fill,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
+                  child: SelectPerWidget(
+                    tile: SelectPerTile.grandRosterChamber,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+                      child: Column(
+                        children: [
+                          // Header tiêu đề nhỏ trong khung đá
+                          Text(
+                            'DANH TƯỚNG HOÀNG GIA (12)',
+                            style: GoogleFonts.cinzel(
+                              color: const Color(0xFFFFD54F),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.2,
+                              shadows: const [
+                                Shadow(color: Colors.black, blurRadius: 4),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 6),
 
-                      // Nội dung lồng chuẩn xác vào lòng khung đá
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 26, 16, 12),
-                        child: Column(
-                          children: [
-                            // Header tiêu đề nhỏ trong khung
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                          // Lưới 12 Anh Hùng: 2 Hàng x 6 Cột
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text(
-                                  'DANH TƯỚNG HOÀNG GIA (12)',
-                                  style: GoogleFonts.cinzel(
-                                    color: const Color(0xFFFFD54F),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 1.2,
-                                    shadows: const [
-                                      Shadow(color: Colors.black, blurRadius: 4),
-                                    ],
-                                  ),
+                                // Hàng 1: 6 Pháp Sư & Hiệp Sĩ
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: List.generate(6, (col) {
+                                    final index = col;
+                                    return _buildHeroSlot(index);
+                                  }),
+                                ),
+
+                                // Hàng 2: 6 Samurai & Tử Linh
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: List.generate(6, (col) {
+                                    final index = col + 6;
+                                    return _buildHeroSlot(index);
+                                  }),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
+                          ),
 
-                            // Lưới 12 Anh Hùng: 2 Hàng x 6 Cột chuẩn mực
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  // Hàng 1: 6 Pháp Sư & Hiệp Sĩ
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: List.generate(6, (col) {
-                                      final index = col;
-                                      return _buildHeroSlot(index);
-                                    }),
-                                  ),
-
-                                  // Hàng 2: 6 Samurai & Tử Linh
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: List.generate(6, (col) {
-                                      final index = col + 6;
-                                      return _buildHeroSlot(index);
-                                    }),
-                                  ),
-                                ],
+                          // Tấm phù hiệu chân bảng: Tên tướng đang chọn
+                          Container(
+                            height: 20,
+                            margin: const EdgeInsets.only(top: 2),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '• ${hero.name} [${hero.role.split(' - ').first}] •',
+                              style: GoogleFonts.cinzel(
+                                color: hero.primaryColor,
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.0,
                               ),
                             ),
-
-                            // Tấm phù hiệu chân bảng: Tên tướng đang chọn
-                            Container(
-                              height: 22,
-                              margin: const EdgeInsets.only(top: 4),
-                              alignment: Alignment.center,
-                              child: Text(
-                                '• ${hero.name} [${hero.role.split(' - ').first}] •',
-                                style: GoogleFonts.cinzel(
-                                  color: hero.primaryColor,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.0,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
 
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
 
                 // =============================================================
                 // PHẦN 2 (GIỮA): VÕ ĐÀI TÔN VINH ANH HÙNG (HERO MONUMENT SHOWCASE)
@@ -556,54 +532,54 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Cột cờ nguyên tố cao lớn phía sau lưng nhân vật
+                      // Cột đá nguyên tố cao lớn phía sau lưng nhân vật từ select_per
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 250),
-                        child: Image.asset(
-                          hero.pillarAsset,
-                          key: ValueKey(hero.pillarAsset),
-                          height: 250,
+                        child: SelectPerWidget(
+                          key: ValueKey(hero.pillarTile),
+                          tile: hero.pillarTile,
+                          height: 235,
                           fit: BoxFit.contain,
                         ),
                       ),
 
-                      // Cờ kiếm Gothic rủ hai bên cánh
-                      Positioned(
-                        left: 0,
+                      // Cờ kiếm Gothic từ UI_tileset_2 rủ hai bên cánh
+                      const Positioned(
+                        left: 2,
                         top: 15,
                         child: Opacity(
-                          opacity: 0.85,
-                          child: Image.asset(
-                            'assets/images/Bg_homes/ui2/red_gothic_banner.png',
-                            height: 95,
+                          opacity: 0.9,
+                          child: Ui2FlagWidget(
+                            tile: Ui2FlagTile.redGothicBanner,
+                            height: 88,
                           ),
                         ),
                       ),
-                      Positioned(
-                        right: 0,
+                      const Positioned(
+                        right: 2,
                         top: 15,
                         child: Opacity(
-                          opacity: 0.85,
-                          child: Image.asset(
-                            'assets/images/Bg_homes/ui2/blue_gothic_banner.png',
-                            height: 95,
+                          opacity: 0.9,
+                          child: Ui2FlagWidget(
+                            tile: Ui2FlagTile.blueGothicBanner,
+                            height: 88,
                           ),
                         ),
                       ),
 
-                      // Bệ đài đá rune ma thuật phát quang dưới chân
+                      // Bệ đài ma thuật phát quang dưới chân
                       Positioned(
-                        bottom: 8,
+                        bottom: 6,
                         child: Container(
-                          width: 150,
-                          height: 24,
+                          width: 140,
+                          height: 22,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(60),
                             boxShadow: [
                               BoxShadow(
                                 color: hero.primaryColor.withValues(alpha: 0.6),
-                                blurRadius: 28,
-                                spreadRadius: 6,
+                                blurRadius: 26,
+                                spreadRadius: 5,
                               ),
                             ],
                             border: Border.all(
@@ -614,221 +590,204 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
                         ),
                       ),
 
-                      // Nhân vật Pixel Art khổng lồ (200px) chạy hoạt ảnh Idle 60fps
+                      // Nhân vật Pixel Art khổng lồ chạy hoạt ảnh Idle
                       Positioned(
-                        bottom: 12,
+                        bottom: 8,
                         child: HeroIdlePreview(
                           key: ValueKey(hero.type),
                           characterType: hero.type,
                           frameCount: hero.idleFrames,
-                          size: 200,
+                          size: 190,
                         ),
                       ),
 
-                      // Phù hiệu vai trò và ngọc hệ nổi trên đầu
+                      // Phù hiệu vai trò và ngọc hệ nổi trên đỉnh đầu (barDiamond từ select_per)
                       Positioned(
                         top: 2,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/Bg_homes/ui2/double_slot.png',
-                              height: 30,
-                              width: 130,
-                              fit: BoxFit.fill,
-                            ),
-                            Row(
+                        child: SelectPerWidget(
+                          tile: SelectPerTile.barDiamond,
+                          width: 135,
+                          height: 26,
+                          child: Center(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Image.asset(
-                                  hero.gemAsset,
-                                  height: 16,
+                                SelectPerWidget(
+                                  tile: hero.gemTile,
+                                  height: 14,
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
                                   hero.role,
                                   style: GoogleFonts.cinzel(
                                     color: Colors.white,
-                                    fontSize: 10,
+                                    fontSize: 9.5,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 0.8,
                                   ),
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
 
                 // =============================================================
-                // PHẦN 3 (PHẢI): BẢNG KHẮC ĐÁ THÔNG SỐ & KỸ NĂNG TỪ TILESET
+                // PHẦN 3 (PHẢI): BẢNG THÔNG SỐ & KỸ NĂNG TỪ SELECT_PER
                 // =============================================================
                 Expanded(
                   flex: 34,
                   child: Column(
                     children: [
-                      // 1. Tấm phù điêu kiếm thần (wide_sword_plaque.png): Tên & Danh hiệu
+                      // 1. Tấm phù điêu kiếm thần (wideTitleBar): Tên & Danh hiệu
                       SizedBox(
-                        height: 68,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.asset(
-                              'assets/images/Bg_homes/ui2/wide_sword_plaque.png',
-                              fit: BoxFit.fill,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(48, 8, 14, 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    hero.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.cinzel(
-                                      color: const Color(0xFFFFD54F),
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.2,
-                                      shadows: const [
-                                        Shadow(color: Colors.black, blurRadius: 4),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    hero.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.medievalSharp(
-                                      color: hero.primaryColor,
-                                      fontSize: 11.5,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      // 2. Bảng đá 4 chỉ số chiến đấu (top_info_panel.png): ATK, DEF, SPD, RNG
-                      Expanded(
-                        flex: 6,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.asset(
-                              'assets/images/Bg_homes/ui2/top_info_panel.png',
-                              fit: BoxFit.fill,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  _StatBar(
-                                    label: 'TẤN CÔNG',
-                                    value: hero.atkRating,
-                                    color: const Color(0xFFFF5252),
-                                    icon: Icons.flash_on_rounded,
-                                  ),
-                                  _StatBar(
-                                    label: 'PHÒNG THỦ',
-                                    value: hero.defRating,
-                                    color: const Color(0xFF42A5F5),
-                                    icon: Icons.shield_rounded,
-                                  ),
-                                  _StatBar(
-                                    label: 'TỐC ĐỘ',
-                                    value: hero.spdRating,
-                                    color: const Color(0xFFFFCA28),
-                                    icon: Icons.speed_rounded,
-                                  ),
-                                  _StatBar(
-                                    label: 'TẦM ĐÁNH',
-                                    value: hero.rngRating,
-                                    color: const Color(0xFFAB47BC),
-                                    icon: Icons.track_changes_rounded,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      // 3. Bảng đá thông tin chiêu thức & tiểu sử (bottom_info_panel.png)
-                      Expanded(
-                        flex: 5,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.asset(
-                              'assets/images/Bg_homes/ui2/bottom_info_panel.png',
-                              fit: BoxFit.fill,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.auto_awesome_rounded,
-                                          color: Color(0xFFFFD54F), size: 14),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        'TUYỆT KỸ: ',
-                                        style: GoogleFonts.cinzel(
-                                          color: const Color(0xFFFFD54F),
-                                          fontSize: 10.5,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          hero.ultimateName,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.medievalSharp(
-                                            color: Colors.amber.shade200,
-                                            fontSize: 11.5,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
+                        height: 60,
+                        child: SelectPerWidget(
+                          tile: SelectPerTile.wideTitleBar,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(40, 6, 12, 6),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  hero.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.cinzel(
+                                    color: const Color(0xFFFFD54F),
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.0,
+                                    shadows: const [
+                                      Shadow(color: Colors.black, blurRadius: 4),
                                     ],
                                   ),
-                                  const SizedBox(height: 3),
-                                  Expanded(
-                                    child: SingleChildScrollView(
+                                ),
+                                Text(
+                                  hero.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.medievalSharp(
+                                    color: hero.primaryColor,
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 5),
+
+                      // 2. Bảng đá 4 chỉ số chiến đấu (statTablet4Lines): ATK, DEF, SPD, RNG
+                      Expanded(
+                        flex: 6,
+                        child: SelectPerWidget(
+                          tile: SelectPerTile.statTablet4Lines,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                _StatBar(
+                                  label: 'TẤN CÔNG',
+                                  value: hero.atkRating,
+                                  color: const Color(0xFFFF5252),
+                                  icon: Icons.flash_on_rounded,
+                                ),
+                                _StatBar(
+                                  label: 'PHÒNG THỦ',
+                                  value: hero.defRating,
+                                  color: const Color(0xFF42A5F5),
+                                  icon: Icons.shield_rounded,
+                                ),
+                                _StatBar(
+                                  label: 'TỐC ĐỘ',
+                                  value: hero.spdRating,
+                                  color: const Color(0xFFFFCA28),
+                                  icon: Icons.speed_rounded,
+                                ),
+                                _StatBar(
+                                  label: 'TẦM ĐÁNH',
+                                  value: hero.rngRating,
+                                  color: const Color(0xFFAB47BC),
+                                  icon: Icons.track_changes_rounded,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 5),
+
+                      // 3. Bảng đá thông tin chiêu thức & tiểu sử (statTablet3Lines)
+                      Expanded(
+                        flex: 5,
+                        child: SelectPerWidget(
+                          tile: SelectPerTile.statTablet3Lines,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.auto_awesome_rounded,
+                                      color: Color(0xFFFFD54F),
+                                      size: 13,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'TUYỆT KỸ: ',
+                                      style: GoogleFonts.cinzel(
+                                        color: const Color(0xFFFFD54F),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    Expanded(
                                       child: Text(
-                                        hero.description,
-                                        style: const TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 10,
-                                          height: 1.3,
+                                        hero.ultimateName,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.medievalSharp(
+                                          color: Colors.amber.shade200,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    child: Text(
+                                      hero.description,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 9.5,
+                                        height: 1.25,
+                                      ),
+                                    ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
@@ -838,66 +797,19 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
             ),
           ),
 
-          // 6. Nút "XUẤT TRẬN" bằng sprite từ UI_tileset_2: long_pointed_button
+          // 6. Nút "XUẤT TRẬN" bằng sprite từ select_per: buttonLong
           Positioned(
-            bottom: 6,
+            bottom: 5,
             left: 0,
             right: 0,
             child: Center(
-              child: GamePressable(
+              child: SelectPerButton(
+                tile: SelectPerTile.buttonLong,
+                width: 280,
+                height: 46,
+                label: 'XUẤT TRẬN',
+                icon: Icons.sports_kabaddi_rounded,
                 onTap: _onConfirmHero,
-                pressDepth: 3.5,
-                pressScale: 0.94,
-                child: SizedBox(
-                  width: 290,
-                  height: 48,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Nền nút nhọn đính ngọc đỏ từ Tileset 2
-                      Image.asset(
-                        'assets/images/Bg_homes/ui2/long_pointed_button.png',
-                        width: 290,
-                        height: 48,
-                        fit: BoxFit.fill,
-                      ),
-
-                      // Chữ hành động
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.sports_kabaddi_rounded,
-                            size: 18,
-                            color: Color(0xFFFFD54F),
-                            shadows: [Shadow(color: Colors.black, blurRadius: 4)],
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'XUẤT TRẬN',
-                            style: GoogleFonts.cinzel(
-                              color: const Color(0xFFFFD54F),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 2.0,
-                              shadows: const [
-                                Shadow(
-                                  color: Colors.black,
-                                  offset: Offset(1.5, 1.5),
-                                  blurRadius: 3,
-                                ),
-                                Shadow(
-                                  color: Color(0xFFE65100),
-                                  blurRadius: 8,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
           ),
@@ -906,7 +818,7 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
     );
   }
 
-  /// Xây dựng ô tướng trong bảng roster board
+  /// Xây dựng ô tướng trong bảng roster chamber có khung squareSlotFrame
   Widget _buildHeroSlot(int index) {
     final item = kHeroRoster[index];
     final isSelected = index == _selectedIndex;
@@ -917,59 +829,63 @@ class _CharacterSelectScreenState extends State<CharacterSelectScreen> {
       enableGlow: false,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        width: 42,
+        width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: isSelected
-              ? item.primaryColor.withValues(alpha: 0.45)
-              : const Color(0xD0120D1A),
-          borderRadius: BorderRadius.circular(5),
-          border: Border.all(
-            color: isSelected ? const Color(0xFFFFD54F) : const Color(0xFF5D4037),
-            width: isSelected ? 2.2 : 1.2,
-          ),
+          borderRadius: BorderRadius.circular(6),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: item.primaryColor.withValues(alpha: 0.85),
+                    color: item.primaryColor.withValues(alpha: 0.9),
                     blurRadius: 10,
-                    spreadRadius: 1.5,
+                    spreadRadius: 2,
+                  ),
+                  const BoxShadow(
+                    color: Color(0xFFFFD54F),
+                    blurRadius: 4,
+                    spreadRadius: 1,
                   ),
                 ]
               : [],
         ),
-        child: Stack(
-          children: [
-            // Ảnh chân dung nhân vật
-            Positioned.fill(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: HeroAvatarSlot(
-                  characterType: item.type,
-                  primaryColor: item.primaryColor,
-                  isSelected: isSelected,
+        child: SelectPerWidget(
+          tile: SelectPerTile.squareSlotFrame,
+          child: Padding(
+            padding: const EdgeInsets.all(4.5),
+            child: Stack(
+              children: [
+                // Ảnh chân dung nhân vật
+                Positioned.fill(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: HeroAvatarSlot(
+                      characterType: item.type,
+                      primaryColor: item.primaryColor,
+                      isSelected: isSelected,
+                    ),
+                  ),
                 ),
-              ),
-            ),
 
-            // Huy hiệu chức nghiệp góc trên trái (badge từ tileset 2)
-            Positioned(
-              top: 1.5,
-              left: 1.5,
-              child: Image.asset(
-                item.badgeAsset,
-                width: 12,
-                height: 12,
-              ),
+                // Huy hiệu chức nghiệp góc trên trái (badge từ select_per)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: SelectPerWidget(
+                    tile: item.badgeTile,
+                    width: 13,
+                    height: 13,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Thanh hiển thị chỉ số sức mạnh trong bảng đá top_info_panel
+/// Thanh hiển thị chỉ số sức mạnh trong bảng đá statTablet
 class _StatBar extends StatelessWidget {
   final String label;
   final double value;
@@ -987,15 +903,15 @@ class _StatBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 13, color: color),
+        Icon(icon, size: 12, color: color),
         const SizedBox(width: 4),
         SizedBox(
-          width: 68,
+          width: 64,
           child: Text(
             label,
             style: GoogleFonts.cinzel(
               color: Colors.white70,
-              fontSize: 9,
+              fontSize: 8.5,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -1004,7 +920,7 @@ class _StatBar extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: Container(
-              height: 8,
+              height: 7,
               color: Colors.black.withValues(alpha: 0.65),
               child: Stack(
                 children: [
@@ -1034,13 +950,13 @@ class _StatBar extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         SizedBox(
-          width: 22,
+          width: 20,
           child: Text(
             '${(value * 100).toInt()}',
             textAlign: TextAlign.end,
             style: TextStyle(
               color: color,
-              fontSize: 9,
+              fontSize: 8.5,
               fontWeight: FontWeight.w900,
             ),
           ),
