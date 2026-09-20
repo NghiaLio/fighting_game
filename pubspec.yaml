@@ -38,6 +38,7 @@ dependencies:
   flame_audio: ^2.12.2
   google_fonts: ^8.2.1
   flutter_native_splash: ^2.4.4
+  get: ^4.7.3
 
 dev_dependencies:
   flutter_test:

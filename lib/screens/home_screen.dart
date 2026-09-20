@@ -1,9 +1,10 @@
+import 'package:fighting_game/controllers/settings_controller.dart';
 import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
-import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,10 +18,6 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _torchController;
   late Animation<double> _torchFlicker;
-
-  // Sound settings state
-  double _bgmVolume = AudioService.bgmVolume;
-  double _sfxVolume = AudioService.sfxVolume;
 
   @override
   void initState() {
@@ -45,116 +42,102 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _openSettings() {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.7),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return Center(
-              child: Material(
-                color: Colors.transparent,
-                child: UiTileWidget(
-                  tile: UiTile.hangingBoard,
-                  width: 480,
-                  height: 310,
-                  child: Padding(
-                  padding: const EdgeInsets.fromLTRB(48, 50, 48, 28),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+    final settingsCtrl = SettingsController.to;
+    Get.dialog(
+      Center(
+        child: Material(
+          color: Colors.transparent,
+          child: UiTileWidget(
+            tile: UiTile.hangingBoard,
+            width: 480,
+            height: 310,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(48, 50, 48, 28),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'CÀI ĐẶT TRÒ CHƠI',
+                    style: GoogleFonts.cinzel(
+                      color: const Color(0xFFFFD54F),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.0,
+                      shadows: const [
+                        Shadow(color: Colors.black, blurRadius: 6),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Nhạc nền BGM
+                  Obx(() => Row(
                     children: [
+                      const Icon(Icons.music_note_rounded,
+                          color: Colors.amber, size: 22),
+                      const SizedBox(width: 8),
                       Text(
-                        'CÀI ĐẶT TRÒ CHƠI',
+                        'Nhạc nền:',
                         style: GoogleFonts.cinzel(
-                          color: const Color(0xFFFFD54F),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2.0,
-                          shadows: const [
-                            Shadow(color: Colors.black, blurRadius: 6),
-                          ],
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
                         ),
                       ),
-                      const SizedBox(height: 20),
-
-                      // Nhạc nền BGM
-                      Row(
-                        children: [
-                          const Icon(Icons.music_note_rounded,
-                              color: Colors.amber, size: 22),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Nhạc nền:',
-                            style: GoogleFonts.cinzel(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                          Expanded(
-                            child: Slider(
-                              value: _bgmVolume,
-                              activeColor: const Color(0xFFFF9800),
-                              inactiveColor: Colors.black54,
-                              onChanged: (val) {
-                                AudioService.bgmVolume = val;
-                                setDialogState(() => _bgmVolume = val);
-                                setState(() => _bgmVolume = val);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // Âm thanh SFX
-                      Row(
-                        children: [
-                          const Icon(Icons.volume_up_rounded,
-                              color: Colors.amber, size: 22),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Hiệu ứng:',
-                            style: GoogleFonts.cinzel(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                          Expanded(
-                            child: Slider(
-                              value: _sfxVolume,
-                              activeColor: const Color(0xFFFF9800),
-                              inactiveColor: Colors.black54,
-                              onChanged: (val) {
-                                AudioService.sfxVolume = val;
-                                setDialogState(() => _sfxVolume = val);
-                                setState(() => _sfxVolume = val);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const Spacer(),
-
-                      // Đóng
-                      UiTileButton(
-                        tile: UiTile.shortButton,
-                        label: 'ĐÓNG',
-                        width: 140,
-                        height: 42,
-                        fontSize: 13,
-                        onTap: () => Navigator.of(context).pop(),
+                      Expanded(
+                        child: Slider(
+                          value: settingsCtrl.bgmVolume.value,
+                          activeColor: const Color(0xFFFF9800),
+                          inactiveColor: Colors.black54,
+                          onChanged: settingsCtrl.setBgmVolume,
+                        ),
                       ),
                     ],
+                  )),
+
+                  // Âm thanh SFX
+                  Obx(() => Row(
+                    children: [
+                      const Icon(Icons.volume_up_rounded,
+                          color: Colors.amber, size: 22),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Hiệu ứng:',
+                        style: GoogleFonts.cinzel(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Expanded(
+                        child: Slider(
+                          value: settingsCtrl.sfxVolume.value,
+                          activeColor: const Color(0xFFFF9800),
+                          inactiveColor: Colors.black54,
+                          onChanged: settingsCtrl.setSfxVolume,
+                        ),
+                      ),
+                    ],
+                  )),
+
+                  const Spacer(),
+
+                  // Đóng
+                  UiTileButton(
+                    tile: UiTile.shortButton,
+                    label: 'ĐÓNG',
+                    width: 140,
+                    height: 42,
+                    fontSize: 13,
+                    onTap: () => Get.back(),
                   ),
-                ),
+                ],
               ),
             ),
-          );
-          },
-        );
-      },
+          ),
+        ),
+      ),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
     );
   }
 

@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/pause_menu_overlay.dart';
+import 'package:get/get.dart';
 
 class GamePlayScreen extends StatefulWidget {
   final CharacterType playerCharacter;
@@ -236,11 +237,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                       Expanded(
                         child: GamePressable(
                           onTap: () {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (_) => const HomeScreen(),
-                              ),
-                            );
+                            Get.offAll(() => const HomeScreen());
                           },
                           glowColor: Colors.grey,
                           child: Container(
