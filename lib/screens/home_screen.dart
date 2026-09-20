@@ -1,5 +1,8 @@
+import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
+import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
+import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,8 +19,8 @@ class _HomeScreenState extends State<HomeScreen>
   late Animation<double> _torchFlicker;
 
   // Sound settings state
-  double _bgmVolume = 0.8;
-  double _sfxVolume = 0.9;
+  double _bgmVolume = AudioService.bgmVolume;
+  double _sfxVolume = AudioService.sfxVolume;
 
   @override
   void initState() {
@@ -94,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen>
                               activeColor: const Color(0xFFFF9800),
                               inactiveColor: Colors.black54,
                               onChanged: (val) {
+                                AudioService.bgmVolume = val;
                                 setDialogState(() => _bgmVolume = val);
                                 setState(() => _bgmVolume = val);
                               },
@@ -122,6 +126,7 @@ class _HomeScreenState extends State<HomeScreen>
                               activeColor: const Color(0xFFFF9800),
                               inactiveColor: Colors.black54,
                               onChanged: (val) {
+                                AudioService.sfxVolume = val;
                                 setDialogState(() => _sfxVolume = val);
                                 setState(() => _sfxVolume = val);
                               },
@@ -150,22 +155,6 @@ class _HomeScreenState extends State<HomeScreen>
           },
         );
       },
-    );
-  }
-
-  void _showComingSoon(String title) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: const Color(0xFF1E140F),
-        content: Text(
-          '$title sẽ ra mắt ở phiên bản tiếp theo!',
-          style: const TextStyle(
-            color: Color(0xFFFFD54F),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        duration: const Duration(seconds: 2),
-      ),
     );
   }
 
@@ -305,8 +294,10 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                     const SizedBox(width: 10),
                     // Quick settings button
-                    GestureDetector(
+                    GamePressable(
                       onTap: _openSettings,
+                      pressDepth: 2.0,
+                      pressScale: 0.90,
                       child: const UiTileWidget(
                         tile: UiTile.rubyGem,
                         width: 36,
@@ -472,7 +463,14 @@ class _HomeScreenState extends State<HomeScreen>
                                   height: 48,
                                   fontSize: 13,
                                   textColor: Colors.amber.shade200,
-                                  onTap: () => _showComingSoon('Kho Anh Hùng'),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const CharacterSelectScreen(),
+                                      ),
+                                    );
+                                  },
                                 ),
                                 const SizedBox(height: 8),
 

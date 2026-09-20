@@ -4,105 +4,157 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Danh sách các sprite được cắt từ ảnh ui_tileset.png (1536 x 1024)
-enum UiTile {
-  /// Bảng gỗ đá lớn có 2 ngọn đuốc rực lửa 2 bên và sừng quỷ (728 x 444)
-  grandBoard(Rect.fromLTWH(28, 12, 728, 444)),
+/// Các thành phần sprite được trích xuất từ UI_tileset_2.png (666 x 375)
+enum UiTile2 {
+  /// Bảng chọn tướng chính 16 ô phong cách gothic (266 x 171)
+  rosterGridBoard(Rect.fromLTWH(3, 2, 266, 171)),
 
-  /// Bảng gỗ treo xích sắt phía trên với cờ kiếm đỏ (712 x 432)
-  hangingBoard(Rect.fromLTWH(800, 0, 712, 432)),
+  /// Cột cờ anh hùng màu xanh dương (49 x 158)
+  heroPillarBlue(Rect.fromLTWH(271, 14, 49, 158)),
 
-  /// Biển tên / Thanh nút dài viền đá & gỗ đính ngọc đỏ (708 x 176)
-  ornatePlaque(Rect.fromLTWH(32, 448, 708, 176)),
+  /// Cột cờ anh hùng màu đỏ hoàng gia (53 x 163)
+  heroPillarRed(Rect.fromLTWH(321, 11, 53, 163)),
 
-  /// Rèm vải đỏ / Dải băng đỏ viền vàng hoàng gia (528 x 196)
-  redCurtain(Rect.fromLTWH(780, 444, 528, 196)),
+  /// Cột cờ anh hùng màu tím ma thuật (53 x 162)
+  heroPillarPurple(Rect.fromLTWH(377, 11, 53, 162)),
 
-  /// Cờ hiệu hiệp sĩ xanh lam có hoa văn kiếm vàng (196 x 244)
-  blueBanner(Rect.fromLTWH(1324, 464, 196, 244)),
+  /// Cột cờ anh hùng màu lục bảo (55 x 163)
+  heroPillarGreen(Rect.fromLTWH(432, 10, 55, 163)),
 
-  /// Khung đá cổ lót giấy da có đầu lâu sừng quỷ (480 x 336)
-  parchmentBoard(Rect.fromLTWH(16, 660, 480, 336)),
+  /// Bảng thông tin trên với thanh tiến trình stat (165 x 84)
+  topInfoPanel(Rect.fromLTWH(497, 13, 165, 84)),
 
-  /// Bảng gỗ ghép đinh tán viền đá đầu lâu (308 x 332)
-  woodMenuBoard(Rect.fromLTWH(540, 656, 308, 332)),
+  /// Bảng thông tin dưới với ô ảnh đại diện và chỉ số (165 x 71)
+  bottomInfoPanel(Rect.fromLTWH(497, 98, 165, 71)),
 
-  /// Cột gỗ thông báo có đèn lồng phát sáng treo cạnh (228 x 324)
-  lanternPillar(Rect.fromLTWH(884, 664, 228, 324)),
+  /// Biểu tượng cánh chim chữ V chữ VALOR có vương miện (187 x 72)
+  valorWingsCrest(Rect.fromLTWH(363, 175, 187, 72)),
 
-  /// Nút bấm kim loại dài viền góc nhọn (368 x 68)
-  longButton(Rect.fromLTWH(1156, 724, 368, 68)),
+  /// Thanh chọn tướng 6 ô ngang (185 x 32)
+  rosterBar6(Rect.fromLTWH(36, 182, 185, 32)),
 
-  /// Nút bấm kim loại vừa (268 x 68)
-  shortButton(Rect.fromLTWH(1168, 804, 268, 68)),
+  /// Thanh chọn tướng 8 ô ngang (242 x 38)
+  rosterBar8(Rect.fromLTWH(6, 222, 242, 38)),
 
-  /// Đuốc lửa đang cháy (80 x 160)
-  torch(Rect.fromLTWH(1424, 840, 80, 160)),
+  /// Nút kép 2 ô (92 x 32)
+  doubleSlot(Rect.fromLTWH(252, 224, 92, 32)),
 
-  /// Viên hồng ngọc đỏ viền vàng kim (76 x 84)
-  rubyGem(Rect.fromLTWH(1188, 900, 76, 84)),
+  /// Bảng chỉ số 4 hàng có viền đỏ nổi bật (92 x 78)
+  statBox4Rows(Rect.fromLTWH(241, 263, 92, 78)),
 
-  /// Phù hiệu đầu lâu chiến binh Viking sừng cong (112 x 92)
-  skullCrest(Rect.fromLTWH(1288, 896, 112, 92));
+  /// Bảng tên dài có biểu tượng kiếm thần (227 x 67)
+  wideSwordPlaque(Rect.fromLTWH(6, 264, 227, 67)),
 
-  final Rect srcRect;
-  const UiTile(this.srcRect);
+  /// Rèm lụa đỏ trang trí (115 x 31)
+  redDrapery(Rect.fromLTWH(346, 259, 115, 31)),
+
+  /// Rèm lụa lam trang trí (114 x 27)
+  blueDrapery(Rect.fromLTWH(347, 290, 114, 27)),
+
+  /// Cờ kiếm gothic đỏ rủ xuống (46 x 98)
+  redGothicBanner(Rect.fromLTWH(484, 265, 46, 98)),
+
+  /// Cờ kiếm gothic lam rủ xuống (47 x 99)
+  blueGothicBanner(Rect.fromLTWH(534, 265, 47, 99)),
+
+  /// Cờ kiếm gothic tím rủ xuống (46 x 97)
+  purpleGothicBanner(Rect.fromLTWH(585, 265, 46, 97)),
+
+  /// Nút nhọn dài viền vàng đính ngọc đỏ (209 x 37)
+  longPointedButton(Rect.fromLTWH(21, 330, 209, 37)),
+
+  /// Huy hiệu đầu lâu (29 x 30)
+  badgeSkull(Rect.fromLTWH(467, 230, 29, 30)),
+
+  /// Huy hiệu vương miện hoàng gia (30 x 30)
+  badgeCrown(Rect.fromLTWH(499, 230, 30, 30)),
+
+  /// Huy hiệu khiên phòng ngự (31 x 31)
+  badgeShield(Rect.fromLTWH(535, 230, 31, 31)),
+
+  /// Huy hiệu song kiếm tấn công (30 x 30)
+  badgeSwords(Rect.fromLTWH(569, 230, 30, 30)),
+
+  /// Ngọc đỏ hồng ngọc (23 x 30)
+  rubyDiamond(Rect.fromLTWH(361, 226, 23, 30)),
+
+  /// Ngọc lam lam ngọc (21 x 30)
+  sapphireDiamond(Rect.fromLTWH(385, 226, 21, 30)),
+
+  /// Ngọc lục bảo (23 x 30)
+  emeraldDiamond(Rect.fromLTWH(407, 226, 23, 30)),
+
+  /// Mũi tên trái (15 x 27)
+  arrowLeft(Rect.fromLTWH(3, 185, 15, 27)),
+
+  /// Mũi tên phải (18 x 26)
+  arrowRight(Rect.fromLTWH(326, 181, 18, 26));
+
+  final Rect rect;
+  const UiTile2(this.rect);
 }
 
-/// Singleton quản lý tải và cache ảnh ui_tileset trong RAM
-class UiTileset {
-  static const String assetPath = 'assets/images/Bg_homes/ui_tileset.png';
+/// Trình tải và quản lý bộ nhớ đệm hình ảnh cho UI_tileset_2.png
+class UiTileset2 {
+  static const String assetPath = 'assets/images/Bg_homes/UI_tileset_2.png';
   static ui.Image? _cachedImage;
+  static Future<ui.Image>? _loadingFuture;
 
-  static Future<ui.Image> load() async {
-    if (_cachedImage != null) return _cachedImage!;
+  static Future<ui.Image> load() {
+    if (_cachedImage != null) {
+      return Future.value(_cachedImage!);
+    }
+    if (_loadingFuture != null) {
+      return _loadingFuture!;
+    }
+
+    _loadingFuture = _loadImage();
+    return _loadingFuture!;
+  }
+
+  static Future<ui.Image> _loadImage() async {
     final data = await rootBundle.load(assetPath);
-    final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+    final bytes = data.buffer.asUint8List();
+    final codec = await ui.instantiateImageCodec(bytes);
     final frame = await codec.getNextFrame();
     _cachedImage = frame.image;
     return _cachedImage!;
   }
-
-  static ui.Image? get image => _cachedImage;
 }
 
-/// Widget hiển thị một mảnh sprite từ ui_tileset.png
-class UiTileWidget extends StatefulWidget {
-  final UiTile tile;
+/// Widget hiển thị sprite cắt từ UI_tileset_2.png
+class UiTile2Widget extends StatefulWidget {
+  final UiTile2 tile;
   final double? width;
   final double? height;
   final BoxFit fit;
   final Widget? child;
-  final AlignmentGeometry alignment;
 
-  const UiTileWidget({
+  const UiTile2Widget({
     super.key,
     required this.tile,
     this.width,
     this.height,
-    this.fit = BoxFit.contain,
+    this.fit = BoxFit.fill,
     this.child,
-    this.alignment = Alignment.center,
   });
 
   @override
-  State<UiTileWidget> createState() => _UiTileWidgetState();
+  State<UiTile2Widget> createState() => _UiTile2WidgetState();
 }
 
-class _UiTileWidgetState extends State<UiTileWidget> {
+class _UiTile2WidgetState extends State<UiTile2Widget> {
   ui.Image? _image;
 
   @override
   void initState() {
     super.initState();
-    if (UiTileset.image != null) {
-      _image = UiTileset.image;
+    if (UiTileset2._cachedImage != null) {
+      _image = UiTileset2._cachedImage;
     } else {
-      UiTileset.load().then((img) {
+      UiTileset2.load().then((img) {
         if (mounted) {
-          setState(() {
-            _image = img;
-          });
+          setState(() => _image = img);
         }
       });
     }
@@ -110,20 +162,15 @@ class _UiTileWidgetState extends State<UiTileWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final aspectRatio = widget.tile.srcRect.width / widget.tile.srcRect.height;
+    final aspectRatio = widget.tile.rect.width / widget.tile.rect.height;
 
     Widget content = CustomPaint(
-      painter: _UiTilePainter(
+      painter: _UiTile2Painter(
         image: _image,
-        srcRect: widget.tile.srcRect,
+        srcRect: widget.tile.rect,
         fit: widget.fit,
       ),
-      child: widget.child != null
-          ? Align(
-              alignment: widget.alignment,
-              child: widget.child,
-            )
-          : null,
+      child: widget.child,
     );
 
     if (widget.width != null && widget.height != null) {
@@ -153,12 +200,12 @@ class _UiTileWidgetState extends State<UiTileWidget> {
   }
 }
 
-class _UiTilePainter extends CustomPainter {
+class _UiTile2Painter extends CustomPainter {
   final ui.Image? image;
   final Rect srcRect;
   final BoxFit fit;
 
-  _UiTilePainter({
+  _UiTile2Painter({
     required this.image,
     required this.srcRect,
     required this.fit,
@@ -167,24 +214,22 @@ class _UiTilePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (image == null) return;
-
     final dstRect = Offset.zero & size;
     final paint = Paint()..filterQuality = FilterQuality.medium;
-
     canvas.drawImageRect(image!, srcRect, dstRect, paint);
   }
 
   @override
-  bool shouldRepaint(covariant _UiTilePainter oldDelegate) {
+  bool shouldRepaint(covariant _UiTile2Painter oldDelegate) {
     return oldDelegate.image != image ||
         oldDelegate.srcRect != srcRect ||
         oldDelegate.fit != fit;
   }
 }
 
-/// Nút bấm tương tác cao cấp làm từ sprite tileset
-class UiTileButton extends StatefulWidget {
-  final UiTile tile;
+/// Nút bấm tương tác cao cấp sử dụng sprite từ UI_tileset_2
+class UiTile2Button extends StatefulWidget {
+  final UiTile2 tile;
   final String label;
   final IconData? icon;
   final VoidCallback onTap;
@@ -194,24 +239,24 @@ class UiTileButton extends StatefulWidget {
   final double fontSize;
   final String? soundEffect;
 
-  const UiTileButton({
+  const UiTile2Button({
     super.key,
     required this.tile,
     required this.label,
     required this.onTap,
     this.icon,
     this.width = 240,
-    this.height = 58,
+    this.height = 54,
     this.textColor = const Color(0xFFFFD54F),
     this.fontSize = 15,
     this.soundEffect = 'click.mp3',
   });
 
   @override
-  State<UiTileButton> createState() => _UiTileButtonState();
+  State<UiTile2Button> createState() => _UiTile2ButtonState();
 }
 
-class _UiTileButtonState extends State<UiTileButton> {
+class _UiTile2ButtonState extends State<UiTile2Button> {
   bool _isPressed = false;
   bool _isHovered = false;
 
@@ -233,7 +278,6 @@ class _UiTileButtonState extends State<UiTileButton> {
 
   @override
   Widget build(BuildContext context) {
-    // Độ dịch chuyển xuống theo trục Y khi ấn (Cảm giác cơ học lún nút)
     final translateY = _isPressed ? 3.5 : 0.0;
     final scale = _isPressed ? 0.94 : (_isHovered ? 1.025 : 1.0);
 
@@ -273,8 +317,9 @@ class _UiTileButtonState extends State<UiTileButton> {
                     ],
             ),
             child: Stack(
+              alignment: Alignment.center,
               children: [
-                UiTileWidget(
+                UiTile2Widget(
                   tile: widget.tile,
                   width: widget.width,
                   height: widget.height,
@@ -323,13 +368,12 @@ class _UiTileButtonState extends State<UiTileButton> {
                     ),
                   ),
                 ),
-                // Lớp phủ sáng nhẹ khi ấn nút (Highlight flash)
                 if (_isPressed)
                   Positioned.fill(
                     child: IgnorePointer(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: Colors.white.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
                       ),

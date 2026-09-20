@@ -14,6 +14,14 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   static const double maxHp = 100.0;
   static const double mapMultiplier = 2.8; // Extended map: 2.8x screen width
 
+  final CharacterType playerCharacter;
+  final CharacterType enemyCharacter;
+
+  FightingGame({
+    this.playerCharacter = CharacterType.fireWizard,
+    this.enemyCharacter = CharacterType.knight1,
+  });
+
   late PositionComponent stage;
   double mapWidth = 0;
   double cameraX = 0;
@@ -32,8 +40,21 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // Cache all character and UI assets
-    await Flame.images.loadAll([
+    // Cache all dynamic character states and control assets
+    const states = [
+      'Idle.png',
+      'Walk.png',
+      'Run.png',
+      'Jump.png',
+      'Attack_1.png',
+      'Attack_2.png',
+      'Attack_3.png',
+      'Special.png',
+      'Hurt.png',
+      'Dead.png',
+    ];
+
+    final toLoad = <String>[
       'Backgrounds/bg1.png',
       'Buttons/left.png',
       'Buttons/right.png',
@@ -41,28 +62,19 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       'Buttons/attack.png',
       'Buttons/special.png',
       'Buttons/sprint.png',
-      'Fire_Wizard/Idle.png',
-      'Fire_Wizard/Walk.png',
-      'Fire_Wizard/Run.png',
-      'Fire_Wizard/Jump.png',
-      'Fire_Wizard/Attack_1.png',
-      'Fire_Wizard/Attack_2.png',
-      'Fire_Wizard/Attack_3.png',
-      'Fire_Wizard/Special.png',
-      'Fire_Wizard/Hurt.png',
-      'Fire_Wizard/Dead.png',
-      'Fire_Wizard/Projectile1.png',
-      'Knight_1/Idle.png',
-      'Knight_1/Walk.png',
-      'Knight_1/Run.png',
-      'Knight_1/Jump.png',
-      'Knight_1/Attack_1.png',
-      'Knight_1/Attack_2.png',
-      'Knight_1/Attack_3.png',
-      'Knight_1/Special.png',
-      'Knight_1/Hurt.png',
-      'Knight_1/Dead.png',
-    ]);
+    ];
+
+    for (final s in states) {
+      toLoad.add('${playerCharacter.spritePath}/$s');
+      toLoad.add('${enemyCharacter.spritePath}/$s');
+    }
+
+    if (playerCharacter == CharacterType.fireWizard ||
+        enemyCharacter == CharacterType.fireWizard) {
+      toLoad.add('Fire_Wizard/Projectile1.png');
+    }
+
+    await Flame.images.loadAll(toLoad.toSet().toList());
 
     mapWidth = size.x * mapMultiplier;
 
@@ -82,7 +94,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
     // 2. Spawn Player and Enemy with comfortable fighting distance
     final p1 = CharacterComponent(
-      characterType: CharacterType.fireWizard,
+      characterType: playerCharacter,
       startX: mapWidth * 0.30,
       groundY: groundY,
       isPlayer: true,
@@ -92,7 +104,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     await stage.add(p1);
 
     final e1 = CharacterComponent(
-      characterType: CharacterType.knight1,
+      characterType: enemyCharacter,
       startX: mapWidth * 0.55,
       groundY: groundY,
       isPlayer: false,

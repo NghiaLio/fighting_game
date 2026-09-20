@@ -47,7 +47,7 @@ class _MobaCircleButton extends PositionComponent
   @override
   void onTapDown(TapDownEvent event) {
     _isPressed = true;
-    scale = Vector2.all(0.90);
+    scale = Vector2.all(0.88);
 
     final now = DateTime.now();
     final diff = now.difference(_lastTapTime).inMilliseconds;
@@ -80,25 +80,39 @@ class _MobaCircleButton extends PositionComponent
   void render(Canvas canvas) {
     super.render(canvas);
 
+    canvas.save();
+    // Tạo cảm giác nút vật lý bị nhấn lún xuống 2.5px
+    if (_isPressed) {
+      canvas.translate(0, 2.5);
+    }
+
     final center = Offset(radius, radius);
 
-    // 1. Dark frosted circular background
+    // 1. Dark frosted circular background + Contact Flash
     final bgPaint = Paint()
       ..color = _isPressed
-          ? activeColor.withValues(alpha: 0.45)
+          ? activeColor.withValues(alpha: 0.55)
           : const Color(0xD8101424);
     canvas.drawCircle(center, radius, bgPaint);
+
+    // 1b. Glow aura khi ấn xuống
+    if (_isPressed) {
+      final glowPaint = Paint()
+        ..color = activeColor.withValues(alpha: 0.35)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+      canvas.drawCircle(center, radius - 2, glowPaint);
+    }
 
     // 2. Outer decorative ring
     final outerRingPaint = Paint()
       ..color = _isPressed ? activeColor : borderColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = _isPressed ? 2.6 : 2.0;
+      ..strokeWidth = _isPressed ? 2.8 : 2.0;
     canvas.drawCircle(center, radius - 1, outerRingPaint);
 
     // 3. Inner subtle accent circle
     final innerRingPaint = Paint()
-      ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.35)
+      ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.45)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     canvas.drawCircle(center, radius - 4.5, innerRingPaint);
@@ -133,6 +147,8 @@ class _MobaCircleButton extends PositionComponent
       textDirection: TextDirection.ltr,
     )..layout();
     tp.paint(canvas, Offset(radius - tp.width / 2, radius * 2 - 12));
+
+    canvas.restore();
   }
 }
 

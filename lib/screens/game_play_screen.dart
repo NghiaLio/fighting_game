@@ -1,12 +1,21 @@
 import 'dart:ui';
+import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/screens/home_screen.dart';
+import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class GamePlayScreen extends StatefulWidget {
-  const GamePlayScreen({super.key});
+  final CharacterType playerCharacter;
+  final CharacterType enemyCharacter;
+
+  const GamePlayScreen({
+    super.key,
+    this.playerCharacter = CharacterType.fireWizard,
+    this.enemyCharacter = CharacterType.knight1,
+  });
 
   @override
   State<GamePlayScreen> createState() => _GamePlayScreenState();
@@ -18,7 +27,10 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   @override
   void initState() {
     super.initState();
-    _game = FightingGame();
+    _game = FightingGame(
+      playerCharacter: widget.playerCharacter,
+      enemyCharacter: widget.enemyCharacter,
+    );
   }
 
   @override
@@ -175,37 +187,44 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                     children: [
                       // Nút Về Trang Chủ (Home)
                       Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
+                        child: GamePressable(
+                          onTap: () {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                 builder: (_) => const HomeScreen(),
                               ),
                             );
                           },
-                          icon: const Icon(
-                            Icons.home_rounded,
-                            size: 20,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'TRANG CHỦ',
-                            style: GoogleFonts.cinzel(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white.withValues(alpha: 0.08),
-                            side: BorderSide(
-                              color: Colors.grey.shade600,
-                              width: 1.5,
-                            ),
+                          glowColor: Colors.grey,
+                          child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Colors.grey.shade600,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.home_rounded,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'TRANG CHỦ',
+                                  style: GoogleFonts.cinzel(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -214,53 +233,53 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
 
                       // Nút Chơi Lại (Replay)
                       Expanded(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: isVictory
-                                  ? const [
-                                      Color(0xFFFFD54F),
-                                      Color(0xFFFF8F00),
-                                    ]
-                                  : const [
-                                      Color(0xFFFF7043),
-                                      Color(0xFFD84315),
-                                    ],
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: glowColor.withValues(alpha: 0.5),
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
+                        child: GamePressable(
+                          onTap: () {
+                            widget.game.restartMatch();
+                          },
+                          glowColor: glowColor,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: isVictory
+                                    ? const [
+                                        Color(0xFFFFD54F),
+                                        Color(0xFFFF8F00),
+                                      ]
+                                    : const [
+                                        Color(0xFFFF7043),
+                                        Color(0xFFD84315),
+                                      ],
                               ),
-                            ],
-                          ),
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              widget.game.restartMatch();
-                            },
-                            icon: Icon(
-                              Icons.replay_rounded,
-                              size: 20,
-                              color: isVictory ? Colors.black : Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: glowColor.withValues(alpha: 0.5),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
-                            label: Text(
-                              'CHƠI LẠI',
-                              style: GoogleFonts.cinzel(
-                                color: isVictory ? Colors.black : Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.replay_rounded,
+                                  size: 20,
+                                  color: isVictory ? Colors.black : Colors.white,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'CHƠI LẠI',
+                                  style: GoogleFonts.cinzel(
+                                    color: isVictory ? Colors.black : Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
