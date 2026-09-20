@@ -1,3 +1,4 @@
+import 'package:fighting_game/constants/pause_menu_strings.dart';
 import 'package:fighting_game/utils/pause_menu_tileset.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,7 +20,7 @@ class PauseHeader extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          'TẠM DỪNG',
+          PauseMenuStrings.title,
           style: GoogleFonts.cinzel(
             color: const Color(0xFFFFD54F),
             fontSize: 15,

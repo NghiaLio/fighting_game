@@ -1,11 +1,11 @@
 import 'dart:math';
-import 'package:fighting_game/character_sprite_animations.dart';
 import 'package:fighting_game/enums/character_state.dart';
 import 'package:fighting_game/enums/character_type.dart';
-import 'package:fighting_game/player_sprite_settings.dart';
-import 'package:fighting_game/player_stats.dart';
 import 'package:fighting_game/game/components/fireball_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
+import 'package:fighting_game/game/utils/character_sprite_animations.dart';
+import 'package:fighting_game/models/player_sprite_settings.dart';
+import 'package:fighting_game/models/player_stats.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';

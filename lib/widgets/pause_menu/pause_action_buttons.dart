@@ -1,3 +1,4 @@
+import 'package:fighting_game/constants/pause_menu_strings.dart';
 import 'package:fighting_game/controllers/pause_menu_controller.dart';
 import 'package:fighting_game/utils/pause_menu_tileset.dart';
 import 'package:flutter/material.dart';
@@ -10,36 +11,39 @@ class PauseActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double btnWidth = 210;
+    const double btnHeight = 42;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         // 1. TIẾP TỤC (resume.png)
         PauseMenuActionButton.resume(
-          label: 'TIẾP TỤC',
+          label: PauseMenuStrings.resumeButton,
           icon: Icons.play_arrow_rounded,
-          width: 190,
-          height: 36,
+          width: btnWidth + 15,
+          height: btnHeight + 5,
           onTap: controller.resume,
         ),
-        const SizedBox(height: 7),
+        const SizedBox(height: 10),
 
         // 2. CHƠI LẠI (other_button.png)
         PauseMenuActionButton.secondary(
-          label: 'CHƠI LẠI',
+          label: PauseMenuStrings.restartButton,
           icon: Icons.refresh_rounded,
-          width: 190,
-          height: 36,
+          width: btnWidth,
+          height: btnHeight,
           textColor: const Color(0xFFFFD54F),
           onTap: controller.restart,
         ),
-        const SizedBox(height: 7),
+        const SizedBox(height: 10),
 
         // 3. THOÁT (other_button.png)
         PauseMenuActionButton.secondary(
-          label: 'THOÁT RA MENU',
+          label: PauseMenuStrings.quitButton,
           icon: Icons.home_rounded,
-          width: 190,
-          height: 36,
+          width: btnWidth,
+          height: btnHeight,
           textColor: const Color(0xFFFFAB91),
           onTap: controller.quitToHome,
         ),

@@ -1,3 +1,4 @@
+import 'package:fighting_game/constants/pause_menu_strings.dart';
 import 'package:fighting_game/controllers/settings_controller.dart';
 import 'package:fighting_game/utils/pause_menu_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
@@ -24,7 +25,7 @@ class PauseAudioPanel extends StatelessWidget {
           // Nhạc Nền (BGM)
           _buildVolumeRow(
             context: context,
-            title: 'NHẠC NỀN',
+            title: PauseMenuStrings.bgmTitle,
             value: isSoundOn ? bgm : 0.0,
             onChanged: isSoundOn
                 ? (val) => settingsCtrl.setBgmVolume(val)
@@ -34,7 +35,7 @@ class PauseAudioPanel extends StatelessWidget {
           // Hiệu Ứng (SFX)
           _buildVolumeRow(
             context: context,
-            title: 'HIỆU ỨNG',
+            title: PauseMenuStrings.sfxTitle,
             value: isSoundOn ? sfx : 0.0,
             onChanged: isSoundOn
                 ? (val) => settingsCtrl.setSfxVolume(val)
@@ -65,8 +66,8 @@ class PauseAudioPanel extends StatelessWidget {
               opacity: isMuted ? 0.35 : 1.0,
               child: Image.asset(
                 PauseMenuAssets.volumeIcon,
-                width: 20,
-                height: 18,
+                width: 40,
+                height: 40,
                 fit: BoxFit.contain,
               ),
             ),
@@ -80,7 +81,7 @@ class PauseAudioPanel extends StatelessWidget {
               title,
               style: GoogleFonts.cinzel(
                 color: isMuted ? Colors.white38 : const Color(0xFFFFD54F),
-                fontSize: 9.0,
+                fontSize: 12.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -90,9 +91,9 @@ class PauseAudioPanel extends StatelessWidget {
           Expanded(
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                trackHeight: 3.5,
+                trackHeight: 5.5,
                 thumbShape: const RoundSliderThumbShape(
-                  enabledThumbRadius: 5.5,
+                  enabledThumbRadius: 7.5,
                 ),
                 overlayShape: const RoundSliderOverlayShape(overlayRadius: 9),
                 activeTrackColor: const Color(0xFFFFD54F),
@@ -102,10 +103,7 @@ class PauseAudioPanel extends StatelessWidget {
                 disabledActiveTrackColor: Colors.white24,
                 disabledInactiveTrackColor: Colors.black38,
               ),
-              child: Slider(
-                value: value.clamp(0.0, 1.0),
-                onChanged: onChanged,
-              ),
+              child: Slider(value: value.clamp(0.0, 1.0), onChanged: onChanged),
             ),
           ),
 
@@ -117,7 +115,7 @@ class PauseAudioPanel extends StatelessWidget {
               textAlign: TextAlign.end,
               style: TextStyle(
                 color: isMuted ? Colors.white38 : const Color(0xFFFFD54F),
-                fontSize: 9.0,
+                fontSize: 12.0,
                 fontWeight: FontWeight.w900,
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/screens/home_screen.dart';
 import 'package:get/get.dart';
@@ -10,12 +11,14 @@ class PauseMenuController extends GetxController {
 
   /// Tiếp tục trận đấu
   void resume() {
+    GameMatchController.to.closeSetting();
     game.overlays.remove('PauseMenu');
     game.resumeEngine();
   }
 
   /// Chơi lại trận đấu từ đầu
   void restart() {
+    GameMatchController.to.closeSetting();
     game.overlays.remove('PauseMenu');
     game.restartMatch();
     game.resumeEngine();
@@ -23,6 +26,7 @@ class PauseMenuController extends GetxController {
 
   /// Thoát ra Menu chính
   void quitToHome() {
+    GameMatchController.to.closeSetting();
     game.resumeEngine();
     Get.offAll(() => const HomeScreen());
   }

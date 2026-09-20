@@ -15,8 +15,21 @@ class GameMatchController extends GetxController {
   final RxBool isVictory = false.obs;
   final RxString endMessage = ''.obs;
 
+  /// Trạng thái mở/đóng của màn hình Cài đặt / Tạm dừng (Pause / Setting)
+  final RxBool isSettingOpen = false.obs;
+
   final Rx<CharacterType> playerCharacter = CharacterType.fireWizard.obs;
   final Rx<CharacterType> enemyCharacter = CharacterType.knight1.obs;
+
+  void openSetting() {
+    isSettingOpen.value = true;
+    matchState.value = MatchState.paused;
+  }
+
+  void closeSetting() {
+    isSettingOpen.value = false;
+    matchState.value = MatchState.playing;
+  }
 
   void startMatch({
     required CharacterType player,
@@ -26,19 +39,23 @@ class GameMatchController extends GetxController {
     enemyCharacter.value = enemy;
     matchState.value = MatchState.playing;
     isVictory.value = false;
+    isSettingOpen.value = false;
     endMessage.value = '';
   }
 
   void pauseGame() {
+    isSettingOpen.value = true;
     matchState.value = MatchState.paused;
   }
 
   void resumeGame() {
+    isSettingOpen.value = false;
     matchState.value = MatchState.playing;
   }
 
   void finishMatch({required bool victory, required String message}) {
     isVictory.value = victory;
+    isSettingOpen.value = false;
     endMessage.value = message;
     matchState.value = MatchState.gameOver;
   }
@@ -46,6 +63,7 @@ class GameMatchController extends GetxController {
   void restartMatch() {
     matchState.value = MatchState.playing;
     isVictory.value = false;
+    isSettingOpen.value = false;
     endMessage.value = '';
   }
 }

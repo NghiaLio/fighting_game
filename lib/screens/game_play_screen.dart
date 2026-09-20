@@ -7,6 +7,8 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:fighting_game/constants/pause_menu_assets.dart';
+import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/pause_menu_overlay.dart';
 import 'package:get/get.dart';
@@ -51,44 +53,50 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
             },
           ),
 
-          // Nút bấm Tạm Dừng (Setting / Pause Button) nằm cạnh bộ đếm giờ trên đỉnh
-          Positioned(
-            top: 8,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                margin: const EdgeInsets.only(right: 80),
-                child: GamePressable(
-                  onTap: () {
-                    AudioService.playButtonClick();
-                    _game.pauseEngine();
-                    _game.overlays.add('PauseMenu');
-                  },
-                  pressDepth: 2.5,
-                  pressScale: 0.90,
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black54,
-                          blurRadius: 6,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Image.asset(
-                      'assets/images/Buttons/setting.png',
-                      fit: BoxFit.contain,
+          // Nút bấm Tạm Dừng (Setting / Pause Button) nằm cạnh bộ đếm giờ trên đỉnh - Ẩn khi đang mở Setting
+          Obx(() {
+            if (GameMatchController.to.isSettingOpen.value) {
+              return const SizedBox.shrink();
+            }
+            return Positioned(
+              top: 8,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  margin: const EdgeInsets.only(right: 80),
+                  child: GamePressable(
+                    onTap: () {
+                      AudioService.playButtonClick();
+                      GameMatchController.to.openSetting();
+                      _game.pauseEngine();
+                      _game.overlays.add('PauseMenu');
+                    },
+                    pressDepth: 2.5,
+                    pressScale: 0.90,
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black54,
+                            blurRadius: 6,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        PauseMenuAssets.settingButton,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );
@@ -137,12 +145,15 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
   @override
   Widget build(BuildContext context) {
     final isVictory = widget.game.isVictory;
-    final primaryColor =
-        isVictory ? const Color(0xFFFFD54F) : const Color(0xFFFF5252);
-    final borderColor =
-        isVictory ? const Color(0xFFD4AF37) : const Color(0xFFB71C1C);
-    final glowColor =
-        isVictory ? const Color(0xFFFF9800) : const Color(0xFFD32F2F);
+    final primaryColor = isVictory
+        ? const Color(0xFFFFD54F)
+        : const Color(0xFFFF5252);
+    final borderColor = isVictory
+        ? const Color(0xFFD4AF37)
+        : const Color(0xFFB71C1C);
+    final glowColor = isVictory
+        ? const Color(0xFFFF9800)
+        : const Color(0xFFD32F2F);
 
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
@@ -183,12 +194,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                         : Icons.shield_outlined,
                     color: primaryColor,
                     size: 48,
-                    shadows: [
-                      Shadow(
-                        color: glowColor,
-                        blurRadius: 16,
-                      ),
-                    ],
+                    shadows: [Shadow(color: glowColor, blurRadius: 16)],
                   ),
                   const SizedBox(height: 8),
 
@@ -201,10 +207,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                       fontWeight: FontWeight.w900,
                       letterSpacing: 2.5,
                       shadows: [
-                        Shadow(
-                          color: glowColor,
-                          blurRadius: 14,
-                        ),
+                        Shadow(color: glowColor, blurRadius: 14),
                         const Shadow(
                           color: Colors.black,
                           blurRadius: 6,
@@ -311,13 +314,17 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                                 Icon(
                                   Icons.replay_rounded,
                                   size: 20,
-                                  color: isVictory ? Colors.black : Colors.white,
+                                  color: isVictory
+                                      ? Colors.black
+                                      : Colors.white,
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'CHƠI LẠI',
                                   style: GoogleFonts.cinzel(
-                                    color: isVictory ? Colors.black : Colors.white,
+                                    color: isVictory
+                                        ? Colors.black
+                                        : Colors.white,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1.0,

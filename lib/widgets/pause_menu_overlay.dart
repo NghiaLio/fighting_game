@@ -20,7 +20,7 @@ class PauseMenuOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double boardWidth = 330;
+    const double boardWidth = 400;
     const double boardHeight = 374;
 
     // Khởi tạo/Lấy Controller xử lý nghiệp vụ
@@ -61,17 +61,16 @@ class PauseMenuOverlay extends StatelessWidget {
                   // 2. Nội dung bố cục dọc bên trong khung đá
                   Positioned.fill(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(36, 26, 36, 22),
+                      padding: const EdgeInsets.fromLTRB(50, 48, 60, 28),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // UI Component 1: Tiêu đề
-                          const PauseHeader(),
-
-                          // UI Component 2: Bảng điều chỉnh âm lượng
+                          // UI Component: Bảng điều chỉnh âm lượng
                           PauseAudioPanel(settingsCtrl: settingsCtrl),
 
-                          // UI Component 3: Hàng nút bấm hành động
+                          const SizedBox(height: 18),
+
+                          // UI Component: Hàng nút bấm hành động
                           PauseActionButtons(controller: pauseCtrl),
                         ],
                       ),
