@@ -8,6 +8,7 @@ import 'package:fighting_game/game/components/fireball_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 
 class CharacterComponent extends PositionComponent
     with HasGameReference<FightingGame>, CollisionCallbacks {
@@ -68,6 +69,15 @@ class CharacterComponent extends PositionComponent
   // AI
   final _rng = Random();
   double _aiTimer = 0;
+
+  // Game Feel & VFX States (theo docs/03_vfx_and_game_feel.md)
+  double _hitStopTimer = 0;
+  double _damageFlashTimer = 0;
+  double _sprintDustTimer = 0;
+
+  void hitStop(double duration) {
+    _hitStopTimer = duration;
+  }
 
   // Scale for rendering the sprite: 128x128 pixel art scaled 2.5x -> 320x320
   static const double _scale = 2.5;
@@ -185,6 +195,18 @@ class CharacterComponent extends PositionComponent
     super.update(dt);
 
     if (isDeadCompleted) return;
+
+    // C. Cơ chế Khựng khung hình (Hit-Stop / Freeze Frame) theo docs/03_vfx_and_game_feel.md
+    if (_hitStopTimer > 0) {
+      _hitStopTimer -= dt;
+      return;
+    }
+
+    // B. Hiệu ứng nhấp nháy khi bị thương (Damage Flash)
+    _updateDamageFlash(dt);
+
+    // F. Hiệu ứng bụi bứt tốc chạy (Sprint Dust)
+    _updateSprintDust(dt);
 
     if (_isDying) {
       _handleDying(dt);
@@ -338,6 +360,8 @@ class CharacterComponent extends PositionComponent
         _isLanding = true;
         _landingTimer = _landingDuration;
         _velocityX = 0;
+        // F. Hiệu Ứng Bụi Tiếp Đất (Dust Particles)
+        game.spawnDustPuff(Vector2(position.x, groundY));
       }
     }
   }
@@ -435,6 +459,31 @@ class CharacterComponent extends PositionComponent
     if (dx <= reach) {
       _hasDealtDamage = true;
       final dmg = stats.getAttackPower(_state) * multiplier;
+      final isHeavy = _state == CharacterState.attack3 || _state == CharacterState.special;
+
+      // A. Hiệu ứng tia lửa va chạm (Hit Sparks) tại điểm tiếp xúc vũ khí
+      final sparkX = (position.x + opponent!.position.x) / 2;
+      final sparkY = position.y - 75.0;
+      game.spawnHitSpark(Vector2(sparkX, sparkY), isHeavy: isHeavy);
+
+      // C. Cơ chế Khựng khung hình (Hit-Stop) 0.06s cho cả 2 bên (mục C)
+      hitStop(0.06);
+      opponent!.hitStop(0.06);
+
+      // D. Rung chấn màn hình (Screen Shake) (mục D)
+      game.triggerScreenShake(
+        duration: isHeavy ? 0.22 : 0.14,
+        intensity: isHeavy ? 6.0 : 3.0,
+      );
+
+      // E. Số sát thương nảy lên (Floating Damage Numbers) (mục E)
+      final damageY = opponent!.position.y - 120.0;
+      game.spawnFloatingDamage(
+        Vector2(opponent!.position.x, damageY),
+        dmg,
+        isCritical: isHeavy,
+      );
+
       opponent!.receiveDamage(dmg);
     }
   }
@@ -445,6 +494,9 @@ class CharacterComponent extends PositionComponent
     _isAttacking = false;
     _attackTimer = 0;
     _isLanding = false;
+
+    // B. Hiệu ứng nhấp nháy khi bị thương (Damage Flash trắng trong 0.08s)
+    _damageFlashTimer = 0.08;
 
     // Small knockback when hit
     _velocityX = (facingRight ? -1 : 1) * 90;
@@ -485,5 +537,33 @@ class CharacterComponent extends PositionComponent
     final minX = safeMargin;
     final maxX = game.mapWidth > 0 ? (game.mapWidth - safeMargin) : (game.size.x - safeMargin);
     position.x = position.x.clamp(minX, maxX);
+  }
+
+  void _updateSprintDust(double dt) {
+    if (_onGround && (movingLeft || movingRight) && sprinting && !_isAttacking && !_isHurt && !isDead) {
+      _sprintDustTimer -= dt;
+      if (_sprintDustTimer <= 0) {
+        _sprintDustTimer = 0.20;
+        final dustX = position.x + (facingRight ? -30.0 : 30.0);
+        game.spawnDustPuff(Vector2(dustX, groundY), flipHorizontal: !facingRight);
+      }
+    } else {
+      _sprintDustTimer = 0;
+    }
+  }
+
+  void _updateDamageFlash(double dt) {
+    if (_damageFlashTimer > 0) {
+      _damageFlashTimer -= dt;
+      if (_damageFlashTimer <= 0) {
+        _animComp?.paint = Paint();
+      } else {
+        _animComp?.paint = Paint()
+          ..colorFilter = const ColorFilter.mode(
+            Colors.white,
+            BlendMode.srcATop,
+          );
+      }
+    }
   }
 }

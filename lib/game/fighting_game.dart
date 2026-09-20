@@ -4,6 +4,7 @@ import 'package:fighting_game/game/components/background_component.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/game/components/game_controls.dart';
 import 'package:fighting_game/game/components/hud_component.dart';
+import 'package:fighting_game/game/components/vfx_components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -62,6 +63,8 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       'Buttons/attack.png',
       'Buttons/special.png',
       'Buttons/sprint.png',
+      'sfx/hit_spark.png',
+      'sfx/dust_puff.png',
     ];
 
     for (final s in states) {
@@ -144,10 +147,41 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     stage.position.x = -cameraX;
   }
 
+  // Screen Shake (mục D trong docs/03_vfx_and_game_feel.md)
+  double _shakeTimer = 0;
+  double _shakeIntensity = 0;
+
+  void triggerScreenShake({double duration = 0.18, double intensity = 5.0}) {
+    _shakeTimer = duration;
+    _shakeIntensity = intensity;
+  }
+
+  void spawnHitSpark(Vector2 pos, {bool isHeavy = false}) {
+    stage.add(HitSparkComponent(position: pos, isHeavy: isHeavy));
+  }
+
+  void spawnDustPuff(Vector2 pos, {bool flipHorizontal = false}) {
+    stage.add(DustPuffComponent(position: pos, flipHorizontal: flipHorizontal));
+  }
+
+  void spawnFloatingDamage(Vector2 pos, double damage, {bool isCritical = false}) {
+    stage.add(FloatingDamageComponent(position: pos, damage: damage, isCritical: isCritical));
+  }
+
   @override
   void update(double dt) {
     super.update(dt);
     _updateCamera(dt);
+    _applyShake(dt);
+  }
+
+  void _applyShake(double dt) {
+    if (_shakeTimer <= 0) return;
+    _shakeTimer -= dt;
+    final random = Random();
+    final offsetX = (random.nextDouble() * 2 - 1) * _shakeIntensity;
+    final offsetY = (random.nextDouble() * 2 - 1) * _shakeIntensity;
+    stage.position += Vector2(offsetX, offsetY);
   }
 
   void _updateCamera(double dt) {
@@ -163,6 +197,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     cameraX = cameraX.clamp(0.0, mapWidth - size.x);
 
     stage.position.x = -cameraX;
+    stage.position.y = 0;
   }
 
   @override
