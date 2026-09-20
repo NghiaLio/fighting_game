@@ -7,6 +7,9 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:fighting_game/services/audio_service.dart';
+import 'package:fighting_game/widgets/pause_menu_overlay.dart';
+
 class GamePlayScreen extends StatefulWidget {
   final CharacterType playerCharacter;
   final CharacterType enemyCharacter;
@@ -37,11 +40,55 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: GameWidget<FightingGame>(
-        game: _game,
-        overlayBuilderMap: {
-          'GameOver': (context, game) => _GameOverOverlay(game: game),
-        },
+      body: Stack(
+        children: [
+          GameWidget<FightingGame>(
+            game: _game,
+            overlayBuilderMap: {
+              'GameOver': (context, game) => _GameOverOverlay(game: game),
+              'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
+            },
+          ),
+
+          // Nút bấm Tạm Dừng (Setting / Pause Button) nằm cạnh bộ đếm giờ trên đỉnh
+          Positioned(
+            top: 8,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                margin: const EdgeInsets.only(right: 80),
+                child: GamePressable(
+                  onTap: () {
+                    AudioService.playButtonClick();
+                    _game.pauseEngine();
+                    _game.overlays.add('PauseMenu');
+                  },
+                  pressDepth: 2.5,
+                  pressScale: 0.90,
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black54,
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/images/Buttons/setting.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
