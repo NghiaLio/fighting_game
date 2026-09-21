@@ -1,8 +1,29 @@
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+
+/// Component hiển thị banner WIN / LOSE trong trận đấu
+class WinBannerComponent extends SpriteComponent {
+  bool isShowing = false;
+
+  WinBannerComponent({
+    required super.sprite,
+    required super.size,
+    required super.position,
+    required super.anchor,
+    required super.scale,
+    required super.priority,
+  });
+
+  @override
+  void render(Canvas canvas) {
+    if (!isShowing) return;
+    super.render(canvas);
+  }
+}
 
 class HudComponent extends Component with HasGameReference<FightingGame> {
   final CharacterComponent player;
@@ -12,11 +33,15 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   double _matchTime = 99.0;
   bool _matchOver = false;
 
-  // Text components
+  // Text components & Win/Lose banner
   late TextComponent _timerText;
   late TextComponent _p1Label;
   late TextComponent _enemyLabel;
-  late TextComponent _winText;
+  Sprite? _winSprite;
+  Sprite? _loseSprite;
+  late WinBannerComponent _winBanner;
+  double _bannerAnimProgress = 0.0;
+  bool _animatingBanner = false;
 
   HudComponent({required this.player, required this.enemy});
 
@@ -38,16 +63,6 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       shadows: [Shadow(blurRadius: 8, color: Colors.orange)],
     );
 
-    final winStyle = TextStyle(
-      color: Colors.yellow,
-      fontSize: 36,
-      fontWeight: FontWeight.bold,
-      shadows: [
-        Shadow(blurRadius: 10, color: Colors.red),
-        Shadow(blurRadius: 4, color: Colors.black),
-      ],
-    );
-
     _p1Label = TextComponent(
       text: 'FIRE WIZARD',
       textRenderer: TextPaint(style: labelStyle),
@@ -65,14 +80,20 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       position: Vector2(game.size.x / 2, 10),
       anchor: Anchor.topCenter,
     );
-    _winText = TextComponent(
-      text: '',
-      textRenderer: TextPaint(style: winStyle),
+
+    _winSprite = await game.loadSprite(AppAssets.vfxWin);
+    _loseSprite = await game.loadSprite(AppAssets.vfxLose);
+
+    _winBanner = WinBannerComponent(
+      sprite: _winSprite,
+      size: Vector2(240, 120),
       position: Vector2(game.size.x / 2, game.size.y / 2 - 20),
       anchor: Anchor.center,
+      scale: Vector2.all(0.0),
+      priority: 15,
     );
 
-    await addAll([_p1Label, _enemyLabel, _timerText, _winText]);
+    await addAll([_p1Label, _enemyLabel, _timerText, _winBanner]);
   }
 
   @override
@@ -81,7 +102,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     if (!isLoaded) return;
     _enemyLabel.position = Vector2(size.x - 16, 12);
     _timerText.position = Vector2(size.x / 2, 10);
-    _winText.position = Vector2(size.x / 2, size.y / 2 - 20);
+    _winBanner.position = Vector2(size.x / 2, size.y / 2 - 20);
   }
 
   @override
@@ -171,6 +192,17 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (_animatingBanner) {
+      _bannerAnimProgress += dt * 3.5;
+      if (_bannerAnimProgress >= 1.0) {
+        _bannerAnimProgress = 1.0;
+        _animatingBanner = false;
+      }
+      final scaleVal = Curves.easeOutBack.transform(_bannerAnimProgress);
+      _winBanner.scale = Vector2.all(scaleVal);
+    }
+
     if (_matchOver) return;
 
     _matchTime -= dt;
@@ -196,7 +228,11 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   void _showWin({required bool victory, required String msg}) {
     if (_matchOver) return;
     _matchOver = true;
-    _winText.text = msg;
+    _winBanner.sprite = victory ? _winSprite : _loseSprite;
+    _winBanner.isShowing = true;
+    _bannerAnimProgress = 0.0;
+    _animatingBanner = true;
+    _winBanner.scale = Vector2.all(0.0);
 
     // Phát âm thanh chiến thắng / thất bại ngay trước khi hiện dialog
     AudioService.playMatchEnd(isVictory: victory);
@@ -212,7 +248,10 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   void resetHud() {
     _matchTime = 99.0;
     _matchOver = false;
-    _winText.text = '';
+    _animatingBanner = false;
+    _bannerAnimProgress = 0.0;
+    _winBanner.isShowing = false;
+    _winBanner.scale = Vector2.all(0.0);
     _timerText.text = '99';
     AudioService.stopMatchEnd();
   }

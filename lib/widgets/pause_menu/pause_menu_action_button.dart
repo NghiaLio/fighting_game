@@ -36,6 +36,7 @@ class PauseMenuActionButton extends StatelessWidget {
     IconData? icon,
     double width = 210,
     double height = 42,
+    double fontSize = 12.0,
   }) {
     return PauseMenuActionButton(
       imagePath: PauseMenuAssets.resumeButton,
@@ -45,7 +46,7 @@ class PauseMenuActionButton extends StatelessWidget {
       width: width,
       height: height,
       textColor: const Color(0xFFFFF176),
-      fontSize: 12.0,
+      fontSize: fontSize,
     );
   }
 
@@ -56,6 +57,7 @@ class PauseMenuActionButton extends StatelessWidget {
     IconData? icon,
     double width = 210,
     double height = 42,
+    double fontSize = 12.0,
     Color textColor = const Color(0xFFFFD54F),
   }) {
     return PauseMenuActionButton(
@@ -66,7 +68,7 @@ class PauseMenuActionButton extends StatelessWidget {
       width: width,
       height: height,
       textColor: textColor,
-      fontSize: 12.0,
+      fontSize: fontSize,
     );
   }
 

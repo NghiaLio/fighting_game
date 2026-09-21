@@ -6,11 +6,13 @@ import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/game/components/game_controls.dart';
 import 'package:fighting_game/game/components/hud_component.dart';
 import 'package:fighting_game/game/components/vfx_components.dart';
+import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class FightingGame extends FlameGame with HasCollisionDetection {
   static const double groundFraction = 0.82;
@@ -62,6 +64,8 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       ...AppAssets.battleControls,
       AppAssets.hitSpark,
       AppAssets.dustPuff,
+      AppAssets.vfxWin,
+      AppAssets.vfxLose,
     ];
 
     for (final s in states) {
@@ -132,11 +136,17 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     isVictory = victory;
     endMessage = message;
     overlays.add('GameOver');
+    if (Get.isRegistered<GameMatchController>()) {
+      GameMatchController.to.finishMatch(victory: victory, message: message);
+    }
   }
 
   void restartMatch() {
     AudioService.stopMatchEnd();
     overlays.remove('GameOver');
+    if (Get.isRegistered<GameMatchController>()) {
+      GameMatchController.to.restartMatch();
+    }
     if (player == null || enemy == null) return;
     player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);
     enemy!.resetCharacter(startX: mapWidth * 0.55, faceRight: false);

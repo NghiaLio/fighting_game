@@ -15,6 +15,8 @@ class AppAssets {
   static const String resumeButton = 'assets/images/Bg_homes/resume.png';
   static const String volumeIcon = 'assets/images/Bg_homes/volume.png';
   static const String settingButton = 'assets/images/Buttons/setting.png';
+  static const String imgWin = 'assets/images/sfx/win.png';
+  static const String imgLose = 'assets/images/sfx/lose.png';
 
   // ==========================================
   // 2. TÀI NGUYÊN FLAME ENGINE (Flame Image Assets)

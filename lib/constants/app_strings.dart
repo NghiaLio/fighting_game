@@ -60,6 +60,10 @@ class AppStrings {
       'You have fallen! Rise and reclaim your honor!';
   static const String gamePlayHome = 'HOME';
   static const String replay = 'REPLAY';
+  static const String continuePrompt = 'CONTINUE?';
+  static const String continueAction = 'CONTINUE';
+  static const String exitAction = 'EXIT';
+  static const String giveUpAction = 'MAIN MENU';
 
   // ==========================================
   // 5. MENU TẠM DỪNG (Pause Menu & In-Game Settings)
