@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
@@ -25,7 +26,7 @@ class HitSparkComponent extends SpriteAnimationComponent
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final image = Flame.images.fromCache('sfx/hit_spark.png');
+    final image = Flame.images.fromCache(AppAssets.hitSpark);
 
     final sprites = List.generate(
       5,
@@ -65,7 +66,7 @@ class DustPuffComponent extends SpriteAnimationComponent
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final image = Flame.images.fromCache('sfx/dust_puff.png');
+    final image = Flame.images.fromCache(AppAssets.dustPuff);
 
     final sprites = List.generate(
       4,

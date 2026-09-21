@@ -1,5 +1,5 @@
+import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/game_typography.dart';
-import 'package:fighting_game/constants/pause_menu_strings.dart';
 import 'package:fighting_game/controllers/settings_controller.dart';
 import 'package:fighting_game/utils/pause_menu_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
@@ -25,7 +25,7 @@ class PauseAudioPanel extends StatelessWidget {
           // Nhạc Nền (BGM)
           _buildVolumeRow(
             context: context,
-            title: PauseMenuStrings.bgmTitle,
+            title: AppStrings.pauseBgm,
             value: isSoundOn ? bgm : 0.0,
             onChanged: isSoundOn
                 ? (val) => settingsCtrl.setBgmVolume(val)
@@ -35,7 +35,7 @@ class PauseAudioPanel extends StatelessWidget {
           // Hiệu Ứng (SFX)
           _buildVolumeRow(
             context: context,
-            title: PauseMenuStrings.sfxTitle,
+            title: AppStrings.pauseSfx,
             value: isSoundOn ? sfx : 0.0,
             onChanged: isSoundOn
                 ? (val) => settingsCtrl.setSfxVolume(val)

@@ -1,4 +1,4 @@
-import 'package:fighting_game/constants/pause_menu_strings.dart';
+import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/controllers/pause_menu_controller.dart';
 import 'package:fighting_game/utils/pause_menu_tileset.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,7 @@ class PauseActionButtons extends StatelessWidget {
       children: [
         // 1. TIẾP TỤC (resume.png)
         PauseMenuActionButton.resume(
-          label: PauseMenuStrings.resumeButton,
+          label: AppStrings.pauseResume,
           icon: Icons.play_arrow_rounded,
           width: btnWidth + 15,
           height: btnHeight + 5,
@@ -29,7 +29,7 @@ class PauseActionButtons extends StatelessWidget {
 
         // 2. CHƠI LẠI (other_button.png)
         PauseMenuActionButton.secondary(
-          label: PauseMenuStrings.restartButton,
+          label: AppStrings.pauseRestart,
           icon: Icons.refresh_rounded,
           width: btnWidth,
           height: btnHeight,
@@ -40,7 +40,7 @@ class PauseActionButtons extends StatelessWidget {
 
         // 3. THOÁT (other_button.png)
         PauseMenuActionButton.secondary(
-          label: PauseMenuStrings.quitButton,
+          label: AppStrings.pauseQuit,
           icon: Icons.home_rounded,
           width: btnWidth,
           height: btnHeight,

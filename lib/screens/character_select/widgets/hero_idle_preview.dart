@@ -1,9 +1,10 @@
 import 'dart:ui' as ui;
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Hoạt ảnh Idle pixel art chạy liên tục trên sân khấu
+/// Widget render sprite Idle động của nhân vật được chọn bằng Canvas CustomPainter
 class HeroIdlePreview extends StatefulWidget {
   final CharacterType characterType;
   final int frameCount;
@@ -22,8 +23,8 @@ class HeroIdlePreview extends StatefulWidget {
 
 class _HeroIdlePreviewState extends State<HeroIdlePreview>
     with SingleTickerProviderStateMixin {
-  ui.Image? _image;
   late AnimationController _animController;
+  ui.Image? _image;
 
   @override
   void initState() {
@@ -44,7 +45,8 @@ class _HeroIdlePreviewState extends State<HeroIdlePreview>
 
   Future<void> _loadSprite() async {
     try {
-      final path = 'assets/images/${widget.characterType.spritePath}/Idle.png';
+      final path =
+          AppAssets.characterIdleFlutterPath(widget.characterType.spritePath);
       final data = await rootBundle.load(path);
       final bytes = data.buffer.asUint8List();
       final codec = await ui.instantiateImageCodec(bytes);

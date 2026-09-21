@@ -1,3 +1,4 @@
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -206,7 +207,7 @@ class GameControls extends Component with HasGameReference {
     const dpadSpacing = 48.0;
 
     _leftBtn = _MobaCircleButton(
-      imagePath: 'Buttons/left.png',
+      imagePath: AppAssets.btnLeft,
       position: dpadCenter + Vector2(-dpadSpacing, 0),
       radius: dpadRadius,
       borderColor: const Color(0xFF78909C),
@@ -218,7 +219,7 @@ class GameControls extends Component with HasGameReference {
     );
 
     _rightBtn = _MobaCircleButton(
-      imagePath: 'Buttons/right.png',
+      imagePath: AppAssets.btnRight,
       position: dpadCenter + Vector2(dpadSpacing, 0),
       radius: dpadRadius,
       borderColor: const Color(0xFF78909C),
@@ -230,7 +231,7 @@ class GameControls extends Component with HasGameReference {
     );
 
     _jumpBtn = _MobaCircleButton(
-      imagePath: 'Buttons/up.png',
+      imagePath: AppAssets.btnUp,
       position: dpadCenter + Vector2(0, -dpadSpacing),
       radius: dpadRadius,
       borderColor: const Color(0xFF66BB6A),
@@ -241,7 +242,7 @@ class GameControls extends Component with HasGameReference {
     );
 
     _runBtn = _MobaCircleButton(
-      imagePath: 'Buttons/sprint.png',
+      imagePath: AppAssets.btnSprint,
       position: dpadCenter,
       radius: dpadRadius - 2,
       borderColor: const Color(0xFFFFA726),
@@ -259,7 +260,7 @@ class GameControls extends Component with HasGameReference {
     const mainRadius = 32.0;
 
     _atk1Btn = _MobaCircleButton(
-      imagePath: 'Buttons/attack.png',
+      imagePath: AppAssets.btnAttack,
       position: mainAtkCenter,
       radius: mainRadius,
       borderColor: const Color(0xFFFFCA28), // Golden highlight
@@ -271,7 +272,7 @@ class GameControls extends Component with HasGameReference {
 
     // Skill 1 (ATK 2) - Positioned to the left of main attack
     _atk2Btn = _MobaCircleButton(
-      imagePath: 'Buttons/attack.png',
+      imagePath: AppAssets.btnAttack,
       position: mainAtkCenter + Vector2(-68, -6),
       radius: 23.0,
       borderColor: const Color(0xFF26C6DA), // Cyan
@@ -283,7 +284,7 @@ class GameControls extends Component with HasGameReference {
 
     // Skill 2 (ATK 3) - Positioned diagonally top-left
     _atk3Btn = _MobaCircleButton(
-      imagePath: 'Buttons/attack.png',
+      imagePath: AppAssets.btnAttack,
       position: mainAtkCenter + Vector2(-54, -54),
       radius: 23.0,
       borderColor: const Color(0xFFFF7043), // Fiery Orange
@@ -295,7 +296,7 @@ class GameControls extends Component with HasGameReference {
 
     // Skill 3 / Ultimate (Special) - Positioned directly above main attack
     _skillBtn = _MobaCircleButton(
-      imagePath: 'Buttons/special.png',
+      imagePath: AppAssets.btnSpecial,
       position: mainAtkCenter + Vector2(-6, -68),
       radius: 24.0,
       borderColor: const Color(0xFFAB47BC), // Arcane Purple

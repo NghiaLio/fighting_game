@@ -1,3 +1,4 @@
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
@@ -37,7 +38,7 @@ class FireballComponent extends PositionComponent with HasGameReference {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final image = Flame.images.fromCache('Fire_Wizard/Projectile1.png');
+    final image = Flame.images.fromCache(AppAssets.fireballProjectile);
 
     // Flying animation: frames 0 to 4 (spinning fireball)
     final flySprites = List.generate(

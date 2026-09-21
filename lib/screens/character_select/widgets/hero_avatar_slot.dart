@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,7 +32,8 @@ class _HeroAvatarSlotState extends State<HeroAvatarSlot> {
 
   Future<void> _loadSprite() async {
     try {
-      final path = 'assets/images/${widget.characterType.spritePath}/Idle.png';
+      final path =
+          AppAssets.characterIdleFlutterPath(widget.characterType.spritePath);
       final data = await rootBundle.load(path);
       final bytes = data.buffer.asUint8List();
       final codec = await ui.instantiateImageCodec(bytes);

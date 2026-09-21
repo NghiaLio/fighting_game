@@ -1,10 +1,12 @@
 import 'dart:ui' as ui;
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Các thành phần sprite được trích xuất từ UI_tileset_2.png (666 x 375)
+/// Danh mục các tile UI được cắt từ tấm `assets/images/Bg_homes/UI_tileset_2.png`
+/// Kích thước tổng của tấm texture: 1024 x 1024 px
 enum UiTile2 {
   /// Bảng chọn tướng chính 16 ô phong cách gothic (266 x 171)
   rosterGridBoard(Rect.fromLTWH(3, 2, 266, 171)),
@@ -96,7 +98,7 @@ enum UiTile2 {
 
 /// Trình tải và quản lý bộ nhớ đệm hình ảnh cho UI_tileset_2.png
 class UiTileset2 {
-  static const String assetPath = 'assets/images/Bg_homes/UI_tileset_2.png';
+  static const String assetPath = AppAssets.uiTileset2;
   static ui.Image? _cachedImage;
   static Future<ui.Image>? _loadingFuture;
 
@@ -249,7 +251,7 @@ class UiTile2Button extends StatefulWidget {
     this.height = 54,
     this.textColor = const Color(0xFFFFD54F),
     this.fontSize = 15,
-    this.soundEffect = 'click.mp3',
+    this.soundEffect = 'button.wav',
   });
 
   @override

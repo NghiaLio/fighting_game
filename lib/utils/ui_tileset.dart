@@ -1,10 +1,12 @@
 import 'dart:ui' as ui;
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Danh sách các sprite được cắt từ ảnh ui_tileset.png (1536 x 1024)
+/// Danh mục các tile UI được cắt từ tấm `assets/images/Bg_homes/ui_tileset.png`
+/// Kích thước tổng của tấm texture: 1920 x 1080 px
 enum UiTile {
   /// Bảng gỗ đá lớn có 2 ngọn đuốc rực lửa 2 bên và sừng quỷ (728 x 444)
   grandBoard(Rect.fromLTWH(28, 12, 728, 444)),
@@ -51,7 +53,7 @@ enum UiTile {
 
 /// Singleton quản lý tải và cache ảnh ui_tileset trong RAM
 class UiTileset {
-  static const String assetPath = 'assets/images/Bg_homes/ui_tileset.png';
+  static const String assetPath = AppAssets.uiTileset;
   static ui.Image? _cachedImage;
 
   static Future<ui.Image> load() async {
@@ -204,7 +206,7 @@ class UiTileButton extends StatefulWidget {
     this.height = 58,
     this.textColor = const Color(0xFFFFD54F),
     this.fontSize = 15,
-    this.soundEffect = 'click.mp3',
+    this.soundEffect = 'button.wav',
   });
 
   @override

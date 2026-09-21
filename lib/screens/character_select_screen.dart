@@ -1,4 +1,5 @@
-import 'package:fighting_game/constants/character_select_strings.dart';
+import 'package:fighting_game/constants/app_assets.dart';
+import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/hero_roster_data.dart';
 import 'package:fighting_game/controllers/character_select_controller.dart';
 import 'package:fighting_game/screens/character_select/widgets/character_monument_stage.dart';
@@ -45,7 +46,7 @@ class CharacterSelectScreen extends StatelessWidget {
           children: [
             // 1. Phông nền Dark Fantasy
             Image.asset(
-              'assets/images/Bg_homes/bg_home.png',
+              AppAssets.bgHome,
               fit: BoxFit.cover,
               width: double.infinity,
               height: double.infinity,
@@ -139,7 +140,7 @@ class CharacterSelectScreen extends StatelessWidget {
                   tile: SelectPerTile.buttonLong,
                   width: 280,
                   height: 46,
-                  label: CharacterSelectStrings.confirmButton,
+                  label: AppStrings.charSelectConfirm,
                   icon: Icons.sports_kabaddi_rounded,
                   onTap: () => _onConfirmHero(controller),
                 ),

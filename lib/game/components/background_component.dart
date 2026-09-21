@@ -1,3 +1,4 @@
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
@@ -14,7 +15,7 @@ class BackgroundComponent extends PositionComponent
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    _bgSprite = Sprite(Flame.images.fromCache('Backgrounds/bg1.png'));
+    _bgSprite = Sprite(Flame.images.fromCache(AppAssets.arenaBg1));
     size = Vector2(mapWidth, game.size.y);
   }
 

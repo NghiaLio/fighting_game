@@ -24,7 +24,7 @@ class GamePressable extends StatefulWidget {
     super.key,
     required this.child,
     required this.onTap,
-    this.soundEffect = 'click.mp3',
+    this.soundEffect = 'button.wav',
     this.pressDepth = 3.5,
     this.pressScale = 0.94,
     this.hoverScale = 1.02,

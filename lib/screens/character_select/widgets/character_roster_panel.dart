@@ -1,4 +1,4 @@
-import 'package:fighting_game/constants/character_select_strings.dart';
+import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/models/hero_info.dart';
 import 'package:fighting_game/screens/character_select/widgets/hero_slot_item.dart';
@@ -90,7 +90,7 @@ class CharacterRosterPanel extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    CharacterSelectStrings.rosterSectionTitle,
+                    AppStrings.charSelectRosterTitle,
                     style: GameTypography.pixel(
                       color: const Color(0xFFFFD54F),
                       fontSize: 10,

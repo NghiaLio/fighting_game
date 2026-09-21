@@ -1,5 +1,6 @@
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
+import 'package:fighting_game/services/audio_service.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
@@ -196,8 +197,13 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     if (_matchOver) return;
     _matchOver = true;
     _winText.text = msg;
-    Future.delayed(const Duration(milliseconds: 700), () {
-      if (isMounted) {
+
+    // Phát âm thanh chiến thắng / thất bại ngay trước khi hiện dialog
+    AudioService.playMatchEnd(isVictory: victory);
+
+    // Chờ giọng nói/âm thanh vang lên trước khi hiển thị dialog kết quả
+    Future.delayed(const Duration(milliseconds: 1600), () {
+      if (isMounted && _matchOver) {
         game.onMatchEnd(victory: victory, message: msg);
       }
     });
@@ -208,5 +214,6 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     _matchOver = false;
     _winText.text = '';
     _timerText.text = '99';
+    AudioService.stopMatchEnd();
   }
 }

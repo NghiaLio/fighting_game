@@ -1,4 +1,4 @@
-import 'package:fighting_game/constants/character_select_strings.dart';
+import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/models/hero_info.dart';
 import 'package:fighting_game/screens/character_select/widgets/hero_stat_bar.dart';
@@ -75,25 +75,25 @@ class CharacterSpecsPanel extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   HeroStatBar(
-                    label: CharacterSelectStrings.statAttack,
+                    label: AppStrings.statAttack,
                     value: hero.atkRating,
                     color: const Color(0xFFFF5252),
                     icon: Icons.flash_on_rounded,
                   ),
                   HeroStatBar(
-                    label: CharacterSelectStrings.statDefense,
+                    label: AppStrings.statDefense,
                     value: hero.defRating,
                     color: const Color(0xFF42A5F5),
                     icon: Icons.shield_rounded,
                   ),
                   HeroStatBar(
-                    label: CharacterSelectStrings.statSpeed,
+                    label: AppStrings.statSpeed,
                     value: hero.spdRating,
                     color: const Color(0xFFFFCA28),
                     icon: Icons.speed_rounded,
                   ),
                   HeroStatBar(
-                    label: CharacterSelectStrings.statRange,
+                    label: AppStrings.statRange,
                     value: hero.rngRating,
                     color: const Color(0xFFAB47BC),
                     icon: Icons.track_changes_rounded,
@@ -119,13 +119,13 @@ class CharacterSpecsPanel extends StatelessWidget {
                   Row(
                     children: [
                       const Icon(
-                        Icons.auto_awesome_rounded,
+                         Icons.auto_awesome_rounded,
                         color: Color(0xFFFFD54F),
                         size: 13,
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        CharacterSelectStrings.ultimatePrefix,
+                        AppStrings.ultimatePrefix,
                         style: GameTypography.pixel(
                           color: const Color(0xFFFFD54F),
                           fontSize: 10.5,

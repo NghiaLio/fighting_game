@@ -1,10 +1,12 @@
 import 'dart:math';
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/components/background_component.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/game/components/game_controls.dart';
 import 'package:fighting_game/game/components/hud_component.dart';
 import 'package:fighting_game/game/components/vfx_components.dart';
+import 'package:fighting_game/services/audio_service.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -56,25 +58,20 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     ];
 
     final toLoad = <String>[
-      'Backgrounds/bg1.png',
-      'Buttons/left.png',
-      'Buttons/right.png',
-      'Buttons/up.png',
-      'Buttons/attack.png',
-      'Buttons/special.png',
-      'Buttons/sprint.png',
-      'sfx/hit_spark.png',
-      'sfx/dust_puff.png',
+      AppAssets.arenaBg1,
+      ...AppAssets.battleControls,
+      AppAssets.hitSpark,
+      AppAssets.dustPuff,
     ];
 
     for (final s in states) {
-      toLoad.add('${playerCharacter.spritePath}/$s');
-      toLoad.add('${enemyCharacter.spritePath}/$s');
+      toLoad.add(AppAssets.characterStateFlamePath(playerCharacter.spritePath, s));
+      toLoad.add(AppAssets.characterStateFlamePath(enemyCharacter.spritePath, s));
     }
 
     if (playerCharacter == CharacterType.fireWizard ||
         enemyCharacter == CharacterType.fireWizard) {
-      toLoad.add('Fire_Wizard/Projectile1.png');
+      toLoad.add(AppAssets.fireballProjectile);
     }
 
     await Flame.images.loadAll(toLoad.toSet().toList());
@@ -138,6 +135,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   }
 
   void restartMatch() {
+    AudioService.stopMatchEnd();
     overlays.remove('GameOver');
     if (player == null || enemy == null) return;
     player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);

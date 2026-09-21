@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:flutter/material.dart';
@@ -117,8 +118,8 @@ enum Ui2FlagTile {
 
 /// Bộ nạp ảnh cho select_per.png và UI_tileset_2.png
 class SelectPerTileset {
-  static const String selectPerPath = 'assets/images/Bg_homes/select_per.png';
-  static const String uiTileset2Path = 'assets/images/Bg_homes/UI_tileset_2.png';
+  static const String selectPerPath = AppAssets.selectPer;
+  static const String uiTileset2Path = AppAssets.uiTileset2;
 
   static ui.Image? _selectPerImage;
   static ui.Image? _ui2Image;
@@ -333,7 +334,7 @@ class SelectPerButton extends StatefulWidget {
     this.height = 50,
     this.textColor = const Color(0xFFFFD54F),
     this.fontSize = 15,
-    this.soundEffect = 'click.mp3',
+    this.soundEffect = 'button.wav',
   });
 
   @override
