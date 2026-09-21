@@ -1,8 +1,10 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/game_typography.dart';
+import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/game/fighting_game.dart';
+import 'package:fighting_game/screens/game_play_screen.dart';
 import 'package:fighting_game/screens/home_screen.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/pause_menu/pause_menu_action_button.dart';
@@ -10,14 +12,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// Overlay "CONTINUE?" gọn nhẹ khi kết thúc ván đấu
-/// - Bỏ biểu tượng cúp theo yêu cầu người dùng
-/// - Thu gọn kích thước vừa vặn (340x260)
-/// - Hai nút hành động CONTINUE và EXIT nằm ngang hàng nhau
-/// - 100% StatelessWidget, animation mượt mà
+/// - [level]: level hiện tại (1–3), dùng để xác định hành động CONTINUE
+/// - Nếu thắng: CONTINUE → chuyển sang level tiếp theo; EXIT → về home
+/// - Nếu thua: CONTINUE → chơi lại cùng level; EXIT → về home
 class ContinuePromptOverlay extends StatelessWidget {
   final FightingGame game;
+  final int level;
 
-  const ContinuePromptOverlay({super.key, required this.game});
+  const ContinuePromptOverlay({
+    super.key,
+    required this.game,
+    this.level = 1,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +99,8 @@ class ContinuePromptOverlay extends StatelessWidget {
 
                           // Thông điệp phụ
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
                               isVictory
                                   ? AppStrings.victorySubtitle
@@ -111,11 +118,11 @@ class ContinuePromptOverlay extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
 
-                          // Hàng 2 nút bấm nằm ngang nhau: CONTINUE | EXIT
+                          // Hàng 2 nút: EXIT | CONTINUE
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // Nút EXIT (other_button.png)
+                              // Nút EXIT
                               Padding(
                                 padding: const EdgeInsets.only(top: 9.0),
                                 child: PauseMenuActionButton.secondary(
@@ -131,15 +138,34 @@ class ContinuePromptOverlay extends StatelessWidget {
                                 ),
                               ),
 
-                              // Nút CONTINUE (resume.png)
+                              // Nút CONTINUE
                               PauseMenuActionButton.resume(
                                 label: AppStrings.continueAction,
                                 icon: Icons.play_arrow_rounded,
                                 width: 114,
                                 height: 38,
                                 fontSize: 10.5,
-                                onTap: () {
-                                  game.restartMatch();
+                                onTap: () async {
+                                  AudioService.stopMatchEnd();
+                                  if (isVictory) {
+                                    // Thắng → advance level, chuyển màn tiếp theo
+                                    await GameMatchController.to
+                                        .onWinCurrentLevel();
+                                    final nextLevel = GameMatchController
+                                        .to.currentLevel.value;
+                                    Get.off(
+                                      () => GamePlayScreen(
+                                        playerCharacter: GameMatchController
+                                            .to.playerCharacter.value,
+                                        enemyCharacter: GameMatchController
+                                            .to.enemyCharacter.value,
+                                        level: nextLevel,
+                                      ),
+                                    );
+                                  } else {
+                                    // Thua → chơi lại cùng level
+                                    game.restartMatch();
+                                  }
                                 },
                               ),
                             ],

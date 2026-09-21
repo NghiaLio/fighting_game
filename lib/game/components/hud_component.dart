@@ -1,15 +1,15 @@
-import 'package:fighting_game/constants/app_assets.dart';
+﻿import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
-/// Component hiển thị banner WIN / LOSE trong trận đấu
-class WinBannerComponent extends SpriteComponent {
+/// Component hiển thị banner WIN / LOSE / ROUND trong trận đấu
+class _BannerComponent extends SpriteComponent {
   bool isShowing = false;
 
-  WinBannerComponent({
+  _BannerComponent({
     required super.sprite,
     required super.size,
     required super.position,
@@ -25,6 +25,9 @@ class WinBannerComponent extends SpriteComponent {
   }
 }
 
+// Keep old name as alias for existing usage
+typedef WinBannerComponent = _BannerComponent;
+
 class HudComponent extends Component with HasGameReference<FightingGame> {
   final CharacterComponent player;
   final CharacterComponent enemy;
@@ -39,9 +42,21 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   late TextComponent _enemyLabel;
   Sprite? _winSprite;
   Sprite? _loseSprite;
-  late WinBannerComponent _winBanner;
+  late _BannerComponent _winBanner;
   double _bannerAnimProgress = 0.0;
   bool _animatingBanner = false;
+
+  // Round intro banner
+  late _BannerComponent _roundBanner;
+  Sprite? _round1Sprite;
+  Sprite? _round2Sprite;
+  Sprite? _round3Sprite;
+  double _roundAnimProgress = 0.0;
+  bool _animatingRound = false;
+  double _roundHoldTimer = 0.0;
+  static const _roundHoldDuration = 1.8; // giây hiển thị banner
+
+  int _currentRound = 1;
 
   HudComponent({required this.player, required this.enemy});
 
@@ -83,9 +98,12 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
 
     _winSprite = await game.loadSprite(AppAssets.vfxWin);
     _loseSprite = await game.loadSprite(AppAssets.vfxLose);
+    _round1Sprite = await game.loadSprite(AppAssets.round1);
+    _round2Sprite = await game.loadSprite(AppAssets.round2);
+    _round3Sprite = await game.loadSprite(AppAssets.round3);
 
-    _winBanner = WinBannerComponent(
-      sprite: _winSprite,
+    _winBanner = _BannerComponent(
+      sprite: _winSprite!,
       size: Vector2(240, 120),
       position: Vector2(game.size.x / 2, game.size.y / 2 - 20),
       anchor: Anchor.center,
@@ -93,7 +111,17 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       priority: 15,
     );
 
-    await addAll([_p1Label, _enemyLabel, _timerText, _winBanner]);
+    // Round banner: hiển thị ở giữa màn hình, tương đương kích thước win banner
+    _roundBanner = _BannerComponent(
+      sprite: _round1Sprite!,
+      size: Vector2(280, 100),
+      position: Vector2(game.size.x / 2, game.size.y / 2),
+      anchor: Anchor.center,
+      scale: Vector2.all(0.0),
+      priority: 20, // Cao hơn winBanner
+    );
+
+    await addAll([_p1Label, _enemyLabel, _timerText, _winBanner, _roundBanner]);
   }
 
   @override
@@ -103,6 +131,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     _enemyLabel.position = Vector2(size.x - 16, 12);
     _timerText.position = Vector2(size.x / 2, 10);
     _winBanner.position = Vector2(size.x / 2, size.y / 2 - 20);
+    _roundBanner.position = Vector2(size.x / 2, size.y / 2);
   }
 
   @override
@@ -193,6 +222,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   void update(double dt) {
     super.update(dt);
 
+    // ─── Win/Lose banner animation ───────────────────────────────────────
     if (_animatingBanner) {
       _bannerAnimProgress += dt * 3.5;
       if (_bannerAnimProgress >= 1.0) {
@@ -201,6 +231,28 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       }
       final scaleVal = Curves.easeOutBack.transform(_bannerAnimProgress);
       _winBanner.scale = Vector2.all(scaleVal);
+    }
+
+    // ─── Round banner animation (scale-in → hold → scale-out) ────────────
+    if (_animatingRound) {
+      _roundAnimProgress += dt * 4.0; // scale-in nhanh
+      if (_roundAnimProgress >= 1.0) {
+        _roundAnimProgress = 1.0;
+        _animatingRound = false;
+        _roundHoldTimer = _roundHoldDuration;
+      }
+      final sv = Curves.easeOutBack.transform(_roundAnimProgress);
+      _roundBanner.scale = Vector2.all(sv);
+    } else if (_roundHoldTimer > 0) {
+      _roundHoldTimer -= dt;
+      if (_roundHoldTimer <= 0) {
+        // Scale-out & bắt đầu game
+        _roundBanner.isShowing = false;
+        _roundBanner.scale = Vector2.all(0.0);
+        // Phát âm thanh FIGHT
+        AudioService.playSkillSfx(AppAssets.fight);
+        game.onRoundIntroDone();
+      }
     }
 
     if (_matchOver) return;
@@ -228,7 +280,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   void _showWin({required bool victory, required String msg}) {
     if (_matchOver) return;
     _matchOver = true;
-    _winBanner.sprite = victory ? _winSprite : _loseSprite;
+    _winBanner.sprite = victory ? _winSprite! : _loseSprite!;
     _winBanner.isShowing = true;
     _bannerAnimProgress = 0.0;
     _animatingBanner = true;
@@ -243,6 +295,45 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
         game.onMatchEnd(victory: victory, message: msg);
       }
     });
+  }
+
+  /// Hiện round banner khi bắt đầu hoặc restart trận
+  void startRoundIntro() {
+    if (!isLoaded) return;
+    _matchTime = 99.0;
+    _matchOver = false;
+    _animatingBanner = false;
+    _bannerAnimProgress = 0.0;
+    _winBanner.isShowing = false;
+    _winBanner.scale = Vector2.all(0.0);
+    _timerText.text = '99';
+    AudioService.stopMatchEnd();
+
+    // Chọn sprite đúng theo round
+    final sprite = switch (_currentRound) {
+      2 => _round2Sprite!,
+      3 => _round3Sprite!,
+      _ => _round1Sprite!,
+    };
+
+    // Phát âm thanh round
+    final sfx = switch (_currentRound) {
+      2 => AppAssets.sfxRound2,
+      3 => AppAssets.sfxRound3,
+      _ => AppAssets.sfxRound1,
+    };
+    AudioService.playSkillSfx(sfx);
+
+    _roundBanner.sprite = sprite;
+    _roundBanner.scale = Vector2.all(0.0);
+    _roundBanner.isShowing = true;
+    _roundAnimProgress = 0.0;
+    _animatingRound = true;
+    _roundHoldTimer = 0;
+  }
+
+  void setRound(int round) {
+    _currentRound = round.clamp(1, 3);
   }
 
   void resetHud() {

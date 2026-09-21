@@ -4,8 +4,10 @@ import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/components/fireball_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/game/utils/character_sprite_animations.dart';
+import 'package:fighting_game/models/character_skill_audio.dart';
 import 'package:fighting_game/models/player_sprite_settings.dart';
 import 'package:fighting_game/models/player_stats.dart';
+import 'package:fighting_game/services/audio_service.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,7 @@ class CharacterComponent extends PositionComponent
 
   late PlayerStats stats;
   late PlayerSpriteSettings spriteSettings;
+  CharacterSkillAudio? skillAudio;
 
   CharacterComponent? opponent;
 
@@ -102,6 +105,7 @@ class CharacterComponent extends PositionComponent
     await super.onLoad();
     stats = PlayerStats.fromPlayerType(characterType);
     spriteSettings = PlayerSpriteSettings.fromCharacterType(characterType);
+    skillAudio = CharacterSkillAudio.fromCharacterType(characterType);
 
     position.y = groundY;
 
@@ -215,6 +219,9 @@ class CharacterComponent extends PositionComponent
       _clampToScreen();
       return;
     }
+
+    // Đứng yên trong thời gian hiện round banner
+    if (game.isIntroPlaying) return;
 
     if (isPlayer) {
       _handlePlayerInput(dt);
@@ -383,6 +390,14 @@ class CharacterComponent extends PositionComponent
     _hasSpawnedProjectile = false;
     _velocityX = 0;
     _switchState(attackState, forceReset: true);
+
+    // Chỉ phát âm thanh kỹ năng khi người chơi tung chiêu
+    if (isPlayer) {
+      final sfx = skillAudio?.getSfxForState(attackState);
+      if (sfx != null) {
+        AudioService.playSkillSfx(sfx);
+      }
+    }
   }
 
   void _updateAttack(double dt) {

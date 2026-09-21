@@ -1,4 +1,5 @@
 import 'package:fighting_game/enums/character_type.dart';
+import 'package:fighting_game/services/progress_service.dart';
 import 'package:get/get.dart';
 
 enum MatchState {
@@ -20,6 +21,15 @@ class GameMatchController extends GetxController {
 
   final Rx<CharacterType> playerCharacter = CharacterType.fireWizard.obs;
   final Rx<CharacterType> enemyCharacter = CharacterType.knight1.obs;
+
+  /// Level hiện tại của campaign (1–3), đọc từ ProgressService
+  final RxInt currentLevel = 1.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    currentLevel.value = ProgressService.currentLevel;
+  }
 
   void openSetting() {
     isSettingOpen.value = true;
@@ -65,5 +75,16 @@ class GameMatchController extends GetxController {
     isVictory.value = false;
     isSettingOpen.value = false;
     endMessage.value = '';
+  }
+
+  /// Gọi khi người chơi thắng: lưu progress và advance level
+  Future<void> onWinCurrentLevel() async {
+    await ProgressService.onWinLevel(currentLevel.value);
+    currentLevel.value = ProgressService.currentLevel;
+  }
+
+  /// Reload level từ Hive (dùng khi resume app)
+  void reloadLevel() {
+    currentLevel.value = ProgressService.currentLevel;
   }
 }

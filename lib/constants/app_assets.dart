@@ -17,6 +17,10 @@ class AppAssets {
   static const String settingButton = 'assets/images/Buttons/setting.png';
   static const String imgWin = 'assets/images/sfx/win.png';
   static const String imgLose = 'assets/images/sfx/lose.png';
+  // Round announcement images (Flutter asset path)
+  static const String imgRound1Flutter = 'assets/images/sfx/round1.png';
+  static const String imgRound2Flutter = 'assets/images/sfx/round2.png';
+  static const String imgRound3Flutter = 'assets/images/sfx/round3.png';
 
   // ==========================================
   // 2. TÀI NGUYÊN FLAME ENGINE (Flame Image Assets)
@@ -64,19 +68,32 @@ class AppAssets {
   static const String sfxButton = 'button.wav';
   static const String sfxAttack1 = 'attack_1.mp3';
   static const String sfxAttack2 = 'attac_2.mp3';
+  static const String sfxFireWhoosh = 'sfx_fire_whoosh.mp3';
+  static const String sfxFireSpark = 'sfx_fire_spark.wav';
+  static const String sfxFireballLaunch = 'sfx_fireball_launch_[cut_2sec].wav';
   static const String sfxWin = 'win.mp3';
   static const String sfxLose = 'lose.mp3';
-  static const String sfxRound = 'round.wav';
+  static const String sfxRound1 = 'round_1.wav';
+  static const String sfxRound2 = 'round_2.wav';
+  static const String sfxRound3 = 'round_3.wav';
   static const String sfxPunch = 'soraatwod-punch-416719.mp3';
+  static const String fight = 'fight.wav';
 
   /// Danh sách tất cả âm thanh cần nạp trước vào bộ nhớ (preload)
   static const List<String> allAudio = [
     sfxButton,
     sfxAttack1,
     sfxAttack2,
+    sfxFireWhoosh,
+    sfxFireSpark,
+    sfxFireballLaunch,
     sfxWin,
     sfxLose,
-    sfxRound,
+    sfxRound1,
+    sfxRound2,
+    sfxRound3,
+    fight,
+    sfxPunch,
   ];
 
   // ==========================================

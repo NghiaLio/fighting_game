@@ -21,10 +21,12 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   final CharacterType playerCharacter;
   final CharacterType enemyCharacter;
+  final int level;
 
   FightingGame({
     this.playerCharacter = CharacterType.fireWizard,
     this.enemyCharacter = CharacterType.knight1,
+    this.level = 1,
   });
 
   late PositionComponent stage;
@@ -37,6 +39,9 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   bool isVictory = false;
   String endMessage = '';
+
+  /// true: đang trong pha giới thiệu round (banner hiện) → character không cũ được di chuyển/tấn công
+  bool isIntroPlaying = true;
 
   @override
   Color backgroundColor() => const Color(0xFF1a1a2e);
@@ -130,6 +135,10 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     hud = HudComponent(player: p1, enemy: e1)..priority = 10;
     await add(hud);
     await add(GameControls(player: p1)..priority = 10);
+
+    // 4. Giới thiệu round (banner + âm thanh) trước khi gameplay bắt đầu
+    hud.setRound(level);
+    hud.startRoundIntro();
   }
 
   void onMatchEnd({required bool victory, required String message}) {
@@ -143,6 +152,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   void restartMatch() {
     AudioService.stopMatchEnd();
+    isIntroPlaying = true; // khởi lại intro khi restart
     overlays.remove('GameOver');
     if (Get.isRegistered<GameMatchController>()) {
       GameMatchController.to.restartMatch();
@@ -150,9 +160,14 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     if (player == null || enemy == null) return;
     player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);
     enemy!.resetCharacter(startX: mapWidth * 0.55, faceRight: false);
-    hud.resetHud();
+    hud.startRoundIntro(); // hiện banner round sau restart
     cameraX = (player!.position.x - size.x / 2).clamp(0.0, mapWidth - size.x);
     stage.position.x = -cameraX;
+  }
+
+  /// Gọi khi round banner hiện xong → bắt đầu gameplay
+  void onRoundIntroDone() {
+    isIntroPlaying = false;
   }
 
   // Screen Shake (mục D trong docs/03_vfx_and_game_feel.md)

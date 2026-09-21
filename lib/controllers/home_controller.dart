@@ -1,8 +1,10 @@
 import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/game_typography.dart';
+import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/controllers/settings_controller.dart';
 import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
+import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,9 +44,9 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
           child: UiTileWidget(
             tile: UiTile.hangingBoard,
             width: 480,
-            height: 310,
+            height: 370,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(48, 50, 48, 28),
+              padding: const EdgeInsets.fromLTRB(48, 50, 48, 22),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -114,14 +116,57 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
 
                   const Spacer(),
 
-                  // Đóng
-                  UiTileButton(
-                    tile: UiTile.shortButton,
-                    label: AppStrings.close,
-                    width: 140,
-                    height: 42,
-                    fontSize: 13,
-                    onTap: () => Get.back(),
+                  // Level hiện tại
+                  Obx(() {
+                    final level = GameMatchController.to.currentLevel.value;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.flag_rounded,
+                              color: Colors.amber, size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            'ROUND $level / 3',
+                            style: GameTypography.pixel(
+                              color: const Color(0xFFFFD54F),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+
+                  // Hàng nút: Reset + Đóng
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Nút Reset Progress
+                      UiTileButton(
+                        tile: UiTile.shortButton,
+                        label: 'RESET',
+                        icon: Icons.refresh_rounded,
+                        width: 120,
+                        height: 42,
+                        fontSize: 12,
+                        textColor: const Color(0xFFEF9A9A),
+                        onTap: () => _confirmReset(),
+                      ),
+                      const SizedBox(width: 16),
+                      // Nút Đóng
+                      UiTileButton(
+                        tile: UiTile.shortButton,
+                        label: AppStrings.close,
+                        width: 140,
+                        height: 42,
+                        fontSize: 13,
+                        onTap: () => Get.back(),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -133,9 +178,70 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
     );
   }
 
-  /// Chuyển ngay đến màn chơi trận chiến (Battle Now)
+  /// Hiện confirm rồi reset tiến trình về Round 1
+  void _confirmReset() {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: const Color(0xFF1a1a2e),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: Text(
+          'RESET?',
+          style: GameTypography.pixel(
+            color: const Color(0xFFFF8A80),
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          'Reset tiến trình về Round 1?',
+          style: GameTypography.pixel(
+            color: Colors.white70,
+            fontSize: 12,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'HỦY',
+              style: GameTypography.pixel(
+                color: Colors.grey,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              await ProgressService.setLevel(1);
+              GameMatchController.to.reloadLevel();
+              Get.back(); // đóng confirm
+              Get.back(); // đóng settings
+            },
+            child: Text(
+              'RESET',
+              style: GameTypography.pixel(
+                color: const Color(0xFFFF8A80),
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
+      ),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
+    );
+  }
+
+  /// Chuyển ngay đến màn chơi trận chiến, bắt đầu từ level đã lưu
   void startBattle() {
-    Get.off(() => GamePlayScreen());
+    // Reload level từ Hive để đảm bảo dữ liệu mới nhất
+    GameMatchController.to.reloadLevel();
+    final level = GameMatchController.to.currentLevel.value;
+    Get.off(() => GamePlayScreen(level: level));
   }
 
   /// Mở màn hình chọn tướng (Character Select Screen)

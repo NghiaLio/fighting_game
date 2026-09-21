@@ -1,4 +1,4 @@
-import 'package:fighting_game/constants/pause_menu_assets.dart';
+﻿import 'package:fighting_game/constants/pause_menu_assets.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/fighting_game.dart';
@@ -11,21 +11,25 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// Màn hình trận đấu (Game Play Screen)
-/// - 100% [StatelessWidget] thuần túy
-/// - Quản lý trận đấu thông qua Flame Engine [FightingGame] & [GameMatchController]
+/// - Round announcement giờ là Flame SpriteComponent bên trong HudComponent
+/// - Không cần pause engine; isIntroPlaying flag block character logic
 class GamePlayScreen extends StatelessWidget {
   final CharacterType playerCharacter;
   final CharacterType enemyCharacter;
-  final FightingGame game;
+  final int level;
 
   GamePlayScreen({
     super.key,
     this.playerCharacter = CharacterType.fireWizard,
     this.enemyCharacter = CharacterType.knight1,
-  }) : game = FightingGame(
+    this.level = 1,
+  }) : _game = FightingGame(
           playerCharacter: playerCharacter,
           enemyCharacter: enemyCharacter,
+          level: level,
         );
+
+  final FightingGame _game;
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +37,18 @@ class GamePlayScreen extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
+          // ─── 1. Game canvas ───────────────────────────────────────────
           GameWidget<FightingGame>(
-            game: game,
+            game: _game,
             overlayBuilderMap: {
               'GameOver': (context, activeGame) =>
-                  ContinuePromptOverlay(game: activeGame),
+                  ContinuePromptOverlay(game: activeGame, level: level),
               'PauseMenu': (context, activeGame) =>
                   PauseMenuOverlay(game: activeGame),
             },
           ),
 
-          // Nút bấm Cài đặt / Tạm dừng trên đỉnh màn hình (ẩn khi đang mở Setting hoặc khi hiện ContinuePrompt)
+          // ─── 2. Nút Setting ───────────────────────────────────────────
           Obx(() {
             final matchCtrl = GameMatchController.to;
             if (matchCtrl.isSettingOpen.value ||
@@ -61,8 +66,8 @@ class GamePlayScreen extends StatelessWidget {
                     onTap: () {
                       AudioService.playButtonClick();
                       GameMatchController.to.openSetting();
-                      game.pauseEngine();
-                      game.overlays.add('PauseMenu');
+                      _game.pauseEngine();
+                      _game.overlays.add('PauseMenu');
                     },
                     pressDepth: 2.5,
                     pressScale: 0.90,

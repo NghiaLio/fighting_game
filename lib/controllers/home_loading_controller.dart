@@ -108,12 +108,19 @@ class HomeLoadingController extends GetxController
     _targetProgress = 0.18;
     statusText.value = AppStrings.loadingInitGraphics;
 
-    // Bước 2: Tải trước UI Buttons, Arena Background & Audio SoundPool
+    // Bước 2: Tải trước UI Buttons, Arena Background, VFX & Audio SoundPool
     try {
       await Future.wait([
         Flame.images.loadAll([
           AppAssets.arenaBg1,
           ...AppAssets.battleControls,
+          AppAssets.hitSpark,
+          AppAssets.dustPuff,
+          AppAssets.vfxWin,
+          AppAssets.vfxLose,
+          AppAssets.round1,
+          AppAssets.round2,
+          AppAssets.round3,
         ]),
         AudioService.preloadAll(),
       ]);
