@@ -1,9 +1,9 @@
 import 'package:fighting_game/constants/character_select_strings.dart';
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/models/hero_info.dart';
 import 'package:fighting_game/utils/select_per_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Thanh đỉnh của màn hình chọn tướng: Nút quay lại, Cánh chim hoàng gia, Chế độ trận đấu
 class CharacterSelectTopBar extends StatelessWidget {
@@ -41,9 +41,9 @@ class CharacterSelectTopBar extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   CharacterSelectStrings.homeButton,
-                  style: GoogleFonts.cinzel(
+                  style: GameTypography.pixel(
                     color: const Color(0xFFFFD54F),
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0.8,
                   ),
@@ -62,9 +62,9 @@ class CharacterSelectTopBar extends StatelessWidget {
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 CharacterSelectStrings.screenTitle,
-                style: GoogleFonts.cinzel(
+                style: GameTypography.pixel(
                   color: const Color(0xFFFFD54F),
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 2.0,
                   shadows: const [
@@ -92,11 +92,11 @@ class CharacterSelectTopBar extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 CharacterSelectStrings.matchMode,
-                style: GoogleFonts.cinzel(
+                style: GameTypography.pixel(
                   color: const Color(0xFFFFD54F),
-                  fontSize: 10,
+                  fontSize: 9.5,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 0.8,
+                  letterSpacing: 0.6,
                 ),
               ),
             ],

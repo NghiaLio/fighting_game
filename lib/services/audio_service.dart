@@ -36,17 +36,16 @@ class AudioService {
     if (!soundEnabled || sfxVolume <= 0) return;
 
     try {
-      // FlameAudio tự động tìm trong thư mục assets/audio/
+      // FlameAudio automatically looks in assets/audio/
       await FlameAudio.play(sfx, volume: sfxVolume);
     } catch (e) {
-      // Ghi log nhẹ ở chế độ Debug nếu file âm thanh chưa có
       if (kDebugMode) {
-        debugPrint('[AudioService] SFX "$sfx" chưa được đặt vào assets/audio/ (Chi tiết: $e)');
+        debugPrint('[AudioService] SFX "$sfx" not found in assets/audio/ (Details: $e)');
       }
     }
   }
 
-  /// Phát âm thanh khi tung chiêu thức / kỹ năng trong trận đấu
+  /// Play skill SFX
   static Future<void> playSkillSfx(String sfxName) async {
     if (!soundEnabled || sfxVolume <= 0) return;
 
@@ -54,12 +53,12 @@ class AudioService {
       await FlameAudio.play(sfxName, volume: sfxVolume);
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[AudioService] Skill SFX "$sfxName" chưa có trong assets/audio/');
+        debugPrint('[AudioService] Skill SFX "$sfxName" not found in assets/audio/');
       }
     }
   }
 
-  /// Phát nhạc nền BGM lặp lại
+  /// Play looping background music (BGM)
   static Future<void> playBgm(String bgmName) async {
     if (!soundEnabled || bgmVolume <= 0) return;
 
@@ -67,7 +66,7 @@ class AudioService {
       await FlameAudio.bgm.play(bgmName, volume: bgmVolume);
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[AudioService] BGM "$bgmName" chưa có trong assets/audio/');
+        debugPrint('[AudioService] BGM "$bgmName" not found in assets/audio/');
       }
     }
   }

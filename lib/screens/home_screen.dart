@@ -1,3 +1,4 @@
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/controllers/settings_controller.dart';
 import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
@@ -5,7 +6,6 @@ import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -57,8 +57,8 @@ class _HomeScreenState extends State<HomeScreen>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'CÀI ĐẶT TRÒ CHƠI',
-                    style: GoogleFonts.cinzel(
+                    'GAME SETTINGS',
+                    style: GameTypography.pixel(
                       color: const Color(0xFFFFD54F),
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
@@ -77,8 +77,8 @@ class _HomeScreenState extends State<HomeScreen>
                           color: Colors.amber, size: 22),
                       const SizedBox(width: 8),
                       Text(
-                        'Nhạc nền:',
-                        style: GoogleFonts.cinzel(
+                        'Music:',
+                        style: GameTypography.pixel(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
@@ -102,8 +102,8 @@ class _HomeScreenState extends State<HomeScreen>
                           color: Colors.amber, size: 22),
                       const SizedBox(width: 8),
                       Text(
-                        'Hiệu ứng:',
-                        style: GoogleFonts.cinzel(
+                        'Sound FX:',
+                        style: GameTypography.pixel(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen>
                   // Đóng
                   UiTileButton(
                     tile: UiTile.shortButton,
-                    label: 'ĐÓNG',
+                    label: 'CLOSE',
                     width: 140,
                     height: 42,
                     fontSize: 13,
@@ -204,8 +204,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 color: Colors.amber, size: 16),
                             const SizedBox(width: 6),
                             Text(
-                              'CHIẾN BINH',
-                              style: GoogleFonts.cinzel(
+                              'WARRIOR',
+                              style: GameTypography.pixel(
                                 color: Colors.white,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w900,
@@ -265,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen>
                             const SizedBox(width: 8),
                             Text(
                               '9,999',
-                              style: GoogleFonts.cinzel(
+                              style: GameTypography.pixel(
                                 color: const Color(0xFFFFD54F),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w900,
@@ -320,8 +320,8 @@ class _HomeScreenState extends State<HomeScreen>
                         children: [
                           Center(
                             child: Text(
-                              'CHIẾN DỊCH',
-                              style: GoogleFonts.cinzel(
+                              'CAMPAIGN',
+                              style: GameTypography.pixel(
                                 color: const Color(0xFF3E2723),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
@@ -332,28 +332,28 @@ class _HomeScreenState extends State<HomeScreen>
                           const Divider(color: Color(0xFF8D6E63), thickness: 1.5),
                           const SizedBox(height: 6),
                           Text(
-                            '• Màn hiện tại: MAP 1 (Rừng Xanh)',
-                            style: GoogleFonts.medievalSharp(
+                            '• Current Stage: MAP 1 (Greenwood)',
+                            style: GameTypography.pixel(
                               color: const Color(0xFF4E342E),
-                              fontSize: 13,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '• Đối thủ: Hiệp Sĩ Thiết Giáp',
-                            style: GoogleFonts.medievalSharp(
+                            '• Opponent: Armored Knight',
+                            style: GameTypography.pixel(
                               color: const Color(0xFF4E342E),
-                              fontSize: 13,
+                              fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '• Thể thức: 3 Round tử chiến',
-                            style: GoogleFonts.medievalSharp(
+                            '• Mode: Best of 3 Deathmatch',
+                            style: GameTypography.pixel(
                               color: const Color(0xFFB71C1C),
-                              fontSize: 13,
+                              fontSize: 12,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -367,8 +367,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                'TIẾN ĐỘ: 0 / 7 MAPS',
-                                style: GoogleFonts.cinzel(
+                                'PROGRESS: 0 / 7 MAPS',
+                                style: GameTypography.pixel(
                                   color: const Color(0xFFFFD54F),
                                   fontSize: 11,
                                   fontWeight: FontWeight.w900,
@@ -421,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 // Nút Bắt Đầu Chiến Đấu
                                 UiTileButton(
                                   tile: UiTile.ornatePlaque,
-                                  label: 'CHIẾN ĐẤU NGAY',
+                                  label: 'BATTLE NOW',
                                   icon: Icons.sports_kabaddi_rounded,
                                   width: 290,
                                   height: 60,
@@ -440,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 // Nút Chọn Anh Hùng
                                 UiTileButton(
                                   tile: UiTile.longButton,
-                                  label: 'ANH HÙNG (12)',
+                                  label: 'HEROES (12)',
                                   icon: Icons.shield_rounded,
                                   width: 250,
                                   height: 48,
@@ -460,7 +460,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 // Nút Cài Đặt
                                 UiTileButton(
                                   tile: UiTile.longButton,
-                                  label: 'CÀI ĐẶT',
+                                  label: 'SETTINGS',
                                   icon: Icons.settings_rounded,
                                   width: 250,
                                   height: 48,

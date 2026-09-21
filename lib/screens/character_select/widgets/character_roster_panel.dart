@@ -1,9 +1,9 @@
 import 'package:fighting_game/constants/character_select_strings.dart';
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/models/hero_info.dart';
 import 'package:fighting_game/screens/character_select/widgets/hero_slot_item.dart';
 import 'package:fighting_game/utils/select_per_tileset.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Cột trái: Bảng lớn Gothic Chamber chứa danh sách 12 anh hùng
 /// Thiết kế lưới 4 ô mỗi hàng (3 hàng x 4 cột), ô to rõ nét, tiêu đề đưa xuống dưới đáy bảng
@@ -91,7 +91,7 @@ class CharacterRosterPanel extends StatelessWidget {
                 children: [
                   Text(
                     CharacterSelectStrings.rosterSectionTitle,
-                    style: GoogleFonts.cinzel(
+                    style: GameTypography.pixel(
                       color: const Color(0xFFFFD54F),
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
@@ -104,7 +104,7 @@ class CharacterRosterPanel extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     '• ${_selectedHero.name} [${_selectedHero.shortRole}] •',
-                    style: GoogleFonts.cinzel(
+                    style: GameTypography.pixel(
                       color: _selectedHero.primaryColor,
                       fontSize: 10,
                       fontWeight: FontWeight.w900,

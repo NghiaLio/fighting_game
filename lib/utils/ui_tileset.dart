@@ -1,8 +1,8 @@
 import 'dart:ui' as ui;
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Danh sách các sprite được cắt từ ảnh ui_tileset.png (1536 x 1024)
 enum UiTile {
@@ -300,7 +300,7 @@ class _UiTileButtonState extends State<UiTileButton> {
                             widget.label,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.cinzel(
+                            style: GameTypography.pixel(
                               color: _isHovered ? Colors.white : widget.textColor,
                               fontSize: widget.fontSize,
                               fontWeight: FontWeight.w900,

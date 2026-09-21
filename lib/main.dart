@@ -1,3 +1,4 @@
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/controllers/character_select_controller.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/controllers/settings_controller.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +35,8 @@ class FightingGameApp extends StatelessWidget {
       title: 'Valor Awakening',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        textTheme: GoogleFonts.cinzelTextTheme(ThemeData.dark().textTheme),
+        scaffoldBackgroundColor: Colors.black,
+        textTheme: GameTypography.textTheme(),
       ),
       home: const HomeLoadingScreen(),
     );

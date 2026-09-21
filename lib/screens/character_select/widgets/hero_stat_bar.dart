@@ -1,5 +1,5 @@
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Thanh hiển thị chỉ số sức mạnh trong bảng đá statTablet
 class HeroStatBar extends StatelessWidget {
@@ -26,7 +26,7 @@ class HeroStatBar extends StatelessWidget {
           width: 64,
           child: Text(
             label,
-            style: GoogleFonts.cinzel(
+            style: GameTypography.pixel(
               color: Colors.white70,
               fontSize: 8.5,
               fontWeight: FontWeight.bold,
@@ -67,13 +67,13 @@ class HeroStatBar extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         SizedBox(
-          width: 20,
+          width: 24,
           child: Text(
             '${(value * 100).toInt()}',
             textAlign: TextAlign.end,
-            style: TextStyle(
+            style: GameTypography.pixel(
               color: color,
-              fontSize: 8.5,
+              fontSize: 9.0,
               fontWeight: FontWeight.w900,
             ),
           ),

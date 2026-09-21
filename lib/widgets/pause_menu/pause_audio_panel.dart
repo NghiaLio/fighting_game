@@ -1,10 +1,10 @@
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/constants/pause_menu_strings.dart';
 import 'package:fighting_game/controllers/settings_controller.dart';
 import 'package:fighting_game/utils/pause_menu_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Component UI: Bảng điều chỉnh âm thanh (Nhạc nền & Hiệu ứng)
 class PauseAudioPanel extends StatelessWidget {
@@ -79,7 +79,7 @@ class PauseAudioPanel extends StatelessWidget {
             width: 64,
             child: Text(
               title,
-              style: GoogleFonts.cinzel(
+              style: GameTypography.pixel(
                 color: isMuted ? Colors.white38 : const Color(0xFFFFD54F),
                 fontSize: 12.0,
                 fontWeight: FontWeight.bold,
@@ -109,11 +109,11 @@ class PauseAudioPanel extends StatelessWidget {
 
           // Phần trăm % âm lượng
           SizedBox(
-            width: 28,
+            width: 32,
             child: Text(
               '${(value * 100).toInt()}%',
               textAlign: TextAlign.end,
-              style: TextStyle(
+              style: GameTypography.pixel(
                 color: isMuted ? Colors.white38 : const Color(0xFFFFD54F),
                 fontSize: 12.0,
                 fontWeight: FontWeight.w900,

@@ -1,24 +1,24 @@
-/// Các chuỗi văn bản tĩnh dùng cho Màn hình Chọn Tướng (Character Select Screen)
+/// Static string constants for the Character Select Screen
 class CharacterSelectStrings {
   CharacterSelectStrings._();
 
-  // Thanh đỉnh (Top Bar)
-  static const String homeButton = 'TRANG CHỦ';
-  static const String screenTitle = 'CHỌN ANH HÙNG';
-  static const String matchMode = '1 VS 1 TỬ CHIẾN';
+  // Top Bar
+  static const String homeButton = 'HOME';
+  static const String screenTitle = 'HERO SELECTION';
+  static const String matchMode = '1 VS 1 DEATHMATCH';
 
-  // Bảng chọn danh tướng (Roster Panel)
-  static const String rosterSectionTitle = 'DANH TƯỚNG HOÀNG GIA (12)';
+  // Roster Panel
+  static const String rosterSectionTitle = 'ROYAL CHAMPIONS (12)';
 
-  // Bảng chỉ số (Stats Panel)
-  static const String statAttack = 'TẤN CÔNG';
-  static const String statDefense = 'PHÒNG THỦ';
-  static const String statSpeed = 'TỐC ĐỘ';
-  static const String statRange = 'TẦM ĐÁNH';
+  // Stats Panel
+  static const String statAttack = 'ATTACK';
+  static const String statDefense = 'DEFENSE';
+  static const String statSpeed = 'SPEED';
+  static const String statRange = 'RANGE';
 
-  // Bảng kỹ năng & tiểu sử (Specs Panel)
-  static const String ultimatePrefix = 'TUYỆT KỸ: ';
+  // Specs Panel
+  static const String ultimatePrefix = 'ULTIMATE: ';
 
-  // Nút hành động chính (Action Button)
-  static const String confirmButton = 'XUẤT TRẬN';
+  // Main Action Button
+  static const String confirmButton = 'FIGHT!';
 }

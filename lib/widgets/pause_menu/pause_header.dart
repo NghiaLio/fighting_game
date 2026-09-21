@@ -1,9 +1,9 @@
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/constants/pause_menu_strings.dart';
 import 'package:fighting_game/utils/pause_menu_tileset.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-/// Component UI: Tiêu đề TẠM DỪNG kèm huy hiệu bánh răng gothic đối xứng
+/// Component UI: Tiêu đề PAUSED kèm huy hiệu bánh răng gothic đối xứng
 class PauseHeader extends StatelessWidget {
   const PauseHeader({super.key});
 
@@ -21,9 +21,9 @@ class PauseHeader extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           PauseMenuStrings.title,
-          style: GoogleFonts.cinzel(
+          style: GameTypography.pixel(
             color: const Color(0xFFFFD54F),
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: FontWeight.w900,
             letterSpacing: 2.2,
             shadows: const [

@@ -1,8 +1,8 @@
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/constants/pause_menu_assets.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 export 'package:fighting_game/constants/pause_menu_assets.dart';
 
@@ -104,7 +104,7 @@ class PauseMenuActionButton extends StatelessWidget {
               ],
               Text(
                 label,
-                style: GoogleFonts.cinzel(
+                style: GameTypography.pixel(
                   color: textColor,
                   fontSize: fontSize,
                   fontWeight: FontWeight.w900,

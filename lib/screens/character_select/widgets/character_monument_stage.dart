@@ -1,8 +1,8 @@
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/models/hero_info.dart';
 import 'package:fighting_game/screens/character_select/widgets/hero_idle_preview.dart';
 import 'package:fighting_game/utils/select_per_tileset.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Cột giữa: Võ đài tôn vinh anh hùng (Cột cờ nguyên tố, cờ kiếm gothic, hoạt ảnh idle 60fps)
 class CharacterMonumentStage extends StatelessWidget {
@@ -92,7 +92,7 @@ class CharacterMonumentStage extends StatelessWidget {
           top: 2,
           child: SelectPerWidget(
             tile: SelectPerTile.barDiamond,
-            width: 135,
+            width: 140,
             height: 26,
             child: Center(
               child: Row(
@@ -105,9 +105,9 @@ class CharacterMonumentStage extends StatelessWidget {
                   const SizedBox(width: 5),
                   Text(
                     hero.role,
-                    style: GoogleFonts.cinzel(
+                    style: GameTypography.pixel(
                       color: Colors.white,
-                      fontSize: 9.5,
+                      fontSize: 10,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.8,
                     ),

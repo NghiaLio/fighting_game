@@ -1,9 +1,9 @@
 import 'package:fighting_game/constants/character_select_strings.dart';
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/models/hero_info.dart';
 import 'package:fighting_game/screens/character_select/widgets/hero_stat_bar.dart';
 import 'package:fighting_game/utils/select_per_tileset.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Cột phải: Bảng thông số và kỹ năng từ select_per (Tên, 4 chỉ số chiến đấu, tuyệt kỹ & tiểu sử)
 class CharacterSpecsPanel extends StatelessWidget {
@@ -33,9 +33,9 @@ class CharacterSpecsPanel extends StatelessWidget {
                     hero.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.cinzel(
+                    style: GameTypography.pixel(
                       color: const Color(0xFFFFD54F),
-                      fontSize: 12.5,
+                      fontSize: 13.0,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.0,
                       shadows: const [
@@ -47,7 +47,7 @@ class CharacterSpecsPanel extends StatelessWidget {
                     hero.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.medievalSharp(
+                    style: GameTypography.pixel(
                       color: hero.primaryColor,
                       fontSize: 10.5,
                       fontWeight: FontWeight.bold,
@@ -126,9 +126,9 @@ class CharacterSpecsPanel extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         CharacterSelectStrings.ultimatePrefix,
-                        style: GoogleFonts.cinzel(
+                        style: GameTypography.pixel(
                           color: const Color(0xFFFFD54F),
-                          fontSize: 10,
+                          fontSize: 10.5,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -137,7 +137,7 @@ class CharacterSpecsPanel extends StatelessWidget {
                           hero.ultimateName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.medievalSharp(
+                          style: GameTypography.pixel(
                             color: Colors.amber.shade200,
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
@@ -151,9 +151,9 @@ class CharacterSpecsPanel extends StatelessWidget {
                     child: SingleChildScrollView(
                       child: Text(
                         hero.description,
-                        style: const TextStyle(
+                        style: GameTypography.pixel(
                           color: Colors.white70,
-                          fontSize: 9.5,
+                          fontSize: 10.0,
                           height: 1.25,
                         ),
                       ),

@@ -5,8 +5,7 @@ import 'package:fighting_game/screens/home_screen.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/constants/pause_menu_assets.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/services/audio_service.dart';
@@ -198,12 +197,12 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                   ),
                   const SizedBox(height: 8),
 
-                  // Title: CHIẾN THẮNG / THẤT BẠI
+                  // Title: VICTORY! / DEFEAT!
                   Text(
-                    isVictory ? 'CHIẾN THẮNG!' : 'THẤT BẠI!',
-                    style: GoogleFonts.cinzel(
+                    isVictory ? 'VICTORY!' : 'DEFEAT!',
+                    style: GameTypography.pixel(
                       color: primaryColor,
-                      fontSize: 30,
+                      fontSize: 32,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 2.5,
                       shadows: [
@@ -221,12 +220,12 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                   // Subtitle
                   Text(
                     isVictory
-                        ? 'Tuyệt vời! Bạn đã hạ gục hoàn toàn đối thủ!'
-                        : 'Bạn đã gục ngã! Đừng nản lòng, hãy phục thù!',
+                        ? 'Magnificent! You completely defeated your opponent!'
+                        : 'You have fallen! Rise and reclaim your honor!',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: GameTypography.pixel(
                       color: Colors.grey.shade300,
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -263,8 +262,8 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'TRANG CHỦ',
-                                  style: GoogleFonts.cinzel(
+                                  'HOME',
+                                  style: GameTypography.pixel(
                                     color: Colors.white,
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
@@ -320,8 +319,8 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'CHƠI LẠI',
-                                  style: GoogleFonts.cinzel(
+                                  'REPLAY',
+                                  style: GameTypography.pixel(
                                     color: isVictory
                                         ? Colors.black
                                         : Colors.white,

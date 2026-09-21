@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/screens/home_screen.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeLoadingScreen extends StatefulWidget {
   const HomeLoadingScreen({super.key});
@@ -30,7 +30,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
   // Loading progress
   double _targetProgress = 0.0;
   double _currentProgress = 0.0;
-  String _statusText = 'Đang khởi động hệ thống...';
+  String _statusText = 'Starting game engine...';
   bool _isLoaded = false;
   bool _isNavigating = false;
   Timer? _progressTicker;
@@ -105,7 +105,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
     if (!mounted) return;
     setState(() {
       _targetProgress = 0.18;
-      _statusText = 'Khởi tạo giao diện Tileset & đồ họa...';
+      _statusText = 'Initializing graphics & tilesets...';
     });
 
     // Step 2: Preload UI Buttons and Arena Background
@@ -124,7 +124,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
     if (!mounted) return;
     setState(() {
       _targetProgress = 0.45;
-      _statusText = 'Tải đấu trường & hệ thống điều khiển...';
+      _statusText = 'Loading arena & input controls...';
     });
 
     await Future.delayed(const Duration(milliseconds: 400));
@@ -150,7 +150,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
     if (!mounted) return;
     setState(() {
       _targetProgress = 0.72;
-      _statusText = 'Nạp dữ liệu Pháp Sư Hỏa Hệ...';
+      _statusText = 'Loading Fire Wizard character data...';
     });
 
     await Future.delayed(const Duration(milliseconds: 400));
@@ -175,7 +175,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
     if (!mounted) return;
     setState(() {
       _targetProgress = 0.92;
-      _statusText = 'Chuẩn bị võ đài & trí tuệ NPC...';
+      _statusText = 'Preparing arena & AI opponents...';
     });
 
     await Future.delayed(const Duration(milliseconds: 500));
@@ -184,7 +184,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
     // Step 5: Finalize
     setState(() {
       _targetProgress = 1.0;
-      _statusText = 'Hoàn tất! Sẵn sàng chiến đấu!';
+      _statusText = 'Ready! Prepare for battle!';
     });
 
     // Auto-navigate after reaching 100% if user doesn't press
@@ -310,7 +310,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
                       children: [
                         Text(
                           _statusText,
-                          style: TextStyle(
+                          style: GameTypography.pixel(
                             color: Colors.amber.shade200,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -326,7 +326,7 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
                         ),
                         Text(
                           '$progressPercent%',
-                          style: GoogleFonts.cinzel(
+                          style: GameTypography.pixel(
                             color: Colors.amber.shade400,
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
@@ -338,8 +338,8 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
                                 blurRadius: 4,
                               ),
                               Shadow(
-                                color: Color(0xFFFF9800),
-                                blurRadius: 8,
+                                color: Color(0xFFE65100),
+                                blurRadius: 6,
                               ),
                             ],
                           ),
@@ -456,10 +456,10 @@ class _HomeLoadingScreenState extends State<HomeLoadingScreen>
                             ],
                           ),
                           child: Text(
-                            'CHẠM ĐỂ BẮT ĐẦU',
-                            style: GoogleFonts.cinzel(
+                            'TAP TO START',
+                            style: GameTypography.pixel(
                               color: Colors.black,
-                              fontSize: 13,
+                              fontSize: 14,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.5,
                             ),
