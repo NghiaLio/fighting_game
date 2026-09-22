@@ -465,12 +465,20 @@ class CharacterComponent extends PositionComponent
     final spawnX = position.x + (facingRight ? 45.0 : -45.0);
     final spawnY = position.y - 75.0;
 
+    double multiplier = 1.0;
+    if (isPlayer) {
+      if (game.currentLevel == 2) multiplier = 0.7;
+      if (game.currentLevel >= 3) multiplier = 0.5;
+    } else if (aiProfile != null) {
+      multiplier = aiProfile!.damageMultiplier;
+    }
+
     final fireball = FireballComponent(
       caster: this,
       target: opponent!,
       startPos: Vector2(spawnX, spawnY),
       facingRight: facingRight,
-      damage: stats.getAttackPower(CharacterState.special) * 8.0,
+      damage: stats.getAttackPower(CharacterState.special) * 8.0 * multiplier,
     );
     parent!.add(fireball);
   }
@@ -508,7 +516,15 @@ class CharacterComponent extends PositionComponent
 
     if (dx <= reach) {
       _hasDealtDamage = true;
-      final dmg = stats.getAttackPower(_state) * multiplier * (!isPlayer && aiProfile != null ? aiProfile!.damageMultiplier : 1.0);
+      
+      // Giảm sát thương của người chơi qua từng round để tăng độ khó
+      double playerDamageMultiplier = 1.0;
+      if (isPlayer) {
+        if (game.currentLevel == 2) playerDamageMultiplier = 0.85;
+        if (game.currentLevel >= 3) playerDamageMultiplier = 0.70;
+      }
+      
+      final dmg = stats.getAttackPower(_state) * multiplier * (!isPlayer && aiProfile != null ? aiProfile!.damageMultiplier : playerDamageMultiplier);
       final isHeavy = _state == CharacterState.attack3 || _state == CharacterState.special;
 
       // A. Hiệu ứng tia lửa va chạm (Hit Sparks) tại điểm tiếp xúc vũ khí
