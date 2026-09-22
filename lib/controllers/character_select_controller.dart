@@ -1,6 +1,5 @@
 import 'package:fighting_game/constants/hero_roster_data.dart';
 import 'package:fighting_game/models/hero_info.dart';
-import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/utils/select_per_tileset.dart';
 import 'package:get/get.dart';
 
@@ -21,7 +20,7 @@ class CharacterSelectController extends GetxController {
 
   void selectHero(int index) {
     if (selectedIndex.value == index) return;
-    AudioService.playButtonClick();
+    // Sound được play bởi CharacterRosterPanel widget
     selectedIndex.value = index;
   }
 }

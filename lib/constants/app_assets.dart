@@ -65,7 +65,7 @@ class AppAssets {
   // ==========================================
   // 3. ÂM THANH SFX & BGM (Audio Assets)
   // ==========================================
-  static const String sfxButton = 'button.wav';
+  static const String sfxButton = 'button_2.mp3';
   static const String sfxAttack1 = 'attack_1.mp3';
   static const String sfxAttack2 = 'attac_2.mp3';
   static const String sfxFireWhoosh = 'sfx_fire_whoosh.mp3';

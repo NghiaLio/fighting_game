@@ -23,13 +23,11 @@ class SettingsController extends GetxController {
   }
 
   void toggleSound() {
-    AudioService.playButtonClick();
     soundEnabled.toggle();
     AudioService.soundEnabled = soundEnabled.value;
   }
 
   void toggleHaptic() {
-    AudioService.playButtonClick();
     hapticEnabled.toggle();
     AudioService.hapticEnabled = hapticEnabled.value;
   }

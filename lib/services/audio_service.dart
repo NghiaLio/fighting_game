@@ -24,6 +24,10 @@ class AudioService {
 
   // Low-latency SoundPool instances
   static AudioPool? _buttonPool;
+
+  /// Pool cho từng loại SFX chiêu thức — dùng thay FlameAudio.play() để tránh cold-start delay
+  static final Map<String, AudioPool> _sfxPools = {};
+
   static bool _isPreloaded = false;
 
   /// Preload toàn bộ audio assets vào RAM & khởi tạo pool độ trễ cực thấp
@@ -38,8 +42,8 @@ class AudioService {
       }
     }
 
+    // 2. Tạo AudioPool cho button click
     try {
-      // 2. Khởi tạo AudioPool giữ sẵn player trong bộ nhớ native
       _buttonPool = await FlameAudio.createPool(
         AppAssets.sfxButton,
         minPlayers: 3,
@@ -47,7 +51,37 @@ class AudioService {
       );
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[AudioService] Create AudioPool error: $e');
+        debugPrint('[AudioService] Create button AudioPool error: $e');
+      }
+    }
+
+    // 3. Tạo AudioPool cho từng SFX chiêu thức (pre-warm để play tức thì sau resume)
+    final sfxToPool = [
+      AppAssets.sfxAttack1,
+      AppAssets.sfxAttack2,
+      AppAssets.sfxFireWhoosh,
+      AppAssets.sfxFireSpark,
+      AppAssets.sfxFireballLaunch,
+      AppAssets.sfxRound1,
+      AppAssets.sfxRound2,
+      AppAssets.sfxRound3,
+      AppAssets.fight,
+      AppAssets.sfxWin,
+      AppAssets.sfxLose,
+      AppAssets.sfxPunch,
+    ];
+
+    for (final sfx in sfxToPool) {
+      try {
+        _sfxPools[sfx] = await FlameAudio.createPool(
+          sfx,
+          minPlayers: 1,
+          maxPlayers: 3,
+        );
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('[AudioService] Pool for "$sfx" error: $e');
+        }
       }
     }
 
@@ -105,17 +139,21 @@ class AudioService {
     }
   }
 
-  /// Play skill SFX
-  static Future<void> playSkillSfx(String sfxName) async {
+  /// Play skill SFX — dùng AudioPool để tránh cold-start delay sau resume
+  static void playSkillSfx(String sfxName) {
     if (!soundEnabled || sfxVolume <= 0) return;
 
-    try {
-      await FlameAudio.play(sfxName, volume: sfxVolume);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('[AudioService] Skill SFX "$sfxName" not found in assets/audio/');
-      }
+    // Dùng pool pre-warmed nếu có (zero latency)
+    final pool = _sfxPools[sfxName];
+    if (pool != null) {
+      try {
+        pool.start(volume: sfxVolume);
+        return;
+      } catch (_) {}
     }
+
+    // Fallback: FlameAudio.play() (có delay lần đầu)
+    FlameAudio.play(sfxName, volume: sfxVolume).ignore();
   }
 
   /// Play looping background music (BGM)
@@ -134,39 +172,43 @@ class AudioService {
   static AudioPlayer? _matchEndPlayer;
 
   /// Phát âm thanh khi chiến thắng (win.mp3)
-  static Future<void> playWin() async {
+  static void playWin() {
     if (!soundEnabled || sfxVolume <= 0) return;
     try {
-      await stopMatchEnd();
-      _matchEndPlayer =
-          await FlameAudio.play(AppAssets.sfxWin, volume: sfxVolume);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('[AudioService] Error playing win.mp3: $e');
+      stopMatchEnd();
+      final pool = _sfxPools[AppAssets.sfxWin];
+      if (pool != null) {
+        pool.start(volume: sfxVolume);
+      } else {
+        FlameAudio.play(AppAssets.sfxWin, volume: sfxVolume)
+            .then((p) => _matchEndPlayer = p)
+            .ignore();
       }
-    }
+    } catch (_) {}
   }
 
   /// Phát âm thanh khi thất bại (lose.mp3)
-  static Future<void> playLose() async {
+  static void playLose() {
     if (!soundEnabled || sfxVolume <= 0) return;
     try {
-      await stopMatchEnd();
-      _matchEndPlayer =
-          await FlameAudio.play(AppAssets.sfxLose, volume: sfxVolume);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('[AudioService] Error playing lose.mp3: $e');
+      stopMatchEnd();
+      final pool = _sfxPools[AppAssets.sfxLose];
+      if (pool != null) {
+        pool.start(volume: sfxVolume);
+      } else {
+        FlameAudio.play(AppAssets.sfxLose, volume: sfxVolume)
+            .then((p) => _matchEndPlayer = p)
+            .ignore();
       }
-    }
+    } catch (_) {}
   }
 
   /// Phát âm thanh kết thúc trận đấu (win.mp3 hoặc lose.mp3)
-  static Future<void> playMatchEnd({required bool isVictory}) async {
+  static void playMatchEnd({required bool isVictory}) {
     if (isVictory) {
-      await playWin();
+      playWin();
     } else {
-      await playLose();
+      playLose();
     }
   }
 

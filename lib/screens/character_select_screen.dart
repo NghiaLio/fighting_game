@@ -8,7 +8,6 @@ import 'package:fighting_game/screens/character_select/widgets/character_select_
 import 'package:fighting_game/screens/character_select/widgets/character_specs_panel.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
 import 'package:fighting_game/screens/home_screen.dart';
-import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/utils/select_per_tileset.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,12 +19,12 @@ class CharacterSelectScreen extends StatelessWidget {
   const CharacterSelectScreen({super.key});
 
   void _onBackToHome() {
-    AudioService.playButtonClick();
+    // Sound được play bởi widget bao ngoài (UiTileButton/GamePressable)
     Get.offAll(() => const HomeScreen());
   }
 
   void _onConfirmHero(CharacterSelectController controller) {
-    AudioService.playButtonClick();
+    // Sound được play bởi SelectPerButton
     Get.off(() => GamePlayScreen(
       playerCharacter: controller.selectedHero.type,
     ));

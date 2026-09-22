@@ -1,8 +1,7 @@
-﻿import 'package:fighting_game/constants/pause_menu_assets.dart';
+import 'package:fighting_game/constants/pause_menu_assets.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/fighting_game.dart';
-import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/continue_prompt_overlay.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:fighting_game/widgets/pause_menu_overlay.dart';
@@ -64,7 +63,7 @@ class GamePlayScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(right: 80),
                   child: GamePressable(
                     onTap: () {
-                      AudioService.playButtonClick();
+                      // Sound play bởi GamePressable khi TapDown
                       GameMatchController.to.openSetting();
                       _game.pauseEngine();
                       _game.overlays.add('PauseMenu');

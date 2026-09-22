@@ -21,7 +21,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   final CharacterType playerCharacter;
   final CharacterType enemyCharacter;
-  final int level;
+  final int level; // level ban đầu khi khởi tạo
 
   FightingGame({
     this.playerCharacter = CharacterType.fireWizard,
@@ -40,7 +40,10 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   bool isVictory = false;
   String endMessage = '';
 
-  /// true: đang trong pha giới thiệu round (banner hiện) → character không cũ được di chuyển/tấn công
+  /// Round hiện tại — cập nhật khi gọi startNewLevel()
+  int currentLevel = 1;
+
+  /// true: đang trong pha giới thiệu round (banner hiện) → character không được di chuyển/tấn công
   bool isIntroPlaying = true;
 
   @override
@@ -49,6 +52,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    currentLevel = level; // khởi tạo từ constructor param
 
     // Cache all dynamic character states and control assets
     const states = [
@@ -168,6 +172,28 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   /// Gọi khi round banner hiện xong → bắt đầu gameplay
   void onRoundIntroDone() {
     isIntroPlaying = false;
+  }
+
+  /// Chuyển sang level mới mà không cần navigate (dùng khi thắng + bấm Continue)
+  void startNewLevel(int newLevel) {
+    currentLevel = newLevel; // cập nhật trước tiên
+    AudioService.stopMatchEnd();
+    isIntroPlaying = true;
+    isVictory = false;
+    endMessage = '';
+    overlays.remove('GameOver');
+    if (Get.isRegistered<GameMatchController>()) {
+      GameMatchController.to.restartMatch();
+      // Sync level vào GameMatchController để onWinCurrentLevel() đọc đúng
+      GameMatchController.to.currentLevel.value = newLevel;
+    }
+    if (player == null || enemy == null) return;
+    player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);
+    enemy!.resetCharacter(startX: mapWidth * 0.55, faceRight: false);
+    hud.setRound(newLevel);
+    hud.startRoundIntro();
+    cameraX = (player!.position.x - size.x / 2).clamp(0.0, mapWidth - size.x);
+    stage.position.x = -cameraX;
   }
 
   // Screen Shake (mục D trong docs/03_vfx_and_game_feel.md)

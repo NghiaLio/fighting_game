@@ -206,7 +206,7 @@ class UiTileButton extends StatefulWidget {
     this.height = 58,
     this.textColor = const Color(0xFFFFD54F),
     this.fontSize = 15,
-    this.soundEffect = 'button.wav',
+    this.soundEffect = 'button_2.mp3',
   });
 
   @override

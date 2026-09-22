@@ -334,7 +334,7 @@ class SelectPerButton extends StatefulWidget {
     this.height = 50,
     this.textColor = const Color(0xFFFFD54F),
     this.fontSize = 15,
-    this.soundEffect = 'button.wav',
+    this.soundEffect = 'button_2.mp3',
   });
 
   @override

@@ -1,6 +1,5 @@
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/constants/pause_menu_assets.dart';
-import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
 
@@ -75,10 +74,7 @@ class PauseMenuActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GamePressable(
-      onTap: () {
-        AudioService.playButtonClick();
-        onTap();
-      },
+      onTap: onTap, // GamePressable tự play sound khi TapDown, không cần gọi lại
       pressDepth: 2.5,
       pressScale: 0.94,
       child: Container(

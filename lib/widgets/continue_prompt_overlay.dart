@@ -1,10 +1,9 @@
-﻿import 'dart:ui';
+import 'dart:ui';
 import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/game/fighting_game.dart';
-import 'package:fighting_game/screens/game_play_screen.dart';
 import 'package:fighting_game/screens/home_screen.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/pause_menu/pause_menu_action_button.dart';
@@ -17,13 +16,45 @@ import 'package:get/get.dart';
 /// - Nếu thua: CONTINUE → chơi lại cùng level; EXIT → về home
 class ContinuePromptOverlay extends StatelessWidget {
   final FightingGame game;
-  final int level;
+  final int level; // giữ lại để tương thích, nhưng logic dùng game.currentLevel
 
   const ContinuePromptOverlay({
     super.key,
     required this.game,
     this.level = 1,
   });
+
+  /// Round hiện tại — luôn đọc từ game để phản ánh đúng sau startNewLevel()
+  int get _currentLevel => game.currentLevel;
+
+  /// Round tiếp theo (không vượt 3)
+  int get _nextLevel => (_currentLevel + 1).clamp(1, 3);
+
+  /// true: đang ở round cuối (round 3)
+  bool get _isFinalRound => _currentLevel >= 3;
+
+  void _onContinue() {
+    AudioService.stopMatchEnd();
+    if (game.isVictory) {
+      // Lưu tiến trình Hive (fire-and-forget)
+      GameMatchController.to.onWinCurrentLevel();
+      if (_isFinalRound) {
+        // Xong round 3 → về HomeScreen (campaign hoàn thành)
+        Get.offAll(() => const HomeScreen());
+      } else {
+        // Reset game tại chỗ với round mới
+        game.startNewLevel(_nextLevel);
+      }
+    } else {
+      // Thua → chơi lại cùng level
+      game.restartMatch();
+    }
+  }
+
+  void _onExit() {
+    AudioService.stopMatchEnd();
+    Get.offAll(() => const HomeScreen());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +130,7 @@ class ContinuePromptOverlay extends StatelessWidget {
 
                           // Thông điệp phụ
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
                               isVictory
                                   ? AppStrings.victorySubtitle
@@ -131,42 +161,20 @@ class ContinuePromptOverlay extends StatelessWidget {
                                   width: 114,
                                   height: 38,
                                   fontSize: 10.5,
-                                  onTap: () {
-                                    AudioService.stopMatchEnd();
-                                    Get.offAll(() => const HomeScreen());
-                                  },
+                                  onTap: _onExit,
                                 ),
                               ),
 
-                              // Nút CONTINUE
+                              // Nút CONTINUE / ROUND X
                               PauseMenuActionButton.resume(
-                                label: AppStrings.continueAction,
+                                label: game.isVictory
+                                    ? (_isFinalRound ? 'CONTINUE' : 'ROUND $_nextLevel')
+                                    : 'RETRY',
                                 icon: Icons.play_arrow_rounded,
                                 width: 114,
                                 height: 38,
                                 fontSize: 10.5,
-                                onTap: () async {
-                                  AudioService.stopMatchEnd();
-                                  if (isVictory) {
-                                    // Thắng → advance level, chuyển màn tiếp theo
-                                    await GameMatchController.to
-                                        .onWinCurrentLevel();
-                                    final nextLevel = GameMatchController
-                                        .to.currentLevel.value;
-                                    Get.off(
-                                      () => GamePlayScreen(
-                                        playerCharacter: GameMatchController
-                                            .to.playerCharacter.value,
-                                        enemyCharacter: GameMatchController
-                                            .to.enemyCharacter.value,
-                                        level: nextLevel,
-                                      ),
-                                    );
-                                  } else {
-                                    // Thua → chơi lại cùng level
-                                    game.restartMatch();
-                                  }
-                                },
+                                onTap: _onContinue,
                               ),
                             ],
                           ),
