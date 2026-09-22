@@ -4,6 +4,7 @@ import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/components/fireball_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/game/utils/character_sprite_animations.dart';
+import 'package:fighting_game/models/ai_profile.dart';
 import 'package:fighting_game/models/character_skill_audio.dart';
 import 'package:fighting_game/models/player_sprite_settings.dart';
 import 'package:fighting_game/models/player_stats.dart';
@@ -23,6 +24,7 @@ class CharacterComponent extends PositionComponent
   late PlayerStats stats;
   late PlayerSpriteSettings spriteSettings;
   CharacterSkillAudio? skillAudio;
+  AiProfile? aiProfile;
 
   CharacterComponent? opponent;
 
@@ -30,6 +32,7 @@ class CharacterComponent extends PositionComponent
   CharacterState _state = CharacterState.idle;
 
   SpriteAnimationComponent? _animComp;
+  void Function()? _stopSkillAudio;
 
   // Physics
   double _velocityX = 0;
@@ -128,8 +131,12 @@ class CharacterComponent extends PositionComponent
     await _switchState(CharacterState.idle);
   }
 
-  void resetCharacter({required double startX, required bool faceRight}) {
-    hp = maxHp;
+  void resetCharacter({required double startX, required bool faceRight, AiProfile? newAiProfile}) {
+    if (newAiProfile != null) {
+      aiProfile = newAiProfile;
+    }
+    final effectiveMaxHp = isPlayer ? maxHp : maxHp * (aiProfile?.hpMultiplier ?? 1.0);
+    hp = effectiveMaxHp;
     position.x = startX;
     position.y = groundY;
     facingRight = faceRight;
@@ -137,6 +144,8 @@ class CharacterComponent extends PositionComponent
     _velocityY = 0;
     _onGround = true;
     _isAttacking = false;
+    _stopSkillAudio?.call();
+    _stopSkillAudio = null;
     _hasDealtDamage = false;
     _hasSpawnedProjectile = false;
     _attackTimer = 0;
@@ -226,7 +235,11 @@ class CharacterComponent extends PositionComponent
     if (isPlayer) {
       _handlePlayerInput(dt);
     } else {
-      _handleAI(dt);
+      if (aiProfile != null) {
+        _handleAI(dt, aiProfile!);
+      } else {
+        _velocityX = 0;
+      }
     }
 
     _applyPhysics(dt);
@@ -299,7 +312,7 @@ class CharacterComponent extends PositionComponent
     }
   }
 
-  void _handleAI(double dt) {
+  void _handleAI(double dt, AiProfile ai) {
     if (_isAttacking || _isHurt || _isLanding || isDead) return;
     if (opponent == null || opponent!.isDead) {
       _velocityX = 0;
@@ -310,35 +323,51 @@ class CharacterComponent extends PositionComponent
     _aiTimer -= dt;
     final dx = opponent!.position.x - position.x;
     final dist = dx.abs();
-
+    final opponentIsAttacking = opponent!._isAttacking;
     final atkReach = stats.getAttackReach(CharacterState.attack1);
-    final runThreshold = atkReach + 60.0;
 
-    if (dist > runThreshold) {
-      // Dash / Run towards player when far away
+    // 1. Phản xạ Phòng Thủ (Block Behavior):
+    if (opponentIsAttacking && dist <= atkReach + 30 && _rng.nextDouble() < ai.blockChance) {
+      _velocityX = (dx > 0 ? -1 : 1) * stats.walkSpeed * 80;
+      facingRight = dx > 0;
+      return;
+    }
+
+    // 2. Phản xạ Nhảy né đạn / Áp sát trên không:
+    if (_onGround && _rng.nextDouble() < ai.jumpChance * dt) {
+      if (opponentIsAttacking || opponent!.position.y < position.y - 20) {
+        _velocityY = -stats.jumpPower * 0.95;
+        _onGround = false;
+        _switchState(CharacterState.jump);
+        return;
+      }
+    }
+
+    // 3. Di Chuyển Định Vị (Spacing & Approach):
+    if (dist > ai.runThreshold) {
       _velocityX = (dx > 0 ? 1 : -1) * stats.runSpeed * 100;
       facingRight = dx > 0;
       if (_onGround) _switchState(CharacterState.run);
     } else if (dist > atkReach) {
-      // Walk when getting closer into attack range
       _velocityX = (dx > 0 ? 1 : -1) * stats.walkSpeed * 100;
       facingRight = dx > 0;
       if (_onGround) _switchState(CharacterState.walk);
     } else {
+      // 4. Ra Đòn & Nối Chuỗi Combo Dựa Trên Cấp Độ AI:
       _velocityX = 0;
       if (_onGround) {
         if (_aiTimer <= 0) {
-          _aiTimer = 0.8 + _rng.nextDouble() * 1.2;
-          final r = _rng.nextInt(6);
-          if (r == 0) _startAttack(CharacterState.attack1);
-          if (r == 1) _startAttack(CharacterState.attack2);
-          if (r == 2) _startAttack(CharacterState.attack3);
-          if (r == 3) _startAttack(CharacterState.special);
-          if (r == 4 && _onGround) {
-            // AI occasionally jumps
-            _velocityY = -stats.jumpPower * 0.9;
-            _onGround = false;
-            _switchState(CharacterState.jump);
+          _aiTimer = ai.minThinkDelay + _rng.nextDouble() * (ai.maxThinkDelay - ai.minThinkDelay);
+
+          final randSkill = _rng.nextDouble();
+          if (randSkill < 0.35) {
+            _startAttack(CharacterState.attack1);
+          } else if (randSkill < 0.65) {
+            _startAttack(CharacterState.attack2);
+          } else if (randSkill < 0.65 + ai.specialChance * 0.20) {
+            _startAttack(CharacterState.attack3);
+          } else {
+            _startAttack(CharacterState.special); // ULT bùng nổ
           }
         } else {
           _switchState(CharacterState.idle);
@@ -395,7 +424,13 @@ class CharacterComponent extends PositionComponent
     if (isPlayer) {
       final sfx = skillAudio?.getSfxForState(attackState);
       if (sfx != null) {
-        AudioService.playSkillSfx(sfx);
+        AudioService.playSkillSfx(sfx).then((stopFn) {
+          if (_isAttacking) {
+            _stopSkillAudio = stopFn;
+          } else {
+            stopFn?.call();
+          }
+        });
       }
     }
   }
@@ -473,7 +508,7 @@ class CharacterComponent extends PositionComponent
 
     if (dx <= reach) {
       _hasDealtDamage = true;
-      final dmg = stats.getAttackPower(_state) * multiplier;
+      final dmg = stats.getAttackPower(_state) * multiplier * (!isPlayer && aiProfile != null ? aiProfile!.damageMultiplier : 1.0);
       final isHeavy = _state == CharacterState.attack3 || _state == CharacterState.special;
 
       // A. Hiệu ứng tia lửa va chạm (Hit Sparks) tại điểm tiếp xúc vũ khí
@@ -505,6 +540,12 @@ class CharacterComponent extends PositionComponent
 
   void receiveDamage(double dmg) {
     if (isDead) return;
+    
+    if (_isAttacking) {
+      _stopSkillAudio?.call();
+      _stopSkillAudio = null;
+    }
+
     hp = (hp - dmg).clamp(0, maxHp);
     _isAttacking = false;
     _attackTimer = 0;

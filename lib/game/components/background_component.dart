@@ -1,4 +1,3 @@
-import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
@@ -8,14 +7,15 @@ import 'package:flutter/material.dart';
 class BackgroundComponent extends PositionComponent
     with HasGameReference<FightingGame> {
   final double mapWidth;
+  final String assetPath;
   Sprite? _bgSprite;
 
-  BackgroundComponent({required this.mapWidth}) : super(priority: -1);
+  BackgroundComponent({required this.mapWidth, required this.assetPath}) : super(priority: -1);
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    _bgSprite = Sprite(Flame.images.fromCache(AppAssets.arenaBg1));
+    _bgSprite = Sprite(Flame.images.fromCache(assetPath));
     size = Vector2(mapWidth, game.size.y);
   }
 

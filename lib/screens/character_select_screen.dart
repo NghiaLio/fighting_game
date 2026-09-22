@@ -2,6 +2,7 @@ import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/hero_roster_data.dart';
 import 'package:fighting_game/controllers/character_select_controller.dart';
+import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/screens/character_select/widgets/character_monument_stage.dart';
 import 'package:fighting_game/screens/character_select/widgets/character_roster_panel.dart';
 import 'package:fighting_game/screens/character_select/widgets/character_select_top_bar.dart';
@@ -25,8 +26,10 @@ class CharacterSelectScreen extends StatelessWidget {
 
   void _onConfirmHero(CharacterSelectController controller) {
     // Sound được play bởi SelectPerButton
+    final matchCtrl = GameMatchController.to;
     Get.off(() => GamePlayScreen(
       playerCharacter: controller.selectedHero.type,
+      level: matchCtrl.currentLevel.value,
     ));
   }
 

@@ -8,6 +8,7 @@ import 'package:fighting_game/game/components/hud_component.dart';
 import 'package:fighting_game/game/components/vfx_components.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/services/audio_service.dart';
+import 'package:fighting_game/models/ai_profile.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -49,6 +50,28 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   @override
   Color backgroundColor() => const Color(0xFF1a1a2e);
 
+  static const List<String> allBackgrounds = [
+    AppAssets.arenaBg1,
+    AppAssets.arenaBg2,
+    AppAssets.arenaBg3,
+    AppAssets.arenaBg4,
+    AppAssets.arenaBg5,
+    AppAssets.arenaBg6,
+    AppAssets.arenaBg7,
+  ];
+
+  String _getRandomBackground() {
+    return allBackgrounds[Random().nextInt(allBackgrounds.length)];
+  }
+
+  void _changeBackground() {
+    final bgList = stage.children.whereType<BackgroundComponent>().toList();
+    for (var bg in bgList) {
+      bg.removeFromParent();
+    }
+    stage.add(BackgroundComponent(mapWidth: mapWidth, assetPath: _getRandomBackground()));
+  }
+
   @override
   Future<void> onLoad() async {
     await super.onLoad();
@@ -69,7 +92,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     ];
 
     final toLoad = <String>[
-      AppAssets.arenaBg1,
+      ...allBackgrounds,
       ...AppAssets.battleControls,
       AppAssets.hitSpark,
       AppAssets.dustPuff,
@@ -103,7 +126,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     final groundY = gameSize.y * groundFraction;
 
     // 1. Add extended tiled background to stage
-    await stage.add(BackgroundComponent(mapWidth: mapWidth));
+    await stage.add(BackgroundComponent(mapWidth: mapWidth, assetPath: _getRandomBackground()));
 
     // 2. Spawn Player and Enemy with comfortable fighting distance
     final p1 = CharacterComponent(
@@ -124,6 +147,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       facingRight: false,
       maxHp: maxHp,
     );
+    e1.aiProfile = AiProfile.forMapAndRound(1, currentLevel);
     await stage.add(e1);
 
     p1.opponent = e1;
@@ -163,7 +187,12 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     }
     if (player == null || enemy == null) return;
     player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);
-    enemy!.resetCharacter(startX: mapWidth * 0.55, faceRight: false);
+    enemy!.resetCharacter(
+      startX: mapWidth * 0.55,
+      faceRight: false,
+      newAiProfile: AiProfile.forMapAndRound(1, currentLevel),
+    );
+    _changeBackground();
     hud.startRoundIntro(); // hiện banner round sau restart
     cameraX = (player!.position.x - size.x / 2).clamp(0.0, mapWidth - size.x);
     stage.position.x = -cameraX;
@@ -189,7 +218,12 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     }
     if (player == null || enemy == null) return;
     player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);
-    enemy!.resetCharacter(startX: mapWidth * 0.55, faceRight: false);
+    enemy!.resetCharacter(
+      startX: mapWidth * 0.55,
+      faceRight: false,
+      newAiProfile: AiProfile.forMapAndRound(1, currentLevel),
+    );
+    _changeBackground();
     hud.setRound(newLevel);
     hud.startRoundIntro();
     cameraX = (player!.position.x - size.x / 2).clamp(0.0, mapWidth - size.x);

@@ -140,20 +140,25 @@ class AudioService {
   }
 
   /// Play skill SFX — dùng AudioPool để tránh cold-start delay sau resume
-  static void playSkillSfx(String sfxName) {
-    if (!soundEnabled || sfxVolume <= 0) return;
+  static Future<void Function()?> playSkillSfx(String sfxName) async {
+    if (!soundEnabled || sfxVolume <= 0) return null;
 
     // Dùng pool pre-warmed nếu có (zero latency)
     final pool = _sfxPools[sfxName];
     if (pool != null) {
       try {
-        pool.start(volume: sfxVolume);
-        return;
+        final stopFn = await pool.start(volume: sfxVolume);
+        return stopFn;
       } catch (_) {}
     }
 
     // Fallback: FlameAudio.play() (có delay lần đầu)
-    FlameAudio.play(sfxName, volume: sfxVolume).ignore();
+    try {
+      final player = await FlameAudio.play(sfxName, volume: sfxVolume);
+      return () => player.stop();
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Play looping background music (BGM)
