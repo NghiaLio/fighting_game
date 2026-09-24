@@ -27,10 +27,12 @@ class CharacterSelectScreen extends StatelessWidget {
   void _onConfirmHero(CharacterSelectController controller) {
     // Sound được play bởi SelectPerButton
     final matchCtrl = GameMatchController.to;
-    Get.off(() => GamePlayScreen(
-      playerCharacter: controller.selectedHero.type,
-      level: matchCtrl.currentLevel.value,
-    ));
+    Get.off(
+      () => GamePlayScreen(
+        playerCharacter: controller.selectedHero.type,
+        level: matchCtrl.currentLevel.value,
+      ),
+    );
   }
 
   @override
@@ -69,20 +71,6 @@ class CharacterSelectScreen extends StatelessWidget {
               ),
             ),
 
-            // 3. Rèm lụa đỏ trang trí đỉnh màn hình từ UI_tileset_2
-            const Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Ui2FlagWidget(
-                  tile: Ui2FlagTile.redDrapery,
-                  height: 22,
-                  fit: BoxFit.fitHeight,
-                ),
-              ),
-            ),
-
             // 4. Thanh đỉnh (Top Bar)
             Positioned(
               top: 6,
@@ -116,18 +104,12 @@ class CharacterSelectScreen extends StatelessWidget {
                   const SizedBox(width: 8),
 
                   // CỘT 2 (GIỮA): Võ đài tôn vinh anh hùng (Cột cờ nguyên tố & Idle 60fps)
-                  Expanded(
-                    flex: 28,
-                    child: CharacterMonumentStage(hero: hero),
-                  ),
+                  Expanded(flex: 28, child: CharacterMonumentStage(hero: hero)),
 
                   const SizedBox(width: 8),
 
                   // CỘT 3 (PHẢI): Bảng thông số, 4 chỉ số và kỹ năng / tiểu sử
-                  Expanded(
-                    flex: 34,
-                    child: CharacterSpecsPanel(hero: hero),
-                  ),
+                  Expanded(flex: 34, child: CharacterSpecsPanel(hero: hero)),
                 ],
               ),
             ),
@@ -135,15 +117,15 @@ class CharacterSelectScreen extends StatelessWidget {
             // 6. Nút "XUẤT TRẬN" bằng sprite nhọn từ select_per: buttonLong
             Positioned(
               bottom: 5,
-              left: 0,
+              left: 40,
               right: 0,
               child: Center(
                 child: SelectPerButton(
-                  tile: SelectPerTile.buttonLong,
-                  width: 280,
-                  height: 46,
+                  tile: SelectPerTile.buttonMedium,
+                  width: 200,
+                  height: 50,
                   label: AppStrings.charSelectConfirm,
-                  icon: Icons.sports_kabaddi_rounded,
+                  fontSize: 18,
                   onTap: () => _onConfirmHero(controller),
                 ),
               ),

@@ -60,15 +60,12 @@ class HeroSlotItem extends StatelessWidget {
           children: [
             // Avatar chân dung pixel art kích thước lớn
             Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.all(2.5),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: HeroAvatarSlot(
-                    characterType: hero.type,
-                    primaryColor: hero.primaryColor,
-                    isSelected: isSelected,
-                  ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: HeroAvatarSlot(
+                  characterType: hero.type,
+                  primaryColor: hero.primaryColor,
+                  isSelected: isSelected,
                 ),
               ),
             ),
@@ -79,8 +76,8 @@ class HeroSlotItem extends StatelessWidget {
               left: 2,
               child: SelectPerWidget(
                 tile: hero.badgeTile,
-                width: 14,
-                height: 14,
+                width: 20,
+                height: 20,
               ),
             ),
           ],

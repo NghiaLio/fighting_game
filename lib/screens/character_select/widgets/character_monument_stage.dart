@@ -8,10 +8,7 @@ import 'package:flutter/material.dart';
 class CharacterMonumentStage extends StatelessWidget {
   final HeroInfo hero;
 
-  const CharacterMonumentStage({
-    super.key,
-    required this.hero,
-  });
+  const CharacterMonumentStage({super.key, required this.hero});
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +32,7 @@ class CharacterMonumentStage extends StatelessWidget {
           top: 15,
           child: Opacity(
             opacity: 0.9,
-            child: Ui2FlagWidget(
-              tile: Ui2FlagTile.redGothicBanner,
-              height: 88,
-            ),
+            child: Ui2FlagWidget(tile: Ui2FlagTile.redGothicBanner, height: 88),
           ),
         ),
         const Positioned(
@@ -63,15 +57,11 @@ class CharacterMonumentStage extends StatelessWidget {
               borderRadius: BorderRadius.circular(60),
               boxShadow: [
                 BoxShadow(
-                  color: hero.primaryColor.withValues(alpha: 0.6),
+                  color: hero.primaryColor.withValues(alpha: 0.8),
                   blurRadius: 26,
                   spreadRadius: 5,
                 ),
               ],
-              border: Border.all(
-                color: hero.primaryColor.withValues(alpha: 0.9),
-                width: 1.8,
-              ),
             ),
           ),
         ),
@@ -83,36 +73,29 @@ class CharacterMonumentStage extends StatelessWidget {
             key: ValueKey(hero.type),
             characterType: hero.type,
             frameCount: hero.idleFrames,
-            size: 190,
+            size: 250,
           ),
         ),
 
         // Phù hiệu vai trò và ngọc hệ nổi trên đỉnh đầu (barDiamond từ select_per)
         Positioned(
-          top: 2,
+          top: 0,
           child: SelectPerWidget(
-            tile: SelectPerTile.barDiamond,
-            width: 140,
-            height: 26,
+            tile: SelectPerTile.wideTitleBar,
+            width: 150,
+            height: 50,
             child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SelectPerWidget(
-                    tile: hero.gemTile,
-                    height: 14,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 6.0),
+                child: Text(
+                  hero.name,
+                  style: GameTypography.pixel(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.8,
                   ),
-                  const SizedBox(width: 5),
-                  Text(
-                    hero.role,
-                    style: GameTypography.pixel(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

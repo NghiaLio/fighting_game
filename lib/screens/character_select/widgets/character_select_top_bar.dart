@@ -33,22 +33,22 @@ class CharacterSelectTopBar extends StatelessWidget {
             child: SelectPerWidget(
               tile: SelectPerTile.slenderBarShort,
               width: 100,
-              height: 32,
+              height: 40,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Ui2FlagWidget(
-                    tile: Ui2FlagTile.arrowLeft,
-                    height: 14,
-                  ),
+                  const Ui2FlagWidget(tile: Ui2FlagTile.arrowLeft, height: 14),
                   const SizedBox(width: 6),
-                  Text(
-                    AppStrings.charSelectHome,
-                    style: GameTypography.pixel(
-                      color: const Color(0xFFFFD54F),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.8,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Text(
+                      AppStrings.charSelectHome,
+                      style: GameTypography.pixel(
+                        color: const Color(0xFFFFD54F),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.8,
+                      ),
                     ),
                   ),
                 ],
@@ -56,53 +56,24 @@ class CharacterSelectTopBar extends StatelessWidget {
             ),
           ),
 
-          // Tiêu đề trung tâm: Cánh chim chữ V hoàng gia (wingsCrest từ select_per)
-          SelectPerWidget(
-            tile: SelectPerTile.wingsCrest,
-            height: 44,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  AppStrings.charSelectTitle,
-                  style: GameTypography.pixel(
-                    color: const Color(0xFFFFD54F),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2.0,
-                    shadows: const [
-                      Shadow(color: Colors.black, blurRadius: 6),
-                      Shadow(color: Color(0xFFE65100), blurRadius: 10),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
           // Chế độ thi đấu (Sử dụng slenderBarShort từ select_per)
           SelectPerWidget(
             tile: SelectPerTile.slenderBarShort,
-            width: 125,
-            height: 32,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SelectPerWidget(
-                  tile: selectedHero.gemTile,
-                  height: 15,
-                ),
-                const SizedBox(width: 6),
-                Text(
+            width: 100,
+            height: 40,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5.0),
+                child: Text(
                   AppStrings.charSelectMode,
                   style: GameTypography.pixel(
                     color: const Color(0xFFFFD54F),
-                    fontSize: 9.5,
+                    fontSize: 13,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0.6,
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ],

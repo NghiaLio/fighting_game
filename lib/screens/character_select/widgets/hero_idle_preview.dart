@@ -45,8 +45,9 @@ class _HeroIdlePreviewState extends State<HeroIdlePreview>
 
   Future<void> _loadSprite() async {
     try {
-      final path =
-          AppAssets.characterIdleFlutterPath(widget.characterType.spritePath);
+      final path = AppAssets.characterIdleFlutterPath(
+        widget.characterType.spritePath,
+      );
       final data = await rootBundle.load(path);
       final bytes = data.buffer.asUint8List();
       final codec = await ui.instantiateImageCodec(bytes);
@@ -60,10 +61,7 @@ class _HeroIdlePreviewState extends State<HeroIdlePreview>
   @override
   Widget build(BuildContext context) {
     if (_image == null) {
-      return SizedBox(
-        width: widget.size,
-        height: widget.size,
-      );
+      return SizedBox(width: widget.size, height: widget.size);
     }
 
     return AnimatedBuilder(
@@ -71,7 +69,7 @@ class _HeroIdlePreviewState extends State<HeroIdlePreview>
       builder: (context, _) {
         final currentFrame =
             (_animController.value * widget.frameCount).floor() %
-                widget.frameCount;
+            widget.frameCount;
 
         return CustomPaint(
           size: Size(widget.size, widget.size),

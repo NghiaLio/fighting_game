@@ -26,8 +26,10 @@ class AppStrings {
   // ==========================================
   // 2. MÀN HÌNH TẢI TRẬN (Home Loading Screen)
   // ==========================================
-  static const String loadingInitGraphics = 'Initializing graphics & tilesets...';
-  static const String loadingArenaControls = 'Loading arena & input controls...';
+  static const String loadingInitGraphics =
+      'Initializing graphics & tilesets...';
+  static const String loadingArenaControls =
+      'Loading arena & input controls...';
   static const String loadingFireWizard =
       'Loading Fire Wizard character data...';
   static const String loadingPreparingArena =
@@ -40,7 +42,7 @@ class AppStrings {
   // ==========================================
   static const String charSelectHome = 'HOME';
   static const String charSelectTitle = 'HERO SELECTION';
-  static const String charSelectMode = '1 VS 1 DEATHMATCH';
+  static const String charSelectMode = '1 VS 1';
   static const String charSelectRosterTitle = 'ROYAL CHAMPIONS (12)';
   static const String statAttack = 'ATTACK';
   static const String statDefense = 'DEFENSE';

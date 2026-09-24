@@ -9,10 +9,7 @@ import 'package:flutter/material.dart';
 class CharacterSpecsPanel extends StatelessWidget {
   final HeroInfo hero;
 
-  const CharacterSpecsPanel({
-    super.key,
-    required this.hero,
-  });
+  const CharacterSpecsPanel({super.key, required this.hero});
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +21,13 @@ class CharacterSpecsPanel extends StatelessWidget {
           child: SelectPerWidget(
             tile: SelectPerTile.wideTitleBar,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(40, 6, 12, 6),
+              padding: const EdgeInsets.fromLTRB(40, 12, 12, 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    hero.name,
+                    hero.role,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GameTypography.pixel(
@@ -62,64 +59,62 @@ class CharacterSpecsPanel extends StatelessWidget {
         const SizedBox(height: 5),
 
         // 2. Bảng đá 4 chỉ số chiến đấu (statTablet4Lines): ATK, DEF, SPD, RNG
-        Expanded(
-          flex: 6,
-          child: SelectPerWidget(
-            tile: SelectPerTile.statTablet4Lines,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  HeroStatBar(
-                    label: AppStrings.statAttack,
-                    value: hero.atkRating,
-                    color: const Color(0xFFFF5252),
-                    icon: Icons.flash_on_rounded,
-                  ),
-                  HeroStatBar(
-                    label: AppStrings.statDefense,
-                    value: hero.defRating,
-                    color: const Color(0xFF42A5F5),
-                    icon: Icons.shield_rounded,
-                  ),
-                  HeroStatBar(
-                    label: AppStrings.statSpeed,
-                    value: hero.spdRating,
-                    color: const Color(0xFFFFCA28),
-                    icon: Icons.speed_rounded,
-                  ),
-                  HeroStatBar(
-                    label: AppStrings.statRange,
-                    value: hero.rngRating,
-                    color: const Color(0xFFAB47BC),
-                    icon: Icons.track_changes_rounded,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-
+        // Expanded(
+        //   flex: 8,
+        //   child: SelectPerWidget(
+        //     width: 260,
+        //     height: 200,
+        //     tile: SelectPerTile.statTablet4Lines,
+        //     child: Padding(
+        //       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        //       child: Column(
+        //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //         children: [
+        //           HeroStatBar(
+        //             label: AppStrings.statAttack,
+        //             value: hero.atkRating,
+        //             color: const Color(0xFFFF5252),
+        //             icon: Icons.flash_on_rounded,
+        //           ),
+        //           HeroStatBar(
+        //             label: AppStrings.statDefense,
+        //             value: hero.defRating,
+        //             color: const Color(0xFF42A5F5),
+        //             icon: Icons.shield_rounded,
+        //           ),
+        //           HeroStatBar(
+        //             label: AppStrings.statSpeed,
+        //             value: hero.spdRating,
+        //             color: const Color(0xFFFFCA28),
+        //             icon: Icons.speed_rounded,
+        //           ),
+        //           HeroStatBar(
+        //             label: AppStrings.statRange,
+        //             value: hero.rngRating,
+        //             color: const Color(0xFFAB47BC),
+        //             icon: Icons.track_changes_rounded,
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
         const SizedBox(height: 5),
 
         // 3. Bảng đá thông tin chiêu thức & tiểu sử (statTablet3Lines)
         Expanded(
-          flex: 5,
+          flex: 4,
           child: SelectPerWidget(
-            tile: SelectPerTile.statTablet3Lines,
+            tile: SelectPerTile.wideTitleBar,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+              padding: const EdgeInsets.fromLTRB(20, 80, 14, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       const Icon(
-                         Icons.auto_awesome_rounded,
+                        Icons.auto_awesome_rounded,
                         color: Color(0xFFFFD54F),
                         size: 13,
                       ),
@@ -128,7 +123,7 @@ class CharacterSpecsPanel extends StatelessWidget {
                         AppStrings.ultimatePrefix,
                         style: GameTypography.pixel(
                           color: const Color(0xFFFFD54F),
-                          fontSize: 10.5,
+                          fontSize: 13,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -139,7 +134,7 @@ class CharacterSpecsPanel extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: GameTypography.pixel(
                             color: Colors.amber.shade200,
-                            fontSize: 11,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -153,7 +148,7 @@ class CharacterSpecsPanel extends StatelessWidget {
                         hero.description,
                         style: GameTypography.pixel(
                           color: Colors.white70,
-                          fontSize: 10.0,
+                          fontSize: 13,
                           height: 1.25,
                         ),
                       ),

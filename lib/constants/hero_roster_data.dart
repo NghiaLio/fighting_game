@@ -22,7 +22,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.70,
     rngRating: 0.95,
     ultimateName: 'Fire Dragon Burst',
-    description: 'Channels primordial flames incinerating all defenses. Fireballs reach across the entire arena.',
+    description:
+        'Channels primordial flames incinerating all defenses. Fireballs reach across the entire arena.',
     idleFrames: 7,
   ),
   HeroInfo(
@@ -39,7 +40,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.85,
     rngRating: 0.88,
     ultimateName: 'Heavenly Thunder',
-    description: 'Strikes at lightning speed, electrocuting and paralyzing enemies in an instant.',
+    description:
+        'Strikes at lightning speed, electrocuting and paralyzing enemies in an instant.',
     idleFrames: 7,
   ),
   HeroInfo(
@@ -56,7 +58,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.80,
     rngRating: 0.90,
     ultimateName: 'Void Rift Slash',
-    description: 'Master of spatial arts, tearing destructive rifts through dimensional space from afar.',
+    description:
+        'Master of spatial arts, tearing destructive rifts through dimensional space from afar.',
     idleFrames: 8,
   ),
   HeroInfo(
@@ -73,7 +76,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.65,
     rngRating: 0.60,
     ultimateName: 'Excalibur Judgment',
-    description: 'Stout plate armor and a divine ward shield. Deals immense counter damage upon impact.',
+    description:
+        'Stout plate armor and a divine ward shield. Deals immense counter damage upon impact.',
     idleFrames: 4,
   ),
   HeroInfo(
@@ -90,7 +94,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.75,
     rngRating: 0.65,
     ultimateName: 'Royal Assault',
-    description: 'Frontline royal commander wielding unstoppable lunges and seasoned steel swordsmanship.',
+    description:
+        'Frontline royal commander wielding unstoppable lunges and seasoned steel swordsmanship.',
     idleFrames: 4,
   ),
   HeroInfo(
@@ -107,7 +112,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.60,
     rngRating: 0.65,
     ultimateName: 'Dark Dragon Cleave',
-    description: 'Shadow warrior wielding a colossus greatsword, pulverizing enemy vanguard lines.',
+    description:
+        'Shadow warrior wielding a colossus greatsword, pulverizing enemy vanguard lines.',
     idleFrames: 4,
   ),
 
@@ -126,7 +132,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.95,
     rngRating: 0.70,
     ultimateName: 'Infinite Edge',
-    description: 'Supernatural iaido cut at blinding speed. Rapid multi-slash combos decimate targets.',
+    description:
+        'Supernatural iaido cut at blinding speed. Rapid multi-slash combos decimate targets.',
     idleFrames: 6,
   ),
   HeroInfo(
@@ -143,7 +150,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.90,
     rngRating: 0.98,
     ultimateName: 'Gale Arrow Tempest',
-    description: 'Deadly precision from immense range. Wind-rending arrows control distance with ease.',
+    description:
+        'Deadly precision from immense range. Wind-rending arrows control distance with ease.',
     idleFrames: 9,
   ),
   HeroInfo(
@@ -160,7 +168,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.80,
     rngRating: 0.72,
     ultimateName: 'Dominion Cleave',
-    description: 'Grand battle captain possessing earth-shattering strikes that dictate the entire fight.',
+    description:
+        'Grand battle captain possessing earth-shattering strikes that dictate the entire fight.',
     idleFrames: 5,
   ),
   HeroInfo(
@@ -177,7 +186,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.75,
     rngRating: 0.65,
     ultimateName: 'Spiteful Burst',
-    description: 'Netherworld fighter oblivious to pain, relentless in cornering foes with heavy blade swings.',
+    description:
+        'Netherworld fighter oblivious to pain, relentless in cornering foes with heavy blade swings.',
     idleFrames: 7,
   ),
   HeroInfo(
@@ -194,7 +204,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.88,
     rngRating: 0.95,
     ultimateName: 'Shadow Arrow',
-    description: 'Shoots necrotic venomous bolts that wither health and cripple enemy mobility.',
+    description:
+        'Shoots necrotic venomous bolts that wither health and cripple enemy mobility.',
     idleFrames: 7,
   ),
   HeroInfo(
@@ -211,7 +222,8 @@ const List<HeroInfo> kHeroRoster = [
     spdRating: 0.82,
     rngRating: 0.80,
     ultimateName: 'Death Thrust',
-    description: 'Incredible spear reach with piercing thrusts capable of puncturing the heaviest armor.',
+    description:
+        'Incredible spear reach with piercing thrusts capable of puncturing the heaviest armor.',
     idleFrames: 7,
   ),
 ];

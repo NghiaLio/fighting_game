@@ -21,14 +21,14 @@ class HeroStatBar extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, size: 12, color: color),
-        const SizedBox(width: 4),
+        // const SizedBox(width: 4),
         SizedBox(
           width: 64,
           child: Text(
             label,
             style: GameTypography.pixel(
               color: Colors.white70,
-              fontSize: 8.5,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -46,10 +46,7 @@ class HeroStatBar extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [
-                            color.withValues(alpha: 0.6),
-                            color,
-                          ],
+                          colors: [color.withValues(alpha: 0.6), color],
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -67,7 +64,7 @@ class HeroStatBar extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         SizedBox(
-          width: 24,
+          width: 12,
           child: Text(
             '${(value * 100).toInt()}',
             textAlign: TextAlign.end,

@@ -29,53 +29,43 @@ class CharacterRosterPanel extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 26, 16, 10),
         child: Column(
           children: [
-            // Lưới 12 Anh Hùng: 3 Hàng x 4 Cột (Tăng kích thước ô và nhân vật)
+            Padding(
+              padding: const EdgeInsets.only(top: 35.0),
+              child: Text(
+                AppStrings.charSelectTitle,
+                style: GameTypography.pixel(
+                  color: const Color(0xFFFFD54F),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                  shadows: const [Shadow(color: Colors.black, blurRadius: 4)],
+                ),
+              ),
+            ),
+            // Vùng danh sách co giãn theo khung và có thể cuộn khi số tướng tăng.
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Hàng 1: 4 Tướng đầu tiên (Pháp Sư & Hiệp Sĩ)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(4, (col) {
-                      final index = col;
-                      return HeroSlotItem(
-                        hero: roster[index],
-                        isSelected: index == selectedIndex,
-                        onTap: () => onSelectHero(index),
-                        size: 50,
-                      );
-                    }),
-                  ),
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: (roster.length + 2) ~/ 3,
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                itemBuilder: (context, row) {
+                  final startIndex = row * 3;
+                  final endIndex = (startIndex + 3).clamp(0, roster.length);
 
-                  // Hàng 2: 4 Tướng tiếp theo (Hiệp Sĩ & Samurai)
-                  Row(
+                  return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(4, (col) {
-                      final index = col + 4;
+                    children: List.generate(endIndex - startIndex, (column) {
+                      final index = startIndex + column;
                       return HeroSlotItem(
                         hero: roster[index],
                         isSelected: index == selectedIndex,
                         onTap: () => onSelectHero(index),
-                        size: 50,
+                        size: 60,
                       );
                     }),
-                  ),
-
-                  // Hàng 3: 4 Tướng cuối cùng (Samurai & Tử Linh)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(4, (col) {
-                      final index = col + 8;
-                      return HeroSlotItem(
-                        hero: roster[index],
-                        isSelected: index == selectedIndex,
-                        onTap: () => onSelectHero(index),
-                        size: 50,
-                      );
-                    }),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
 
@@ -83,9 +73,9 @@ class CharacterRosterPanel extends StatelessWidget {
 
             // Dòng tiêu đề đưa xuống dưới đáy bảng để vừa vặn trong lòng khung đá
             Container(
-              height: 22,
+              height: 40,
               alignment: Alignment.center,
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -93,7 +83,7 @@ class CharacterRosterPanel extends StatelessWidget {
                     AppStrings.charSelectRosterTitle,
                     style: GameTypography.pixel(
                       color: const Color(0xFFFFD54F),
-                      fontSize: 10,
+                      fontSize: 11,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.1,
                       shadows: const [
