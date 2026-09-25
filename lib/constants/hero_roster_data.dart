@@ -43,6 +43,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Strikes at lightning speed, electrocuting and paralyzing enemies in an instant.',
     idleFrames: 7,
+    unlockLevel: 1,
+    unlockPrice: 500,
   ),
   HeroInfo(
     type: CharacterType.wandererMagician,
@@ -61,6 +63,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Master of spatial arts, tearing destructive rifts through dimensional space from afar.',
     idleFrames: 8,
+    unlockLevel: 1,
+    unlockPrice: 800,
   ),
   HeroInfo(
     type: CharacterType.knight1,
@@ -79,6 +83,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Stout plate armor and a divine ward shield. Deals immense counter damage upon impact.',
     idleFrames: 4,
+    unlockLevel: 2,
+    unlockPrice: 1200,
   ),
   HeroInfo(
     type: CharacterType.knight2,
@@ -97,6 +103,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Frontline royal commander wielding unstoppable lunges and seasoned steel swordsmanship.',
     idleFrames: 4,
+    unlockLevel: 2,
+    unlockPrice: 1500,
   ),
   HeroInfo(
     type: CharacterType.knight3,
@@ -115,6 +123,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Shadow warrior wielding a colossus greatsword, pulverizing enemy vanguard lines.',
     idleFrames: 4,
+    unlockLevel: 2,
+    unlockPrice: 1800,
   ),
 
   // --- ROW 2: SAMURAIS & SKELETONS ---
@@ -135,6 +145,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Supernatural iaido cut at blinding speed. Rapid multi-slash combos decimate targets.',
     idleFrames: 6,
+    unlockLevel: 2,
+    unlockPrice: 2200,
   ),
   HeroInfo(
     type: CharacterType.samuraiArcher,
@@ -153,6 +165,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Deadly precision from immense range. Wind-rending arrows control distance with ease.',
     idleFrames: 9,
+    unlockLevel: 3,
+    unlockPrice: 2500,
   ),
   HeroInfo(
     type: CharacterType.samuraiCommander,
@@ -171,6 +185,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Grand battle captain possessing earth-shattering strikes that dictate the entire fight.',
     idleFrames: 5,
+    unlockLevel: 3,
+    unlockPrice: 2800,
   ),
   HeroInfo(
     type: CharacterType.skeletonWarrior,
@@ -189,6 +205,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Netherworld fighter oblivious to pain, relentless in cornering foes with heavy blade swings.',
     idleFrames: 7,
+    unlockLevel: 3,
+    unlockPrice: 3000,
   ),
   HeroInfo(
     type: CharacterType.skeletonArcher,
@@ -207,6 +225,8 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Shoots necrotic venomous bolts that wither health and cripple enemy mobility.',
     idleFrames: 7,
+    unlockLevel: 3,
+    unlockPrice: 3300,
   ),
   HeroInfo(
     type: CharacterType.skeletonSpearman,
@@ -225,5 +245,7 @@ const List<HeroInfo> kHeroRoster = [
     description:
         'Incredible spear reach with piercing thrusts capable of puncturing the heaviest armor.',
     idleFrames: 7,
+    unlockLevel: 3,
+    unlockPrice: 3600,
   ),
 ];

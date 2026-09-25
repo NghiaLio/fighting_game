@@ -121,10 +121,7 @@ class _UiTileWidgetState extends State<UiTileWidget> {
         fit: widget.fit,
       ),
       child: widget.child != null
-          ? Align(
-              alignment: widget.alignment,
-              child: widget.child,
-            )
+          ? Align(alignment: widget.alignment, child: widget.child)
           : null,
     );
 
@@ -148,10 +145,7 @@ class _UiTileWidgetState extends State<UiTileWidget> {
       );
     }
 
-    return AspectRatio(
-      aspectRatio: aspectRatio,
-      child: content,
-    );
+    return AspectRatio(aspectRatio: aspectRatio, child: content);
   }
 }
 
@@ -194,6 +188,7 @@ class UiTileButton extends StatefulWidget {
   final double height;
   final Color textColor;
   final double fontSize;
+  final double contentOffsetY;
   final String? soundEffect;
 
   const UiTileButton({
@@ -206,6 +201,7 @@ class UiTileButton extends StatefulWidget {
     this.height = 58,
     this.textColor = const Color(0xFFFFD54F),
     this.fontSize = 15,
+    this.contentOffsetY = 0,
     this.soundEffect = 'button_2.mp3',
   });
 
@@ -282,46 +278,53 @@ class _UiTileButtonState extends State<UiTileButton> {
                   height: widget.height,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.icon != null) ...[
-                          Icon(
-                            widget.icon,
-                            size: widget.fontSize + 4,
-                            color: _isHovered ? Colors.white : widget.textColor,
-                            shadows: const [
-                              Shadow(color: Colors.black, blurRadius: 4),
-                            ],
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                        Flexible(
-                          child: Text(
-                            widget.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GameTypography.pixel(
-                              color: _isHovered ? Colors.white : widget.textColor,
-                              fontSize: widget.fontSize,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
+                    child: Transform.translate(
+                      offset: Offset(0, widget.contentOffsetY),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.icon != null) ...[
+                            Icon(
+                              widget.icon,
+                              size: widget.fontSize + 4,
+                              color: _isHovered
+                                  ? Colors.white
+                                  : widget.textColor,
                               shadows: const [
-                                Shadow(
-                                  color: Colors.black,
-                                  offset: Offset(1.5, 1.5),
-                                  blurRadius: 3,
-                                ),
-                                Shadow(
-                                  color: Color(0xFFE65100),
-                                  blurRadius: 8,
-                                ),
+                                Shadow(color: Colors.black, blurRadius: 4),
                               ],
                             ),
+                            const SizedBox(width: 8),
+                          ],
+                          Flexible(
+                            child: Text(
+                              widget.label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GameTypography.pixel(
+                                color: _isHovered
+                                    ? Colors.white
+                                    : widget.textColor,
+                                fontSize: widget.fontSize,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.5,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black,
+                                    offset: Offset(1.5, 1.5),
+                                    blurRadius: 3,
+                                  ),
+                                  Shadow(
+                                    color: Color(0xFFE65100),
+                                    blurRadius: 8,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

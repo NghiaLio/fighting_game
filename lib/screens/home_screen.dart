@@ -2,6 +2,7 @@ import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/controllers/home_controller.dart';
+import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:flutter/material.dart';
@@ -73,8 +74,11 @@ class HomeScreen extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.person_rounded,
-                                color: Colors.amber, size: 16),
+                            const Icon(
+                              Icons.person_rounded,
+                              color: Colors.amber,
+                              size: 16,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               AppStrings.warrior,
@@ -136,12 +140,14 @@ class HomeScreen extends StatelessWidget {
                               height: 22,
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              AppStrings.currencyAmount,
-                              style: GameTypography.pixel(
-                                color: const Color(0xFFFFD54F),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w900,
+                            Obx(
+                              () => Text(
+                                '${ProgressService.coinBalance.value}',
+                                style: GameTypography.pixel(
+                                  color: const Color(0xFFFFD54F),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
                             ),
                           ],
@@ -153,14 +159,12 @@ class HomeScreen extends StatelessWidget {
                       onTap: controller.openSettings,
                       pressDepth: 2.0,
                       pressScale: 0.90,
-                      child: const UiTileWidget(
-                        tile: UiTile.rubyGem,
-                        width: 36,
-                        height: 38,
-                        child: Icon(
-                          Icons.settings_rounded,
-                          color: Colors.white,
-                          size: 18,
+                      child: SizedBox(
+                        width: 35,
+                        height: 35,
+                        child: Image.asset(
+                          AppAssets.settingButton,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
@@ -202,7 +206,9 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const Divider(
-                              color: Color(0xFF8D6E63), thickness: 1.5),
+                            color: Color(0xFF8D6E63),
+                            thickness: 1.5,
+                          ),
                           const SizedBox(height: 6),
                           Text(
                             AppStrings.currentStage,
@@ -234,7 +240,9 @@ class HomeScreen extends StatelessWidget {
                           Center(
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 4),
+                                horizontal: 14,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF4E342E),
                                 borderRadius: BorderRadius.circular(6),
@@ -272,8 +280,8 @@ class HomeScreen extends StatelessWidget {
                               boxShadow: [
                                 BoxShadow(
                                   color: const Color(0xFFFF6F00).withValues(
-                                      alpha: 0.25 *
-                                          controller.torchFlicker.value),
+                                    alpha: 0.25 * controller.torchFlicker.value,
+                                  ),
                                   blurRadius: 30,
                                   spreadRadius: 6,
                                 ),
@@ -287,7 +295,9 @@ class HomeScreen extends StatelessWidget {
                           height: (size.height * 0.72).clamp(280.0, 360.0),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 60, vertical: 40),
+                              horizontal: 60,
+                              vertical: 40,
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -297,9 +307,10 @@ class HomeScreen extends StatelessWidget {
                                   label: AppStrings.battleNow,
                                   icon: Icons.sports_kabaddi_rounded,
                                   width: 290,
-                                  height: 60,
+                                  height: 48,
                                   fontSize: 16,
                                   textColor: const Color(0xFFFFD54F),
+                                  contentOffsetY: 5,
                                   onTap: controller.startBattle,
                                 ),
                                 const SizedBox(height: 10),

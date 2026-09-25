@@ -19,6 +19,8 @@ class HeroInfo {
   final String ultimateName;
   final String description;
   final int idleFrames;
+  final int unlockLevel;
+  final int unlockPrice;
 
   const HeroInfo({
     required this.type,
@@ -36,6 +38,8 @@ class HeroInfo {
     required this.ultimateName,
     required this.description,
     required this.idleFrames,
+    this.unlockLevel = 2,
+    this.unlockPrice = 1000,
   });
 
   /// Lấy danh xưng ngắn gọn của chức nghiệp (ví dụ: 'Pháp Sư', 'Đấu Sĩ', 'Sát Thủ')

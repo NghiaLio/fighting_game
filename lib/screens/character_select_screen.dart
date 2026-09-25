@@ -98,6 +98,7 @@ class CharacterSelectScreen extends StatelessWidget {
                       roster: kHeroRoster,
                       selectedIndex: selectedIndex,
                       onSelectHero: controller.selectHero,
+                      isHeroUnlocked: controller.isHeroUnlocked,
                     ),
                   ),
 

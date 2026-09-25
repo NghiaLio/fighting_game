@@ -11,12 +11,14 @@ class CharacterRosterPanel extends StatelessWidget {
   final List<HeroInfo> roster;
   final int selectedIndex;
   final ValueChanged<int> onSelectHero;
+  final bool Function(int index) isHeroUnlocked;
 
   const CharacterRosterPanel({
     super.key,
     required this.roster,
     required this.selectedIndex,
     required this.onSelectHero,
+    required this.isHeroUnlocked,
   });
 
   HeroInfo get _selectedHero => roster[selectedIndex];
@@ -60,6 +62,7 @@ class CharacterRosterPanel extends StatelessWidget {
                       return HeroSlotItem(
                         hero: roster[index],
                         isSelected: index == selectedIndex,
+                        isLocked: !isHeroUnlocked(index),
                         onTap: () => onSelectHero(index),
                         size: 60,
                       );

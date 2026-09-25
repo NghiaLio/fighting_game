@@ -84,6 +84,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/map/
     - assets/valor/
     - assets/images/Bg_homes/
     - assets/images/Backgrounds/

@@ -1,16 +1,15 @@
-import 'package:fighting_game/constants/app_strings.dart';
-import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
-import 'package:fighting_game/controllers/settings_controller.dart';
 import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
 import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
+import 'package:fighting_game/widgets/home_settings_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 /// Controller quản lý trạng thái, hoạt ảnh và điều hướng cho màn hình chính (HomeScreen)
-class HomeController extends GetxController with GetSingleTickerProviderStateMixin {
+class HomeController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   static HomeController get to => Get.find<HomeController>();
 
   late final AnimationController torchController;
@@ -36,204 +35,18 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
 
   /// Mở hộp thoại cài đặt âm thanh (Game Settings Dialog)
   void openSettings() {
-    final settingsCtrl = SettingsController.to;
     Get.dialog(
-      Center(
-        child: Material(
-          color: Colors.transparent,
-          child: UiTileWidget(
-            tile: UiTile.hangingBoard,
-            width: 480,
-            height: 370,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(48, 50, 48, 22),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    AppStrings.settingsTitle,
-                    style: GameTypography.pixel(
-                      color: const Color(0xFFFFD54F),
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0,
-                      shadows: const [
-                        Shadow(color: Colors.black, blurRadius: 6),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Nhạc nền BGM
-                  Obx(() => Row(
-                    children: [
-                      const Icon(Icons.music_note_rounded,
-                          color: Colors.amber, size: 22),
-                      const SizedBox(width: 8),
-                      Text(
-                        AppStrings.musicLabel,
-                        style: GameTypography.pixel(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Expanded(
-                        child: Slider(
-                          value: settingsCtrl.bgmVolume.value,
-                          activeColor: const Color(0xFFFF9800),
-                          inactiveColor: Colors.black54,
-                          onChanged: settingsCtrl.setBgmVolume,
-                        ),
-                      ),
-                    ],
-                  )),
-
-                  // Âm thanh SFX
-                  Obx(() => Row(
-                    children: [
-                      const Icon(Icons.volume_up_rounded,
-                          color: Colors.amber, size: 22),
-                      const SizedBox(width: 8),
-                      Text(
-                        AppStrings.sfxLabel,
-                        style: GameTypography.pixel(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Expanded(
-                        child: Slider(
-                          value: settingsCtrl.sfxVolume.value,
-                          activeColor: const Color(0xFFFF9800),
-                          inactiveColor: Colors.black54,
-                          onChanged: settingsCtrl.setSfxVolume,
-                        ),
-                      ),
-                    ],
-                  )),
-
-                  const Spacer(),
-
-                  // Level hiện tại
-                  Obx(() {
-                    final level = GameMatchController.to.currentLevel.value;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.flag_rounded,
-                              color: Colors.amber, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            'ROUND $level / 3',
-                            style: GameTypography.pixel(
-                              color: const Color(0xFFFFD54F),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-
-                  // Hàng nút: Reset + Đóng
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Nút Reset Progress
-                      UiTileButton(
-                        tile: UiTile.shortButton,
-                        label: 'RESET',
-                        icon: Icons.refresh_rounded,
-                        width: 120,
-                        height: 42,
-                        fontSize: 12,
-                        textColor: const Color(0xFFEF9A9A),
-                        onTap: () => _confirmReset(),
-                      ),
-                      const SizedBox(width: 16),
-                      // Nút Đóng
-                      UiTileButton(
-                        tile: UiTile.shortButton,
-                        label: AppStrings.close,
-                        width: 140,
-                        height: 42,
-                        fontSize: 13,
-                        onTap: () => Get.back(),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+      HomeSettingsDialog(onResetConfirmed: resetProgress),
       barrierColor: Colors.black.withValues(alpha: 0.7),
     );
   }
 
-  /// Hiện confirm rồi reset tiến trình về Round 1
-  void _confirmReset() {
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: const Color(0xFF1a1a2e),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Text(
-          'RESET?',
-          style: GameTypography.pixel(
-            color: const Color(0xFFFF8A80),
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        content: Text(
-          'Reset tiến trình về Round 1?',
-          style: GameTypography.pixel(
-            color: Colors.white70,
-            fontSize: 12,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              'HỦY',
-              style: GameTypography.pixel(
-                color: Colors.grey,
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              await ProgressService.setLevel(1);
-              GameMatchController.to.reloadLevel();
-              Get.back(); // đóng confirm
-              Get.back(); // đóng settings
-            },
-            child: Text(
-              'RESET',
-              style: GameTypography.pixel(
-                color: const Color(0xFFFF8A80),
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
-        ],
-      ),
-      barrierColor: Colors.black.withValues(alpha: 0.5),
-    );
+  /// Reset tiến trình về Round 1 rồi đóng các dialog đang mở.
+  Future<void> resetProgress() async {
+    await ProgressService.setLevel(1);
+    GameMatchController.to.reloadLevel();
+    Get.back();
+    Get.back();
   }
 
   /// Chuyển ngay đến màn chơi trận chiến, bắt đầu từ level đã lưu

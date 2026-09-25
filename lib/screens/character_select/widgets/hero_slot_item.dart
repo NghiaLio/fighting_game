@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 class HeroSlotItem extends StatelessWidget {
   final HeroInfo hero;
   final bool isSelected;
+  final bool isLocked;
   final VoidCallback onTap;
   final double size;
 
@@ -16,6 +17,7 @@ class HeroSlotItem extends StatelessWidget {
     super.key,
     required this.hero,
     required this.isSelected,
+    this.isLocked = false,
     required this.onTap,
     this.size = 50,
   });
@@ -69,6 +71,21 @@ class HeroSlotItem extends StatelessWidget {
                 ),
               ),
             ),
+
+            if (isLocked)
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.62),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Icon(
+                    Icons.lock_rounded,
+                    color: Color(0xFFFFD54F),
+                    size: 24,
+                  ),
+                ),
+              ),
 
             // Huy hiệu chức nghiệp ở góc trên bên trái
             Positioned(
