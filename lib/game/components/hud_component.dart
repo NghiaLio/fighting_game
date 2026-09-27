@@ -261,6 +261,9 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     if (_matchTime < 0) _matchTime = 0;
     _timerText.text = _matchTime.ceil().toString();
 
+    // A LAN client waits for the host's authoritative match result.
+    if (game.isNetworkMatch && !game.networkHost) return;
+
     // Check win condition (wait for death animation to fully finish)
     if (player.isDeadCompleted) {
       _showWin(victory: false, msg: 'ENEMY WINS!');

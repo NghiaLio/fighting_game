@@ -122,7 +122,7 @@ class FireballComponent extends PositionComponent with HasGameReference {
     if (_isExploding) return;
     _isExploding = true;
 
-    if (hitTarget) {
+    if (hitTarget && caster.game.canResolveCombat) {
       // Spawn Hit Sparks, Screen Shake, and Floating Damage
       caster.game.spawnHitSpark(position, isHeavy: true);
       caster.game.triggerScreenShake(duration: 0.22, intensity: 6.0);

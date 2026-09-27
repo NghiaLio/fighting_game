@@ -292,11 +292,11 @@ class HomeScreen extends StatelessWidget {
                         },
                         child: UiTileWidget(
                           tile: UiTile.grandBoard,
-                          height: (size.height * 0.72).clamp(280.0, 360.0),
+                          height: (size.height * 0.78).clamp(300.0, 400.0),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 60,
-                              vertical: 40,
+                              vertical: 24,
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -325,6 +325,19 @@ class HomeScreen extends StatelessWidget {
                                   fontSize: 13,
                                   textColor: Colors.amber.shade200,
                                   onTap: controller.openCharacterSelect,
+                                ),
+                                const SizedBox(height: 8),
+
+                                // Nút Cài Đặt
+                                UiTileButton(
+                                  tile: UiTile.longButton,
+                                  label: 'PvP qua mạng LAN',
+                                  icon: Icons.wifi_tethering_rounded,
+                                  width: 250,
+                                  height: 44,
+                                  fontSize: 13,
+                                  textColor: Colors.lightGreenAccent,
+                                  onTap: controller.openLanVersus,
                                 ),
                                 const SizedBox(height: 8),
 

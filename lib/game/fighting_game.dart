@@ -1,19 +1,30 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/components/background_component.dart';
 import 'package:fighting_game/game/components/character_component.dart';
+import 'package:fighting_game/game/components/fireball_component.dart';
 import 'package:fighting_game/game/components/game_controls.dart';
 import 'package:fighting_game/game/components/hud_component.dart';
 import 'package:fighting_game/game/components/vfx_components.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/models/ai_profile.dart';
+import 'package:fighting_game/models/network/player_input.dart';
+import 'package:fighting_game/services/network/lan_match_session.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+class _TimedMatchSnapshot {
+  final Duration receivedAt;
+  final Map<String, dynamic> data;
+
+  const _TimedMatchSnapshot(this.receivedAt, this.data);
+}
 
 class FightingGame extends FlameGame with HasCollisionDetection {
   static const double groundFraction = 0.82;
@@ -23,11 +34,15 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   final CharacterType playerCharacter;
   final CharacterType enemyCharacter;
   final int level; // level ban đầu khi khởi tạo
+  final LanMatchSession? networkSession;
+  final bool networkHost;
 
   FightingGame({
     this.playerCharacter = CharacterType.fireWizard,
     this.enemyCharacter = CharacterType.knight1,
     this.level = 1,
+    this.networkSession,
+    this.networkHost = true,
   });
 
   late PositionComponent stage;
@@ -46,6 +61,17 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   /// true: đang trong pha giới thiệu round (banner hiện) → character không được di chuyển/tấn công
   bool isIntroPlaying = true;
+  bool get isNetworkMatch => networkSession != null;
+  bool get canResolveCombat => !isNetworkMatch || networkHost;
+  StreamSubscription<Map<String, dynamic>>? _networkSubscription;
+  StreamSubscription<String>? _networkErrorSubscription;
+  final Stopwatch _networkClock = Stopwatch()..start();
+  final List<_TimedMatchSnapshot> _snapshotBuffer = [];
+  Map<String, dynamic>? _pendingInput;
+  double _networkSendTimer = 0;
+  int _serverTick = 0;
+  int _lastInputSequence = -1;
+  bool _networkEnded = false;
 
   @override
   Color backgroundColor() => const Color(0xFF1a1a2e);
@@ -61,6 +87,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   ];
 
   String _getRandomBackground() {
+    if (isNetworkMatch) return allBackgrounds.first;
     return allBackgrounds[Random().nextInt(allBackgrounds.length)];
   }
 
@@ -120,6 +147,14 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     await add(stage);
 
     await _spawnEntities(size);
+    final session = networkSession;
+    if (session != null) {
+      _networkSubscription = session.messages.listen(_onNetworkMessage);
+      _networkErrorSubscription = session.errors.listen((_) {
+        if (!_networkEnded) onMatchEnd(victory: !networkHost, message: 'CONNECTION LOST');
+      });
+      session.startHeartbeat();
+    }
   }
 
   Future<void> _spawnEntities(Vector2 gameSize) async {
@@ -129,25 +164,36 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     await stage.add(BackgroundComponent(mapWidth: mapWidth, assetPath: _getRandomBackground()));
 
     // 2. Spawn Player and Enemy with comfortable fighting distance
+    final localStartX = isNetworkMatch && !networkHost
+        ? mapWidth * 0.55
+        : mapWidth * 0.30;
+    final remoteStartX = isNetworkMatch && !networkHost
+        ? mapWidth * 0.30
+        : mapWidth * 0.55;
     final p1 = CharacterComponent(
       characterType: playerCharacter,
-      startX: mapWidth * 0.30,
+      startX: localStartX,
       groundY: groundY,
       isPlayer: true,
-      facingRight: true,
+      facingRight: networkHost || !isNetworkMatch,
       maxHp: maxHp,
     );
     await stage.add(p1);
 
     final e1 = CharacterComponent(
       characterType: enemyCharacter,
-      startX: mapWidth * 0.55,
+      startX: remoteStartX,
       groundY: groundY,
       isPlayer: false,
-      facingRight: false,
+      facingRight: !networkHost,
       maxHp: maxHp,
     );
-    e1.aiProfile = AiProfile.forMapAndRound(1, currentLevel);
+    if (isNetworkMatch) {
+      e1.remoteControlled = true;
+      if (!networkHost) e1.networkReplica = true;
+    } else {
+      e1.aiProfile = AiProfile.forMapAndRound(1, currentLevel);
+    }
     await stage.add(e1);
 
     p1.opponent = e1;
@@ -162,7 +208,12 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     // 3. UI overlays (HUD & Controls) stay fixed on screen
     hud = HudComponent(player: p1, enemy: e1)..priority = 10;
     await add(hud);
-    await add(GameControls(player: p1)..priority = 10);
+    await add(GameControls(
+      player: p1,
+      onNetworkInput: isNetworkMatch && !networkHost
+          ? (input) => networkSession!.sendRealtime(input.toPacket())
+          : null,
+    )..priority = 10);
 
     // 4. Giới thiệu round (banner + âm thanh) trước khi gameplay bắt đầu
     hud.setRound(level);
@@ -170,6 +221,15 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   }
 
   void onMatchEnd({required bool victory, required String message}) {
+    if (_networkEnded) return;
+    _networkEnded = true;
+    if (isNetworkMatch && networkHost) {
+      networkSession!.sendControl({
+        'type': 'match_result',
+        'victory': victory,
+        'message': message,
+      });
+    }
     isVictory = victory;
     endMessage = message;
     overlays.add('GameOver');
@@ -254,8 +314,158 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   @override
   void update(double dt) {
     super.update(dt);
+    _networkSendTimer -= dt;
+    if (isNetworkMatch && !_networkEnded &&
+        networkSession!.timeSinceLastPacket > const Duration(seconds: 2)) {
+      onMatchEnd(victory: !networkHost, message: 'OPPONENT LEFT');
+    }
+    if (_networkSendTimer <= 0) {
+      _networkSendTimer = 1 / 30;
+      _sendNetworkSnapshot();
+    }
+    _applyNetworkUpdates();
     _updateCamera(dt);
     _applyShake(dt);
+  }
+
+  void _onNetworkMessage(Map<String, dynamic> message) {
+    if (message['type'] == 'input' && networkHost) {
+      final sequence = message['sequence'];
+      if (sequence is int && sequence > _lastInputSequence) {
+        _lastInputSequence = sequence;
+        _pendingInput = message;
+      }
+    } else if (message['type'] == 'snapshot' && !networkHost) {
+      _snapshotBuffer.add(_TimedMatchSnapshot(_networkClock.elapsed, message));
+      if (_snapshotBuffer.length > 8) _snapshotBuffer.removeAt(0);
+    } else if (message['type'] == 'projectile' && !networkHost) {
+      final x = message['x'];
+      final y = message['y'];
+      if (x is num && y is num && enemy != null && player != null) {
+        stage.add(FireballComponent(
+          caster: enemy!,
+          target: player!,
+          startPos: Vector2(x.toDouble(), y.toDouble()),
+          facingRight: message['facingRight'] == true,
+          damage: 0,
+        ));
+      }
+    } else if (message['type'] == 'match_result' && !networkHost) {
+      final hostWon = message['victory'] == true;
+      final isDraw = message['message'] == 'DRAW!';
+      onMatchEnd(
+        victory: isDraw ? false : !hostWon,
+        message: isDraw
+            ? 'DRAW!'
+            : hostWon ? 'YOU LOSE!' : 'YOU WIN!',
+      );
+    } else if (message['type'] == 'room_left') {
+      onMatchEnd(victory: !networkHost, message: 'OPPONENT LEFT');
+    }
+  }
+
+  void _applyNetworkUpdates() {
+    final input = _pendingInput;
+    if (input != null) {
+      _pendingInput = null;
+      final action = input['action'];
+      enemy?.applyRemoteInput(
+        left: input['left'] == true,
+        right: input['right'] == true,
+        sprint: input['sprint'] == true,
+        action: action is int ? action : 0,
+      );
+    }
+    if (!networkHost && _snapshotBuffer.isNotEmpty) {
+      _applyInterpolatedSnapshot();
+    }
+  }
+
+  void _applyInterpolatedSnapshot() {
+    // Render slightly behind packet arrival so jitter is absorbed between
+    // snapshots. Local input remains immediate and is reconciled gradually.
+    final renderTime = _networkClock.elapsed - const Duration(milliseconds: 100);
+    var before = _snapshotBuffer.first;
+    var after = _snapshotBuffer.last;
+    for (var i = 0; i < _snapshotBuffer.length; i++) {
+      final snapshot = _snapshotBuffer[i];
+      if (snapshot.receivedAt <= renderTime) before = snapshot;
+      if (snapshot.receivedAt >= renderTime) {
+        after = snapshot;
+        break;
+      }
+    }
+    final interval = after.receivedAt - before.receivedAt;
+    final amount = interval.inMicroseconds == 0
+        ? 1.0
+        : ((renderTime - before.receivedAt).inMicroseconds /
+                  interval.inMicroseconds)
+              .clamp(0.0, 1.0)
+              .toDouble();
+    final hostState = _interpolateActor(before.data['host'], after.data['host'], amount);
+    final clientState = _snapshotBuffer.last.data['client'];
+    if (hostState == null || clientState == null) return;
+    enemy?.applyNetworkSnapshot(hostState, showDamageEffects: true);
+    if (clientState is Map<String, dynamic>) {
+      player?.applyNetworkSnapshot(
+        clientState,
+        reconcilePosition: true,
+        syncState: false,
+        showDamageEffects: true,
+      );
+    }
+  }
+
+  Map<String, dynamic>? _interpolateActor(Object? older, Object? newer, double amount) {
+    if (older is! Map<String, dynamic> || newer is! Map<String, dynamic>) return null;
+    final result = Map<String, dynamic>.from(amount < 0.5 ? older : newer);
+    for (final key in ['x', 'y']) {
+      final a = older[key];
+      final b = newer[key];
+      if (a is num && b is num) result[key] = a + (b - a) * amount;
+    }
+    return result;
+  }
+
+  void _sendNetworkSnapshot() {
+    final session = networkSession;
+    if (session == null || !networkHost || player == null || enemy == null) return;
+    Map<String, Object?> state(CharacterComponent character) => {
+      'x': character.position.x,
+      'y': character.position.y,
+      'hp': character.hp,
+      'facingRight': character.facingRight,
+      'state': character.networkState,
+    };
+    session.sendRealtime({
+      'type': 'snapshot',
+      'serverTick': ++_serverTick,
+      'ackInputSequence': _lastInputSequence,
+      'host': state(player!),
+      'client': state(enemy!),
+      'round': currentLevel,
+    });
+  }
+
+  void publishProjectile({
+    required double x,
+    required double y,
+    required bool facingRight,
+  }) {
+    if (!isNetworkMatch || !networkHost) return;
+    networkSession!.sendRealtime({
+      'type': 'projectile',
+      'x': x,
+      'y': y,
+      'facingRight': facingRight,
+    });
+  }
+
+  @override
+  void onRemove() {
+    _networkSubscription?.cancel();
+    _networkErrorSubscription?.cancel();
+    super.onRemove();
   }
 
   void _applyShake(double dt) {

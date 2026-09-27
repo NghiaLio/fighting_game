@@ -27,6 +27,8 @@ class CharacterComponent extends PositionComponent
   AiProfile? aiProfile;
 
   CharacterComponent? opponent;
+  bool remoteControlled = false;
+  bool networkReplica = false;
 
   double hp = 100;
   CharacterState _state = CharacterState.idle;
@@ -232,7 +234,12 @@ class CharacterComponent extends PositionComponent
     // Đứng yên trong thời gian hiện round banner
     if (game.isIntroPlaying) return;
 
-    if (isPlayer) {
+    if (networkReplica) {
+      _flipSprite();
+      return;
+    }
+
+    if (remoteControlled || isPlayer) {
       _handlePlayerInput(dt);
     } else {
       if (aiProfile != null) {
@@ -251,6 +258,82 @@ class CharacterComponent extends PositionComponent
   }
 
   bool get isDead => hp <= 0;
+  String get networkState => _state.name;
+
+  void applyRemoteInput({
+    required bool left,
+    required bool right,
+    required bool sprint,
+    int action = 0,
+  }) {
+    movingLeft = left;
+    movingRight = right;
+    sprinting = sprint;
+    switch (action) {
+      case 1: wantsAttack1 = true; break;
+      case 2: wantsAttack2 = true; break;
+      case 3: wantsAttack3 = true; break;
+      case 4: wantsSpecial = true; break;
+      case 5: wantsJump = true; break;
+    }
+  }
+
+  void applyNetworkSnapshot(
+    Map<String, dynamic> snapshot, {
+    bool reconcilePosition = false,
+    bool syncState = true,
+    bool showDamageEffects = false,
+  }) {
+    final x = snapshot['x'];
+    final y = snapshot['y'];
+    final remoteHp = snapshot['hp'];
+    final remoteFacing = snapshot['facingRight'];
+    final stateName = snapshot['state'];
+    if (x is num) {
+      if (reconcilePosition) {
+        final error = x.toDouble() - position.x;
+        if (error.abs() > 8) {
+          position.x += (error * 0.12).clamp(-5.0, 5.0).toDouble();
+        }
+      } else {
+        position.x = x.toDouble();
+      }
+    }
+    if (y is num) {
+      if (reconcilePosition) {
+        final error = y.toDouble() - position.y;
+        if (error.abs() > 8) {
+          position.y += (error * 0.12).clamp(-5.0, 5.0).toDouble();
+        }
+      } else {
+        position.y = y.toDouble();
+      }
+    }
+    if (remoteHp is num) {
+      final oldHp = hp;
+      hp = remoteHp.toDouble().clamp(0, maxHp);
+      if (showDamageEffects && hp < oldHp) {
+        final damage = oldHp - hp;
+        game.spawnHitSpark(Vector2(position.x, position.y - 75));
+        game.spawnFloatingDamage(Vector2(position.x, position.y - 120), damage);
+        game.triggerScreenShake(duration: 0.14, intensity: 3);
+      }
+    }
+    if (syncState && remoteFacing is bool) facingRight = remoteFacing;
+    if (syncState && stateName is String) {
+      for (final state in CharacterState.values) {
+        if (state.name == stateName && state != _state) {
+          _switchState(state, forceReset: true);
+          _isAttacking = state == CharacterState.attack1 ||
+              state == CharacterState.attack2 ||
+              state == CharacterState.attack3 ||
+              state == CharacterState.special;
+          break;
+        }
+      }
+    }
+    if (hp <= 0) isDeadCompleted = true;
+  }
 
   void _handleDying(double dt) {
     _deadTimer += dt;
@@ -480,10 +563,14 @@ class CharacterComponent extends PositionComponent
       facingRight: facingRight,
       damage: stats.getAttackPower(CharacterState.special) * 8.0 * multiplier,
     );
+    if (game.isNetworkMatch && game.networkHost) {
+      game.publishProjectile(x: spawnX, y: spawnY, facingRight: facingRight);
+    }
     parent!.add(fireball);
   }
 
   void _tryDealDamage() {
+    if (!game.canResolveCombat) return;
     if (opponent == null || opponent!.isDead) return;
 
     // Fire Wizard special damage is dealt upon projectile impact

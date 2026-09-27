@@ -2,9 +2,12 @@ import 'package:fighting_game/constants/pause_menu_assets.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/fighting_game.dart';
+import 'package:fighting_game/services/network/lan_match_session.dart';
+import 'package:fighting_game/screens/home_screen.dart';
 import 'package:fighting_game/widgets/continue_prompt_overlay.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:fighting_game/widgets/pause_menu_overlay.dart';
+import 'dart:async';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,23 +15,43 @@ import 'package:get/get.dart';
 /// Màn hình trận đấu (Game Play Screen)
 /// - Round announcement giờ là Flame SpriteComponent bên trong HudComponent
 /// - Không cần pause engine; isIntroPlaying flag block character logic
-class GamePlayScreen extends StatelessWidget {
+class GamePlayScreen extends StatefulWidget {
   final CharacterType playerCharacter;
   final CharacterType enemyCharacter;
   final int level;
+  final LanMatchSession? networkSession;
+  final bool networkHost;
 
   GamePlayScreen({
     super.key,
     this.playerCharacter = CharacterType.fireWizard,
     this.enemyCharacter = CharacterType.knight1,
     this.level = 1,
+    this.networkSession,
+    this.networkHost = true,
   }) : _game = FightingGame(
           playerCharacter: playerCharacter,
           enemyCharacter: enemyCharacter,
           level: level,
+          networkSession: networkSession,
+          networkHost: networkHost,
         );
 
   final FightingGame _game;
+
+  @override
+  State<GamePlayScreen> createState() => _GamePlayScreenState();
+}
+
+class _GamePlayScreenState extends State<GamePlayScreen> {
+  @override
+  void initState() {
+    super.initState();
+    GameMatchController.to.startMatch(
+      player: widget.playerCharacter,
+      enemy: widget.enemyCharacter,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +61,39 @@ class GamePlayScreen extends StatelessWidget {
         children: [
           // ─── 1. Game canvas ───────────────────────────────────────────
           GameWidget<FightingGame>(
-            game: _game,
+            game: widget._game,
             overlayBuilderMap: {
               'GameOver': (context, activeGame) =>
-                  ContinuePromptOverlay(game: activeGame, level: level),
+                  activeGame.isNetworkMatch
+                      ? Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: const Color(0xEE17120F),
+                              border: Border.all(color: Colors.amber, width: 2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  activeGame.endMessage,
+                                  style: const TextStyle(
+                                    color: Colors.amber,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                FilledButton(
+                                  onPressed: () => Get.offAll(() => const HomeScreen()),
+                                  child: const Text('VỀ MÀN HÌNH CHÍNH'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : ContinuePromptOverlay(game: activeGame, level: widget.level),
               'PauseMenu': (context, activeGame) =>
                   PauseMenuOverlay(game: activeGame),
             },
@@ -65,8 +117,8 @@ class GamePlayScreen extends StatelessWidget {
                     onTap: () {
                       // Sound play bởi GamePressable khi TapDown
                       GameMatchController.to.openSetting();
-                      _game.pauseEngine();
-                      _game.overlays.add('PauseMenu');
+                      widget._game.pauseEngine();
+                      widget._game.overlays.add('PauseMenu');
                     },
                     pressDepth: 2.5,
                     pressScale: 0.90,
@@ -96,5 +148,12 @@ class GamePlayScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    final session = widget.networkSession;
+    if (session != null) unawaited(session.leaveRoom());
+    super.dispose();
   }
 }

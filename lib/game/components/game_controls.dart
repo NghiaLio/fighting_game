@@ -1,5 +1,6 @@
 import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/components/character_component.dart';
+import 'package:fighting_game/models/network/player_input.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/flame.dart';
@@ -156,6 +157,7 @@ class _MobaCircleButton extends PositionComponent
 /// MOBA-style controls: Arc layout for attacks & clean circular D-pad.
 class GameControls extends Component with HasGameReference {
   final CharacterComponent player;
+  final ValueChanged<PlayerInput>? onNetworkInput;
 
   // Directional buttons
   late _MobaCircleButton _leftBtn;
@@ -174,8 +176,44 @@ class GameControls extends Component with HasGameReference {
   bool _runHeld = false;
   bool _leftDashing = false;
   bool _rightDashing = false;
+  int _actionPulse = 0;
+  double _networkSendTimer = 0;
 
-  GameControls({required this.player});
+  GameControls({required this.player, this.onNetworkInput});
+
+  void _pressAction(int action) {
+    switch (action) {
+      case 1:
+        player.wantsAttack1 = true;
+        break;
+      case 2:
+        player.wantsAttack2 = true;
+        break;
+      case 3:
+        player.wantsAttack3 = true;
+        break;
+      case 4:
+        player.wantsSpecial = true;
+        break;
+      case 5:
+        player.wantsJump = true;
+        break;
+      default: break;
+    }
+    _actionPulse = action;
+    _sendNetworkInput();
+  }
+
+  void _sendNetworkInput() {
+    onNetworkInput?.call(PlayerInput(
+      sequence: 0,
+      left: _leftHeld,
+      right: _rightHeld,
+      sprint: _runHeld || _leftDashing || _rightDashing,
+      action: _actionPulse,
+    ));
+    _actionPulse = 0;
+  }
 
   @override
   Future<void> onLoad() async {
@@ -238,7 +276,7 @@ class GameControls extends Component with HasGameReference {
       activeColor: const Color(0xFFA5D6A7),
       label: 'JUMP',
       iconSize: 22,
-      onTap: () => player.wantsJump = true,
+      onTap: () => _pressAction(5),
     );
 
     _runBtn = _MobaCircleButton(
@@ -267,7 +305,7 @@ class GameControls extends Component with HasGameReference {
       activeColor: const Color(0xFFFFE082),
       label: 'ATK 1',
       iconSize: 28,
-      onTap: () => player.wantsAttack1 = true,
+      onTap: () => _pressAction(1),
     );
 
     // Skill 1 (ATK 2) - Positioned to the left of main attack
@@ -279,7 +317,7 @@ class GameControls extends Component with HasGameReference {
       activeColor: const Color(0xFF80DEEA),
       label: 'ATK 2',
       iconSize: 20,
-      onTap: () => player.wantsAttack2 = true,
+      onTap: () => _pressAction(2),
     );
 
     // Skill 2 (ATK 3) - Positioned diagonally top-left
@@ -291,7 +329,7 @@ class GameControls extends Component with HasGameReference {
       activeColor: const Color(0xFFFFAB91),
       label: 'ATK 3',
       iconSize: 20,
-      onTap: () => player.wantsAttack3 = true,
+      onTap: () => _pressAction(3),
     );
 
     // Skill 3 / Ultimate (Special) - Positioned directly above main attack
@@ -303,7 +341,7 @@ class GameControls extends Component with HasGameReference {
       activeColor: const Color(0xFFCE93D8),
       label: 'ULT',
       iconSize: 22,
-      onTap: () => player.wantsSpecial = true,
+      onTap: () => _pressAction(4),
     );
   }
 
@@ -348,6 +386,11 @@ class GameControls extends Component with HasGameReference {
       player.movingLeft = _leftHeld;
       player.movingRight = _rightHeld;
       player.sprinting = _runHeld || _leftDashing || _rightDashing;
+    }
+    _networkSendTimer -= dt;
+    if (_networkSendTimer <= 0) {
+      _networkSendTimer = 1 / 30;
+      _sendNetworkInput();
     }
   }
 }

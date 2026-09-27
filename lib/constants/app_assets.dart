@@ -18,6 +18,7 @@ class AppAssets {
   static const String imgWin = 'assets/images/sfx/win.png';
   static const String imgLose = 'assets/images/sfx/lose.png';
   static const String tileSetMap = 'assets/images/map/tile_set_map.png';
+  static const String backgroundMap = 'assets/images/map/background_map.png';
   // Round announcement images (Flutter asset path)
   static const String imgRound1Flutter = 'assets/images/sfx/round1.png';
   static const String imgRound2Flutter = 'assets/images/sfx/round2.png';

@@ -1,6 +1,8 @@
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
+import 'package:fighting_game/screens/map_screen.dart';
+import 'package:fighting_game/screens/lan_versus_screen.dart';
 import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:fighting_game/widgets/home_settings_dialog.dart';
@@ -60,6 +62,14 @@ class HomeController extends GetxController
   /// Mở màn hình chọn tướng (Character Select Screen)
   void openCharacterSelect() {
     Get.to(() => const CharacterSelectScreen());
+  }
+
+  void openMap() {
+    Get.to(() => const MapScreen());
+  }
+
+  void openLanVersus() {
+    Get.to(() => const LanVersusScreen());
   }
 
   @override
