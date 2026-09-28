@@ -411,6 +411,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
         _toLocalCoordinates(clientState, newest.data),
         reconcilePosition: true,
         syncState: false,
+        syncDamageState: true,
         showDamageEffects: true,
       );
     }

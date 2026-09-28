@@ -282,6 +282,7 @@ class CharacterComponent extends PositionComponent
     Map<String, dynamic> snapshot, {
     bool reconcilePosition = false,
     bool syncState = true,
+    bool syncDamageState = false,
     bool showDamageEffects = false,
   }) {
     final x = snapshot['x'];
@@ -320,9 +321,13 @@ class CharacterComponent extends PositionComponent
       }
     }
     if (syncState && remoteFacing is bool) facingRight = remoteFacing;
-    if (syncState && stateName is String) {
+    if (stateName is String && (syncState || syncDamageState)) {
       for (final state in CharacterState.values) {
-        if (state.name == stateName && state != _state) {
+        final isDamageState = state == CharacterState.hurt ||
+            state == CharacterState.dead;
+        if (state.name == stateName &&
+            (syncState || (syncDamageState && isDamageState)) &&
+            state != _state) {
           _switchState(state, forceReset: true);
           _isAttacking = state == CharacterState.attack1 ||
               state == CharacterState.attack2 ||
@@ -332,7 +337,13 @@ class CharacterComponent extends PositionComponent
         }
       }
     }
-    if (hp <= 0) isDeadCompleted = true;
+    // HP is authoritative. Ensure a missed/stale state field cannot leave a
+    // zero-HP replica standing idle, and let the death animation finish.
+    if (hp <= 0 && _state != CharacterState.dead) {
+      _isAttacking = false;
+      _isHurt = false;
+      _switchState(CharacterState.dead, forceReset: true);
+    }
   }
 
   void _handleDying(double dt) {
