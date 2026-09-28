@@ -1,4 +1,5 @@
-﻿import 'package:fighting_game/constants/app_assets.dart';
+import 'package:fighting_game/constants/app_assets.dart';
+import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/services/audio_service.dart';
@@ -60,6 +61,26 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
 
   HudComponent({required this.player, required this.enemy});
 
+  CharacterComponent get _leftCharacter =>
+      game.isNetworkMatch && !game.networkHost ? enemy : player;
+  CharacterComponent get _rightCharacter =>
+      game.isNetworkMatch && !game.networkHost ? player : enemy;
+
+  String _characterName(CharacterType type) => switch (type) {
+    CharacterType.fireWizard => 'FIRE WIZARD',
+    CharacterType.lightningWizard => 'LIGHTNING WIZARD',
+    CharacterType.wandererMagician => 'WANDERER',
+    CharacterType.skeletonWarrior => 'SKELETON WARRIOR',
+    CharacterType.skeletonArcher => 'SKELETON ARCHER',
+    CharacterType.skeletonSpearman => 'SKELETON SPEARMAN',
+    CharacterType.samurai => 'SAMURAI',
+    CharacterType.samuraiArcher => 'SAMURAI ARCHER',
+    CharacterType.samuraiCommander => 'SAMURAI COMMANDER',
+    CharacterType.knight1 => 'KNIGHT',
+    CharacterType.knight2 => 'KNIGHT 2',
+    CharacterType.knight3 => 'KNIGHT 3',
+  };
+
   @override
   Future<void> onLoad() async {
     await super.onLoad();
@@ -79,12 +100,16 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     );
 
     _p1Label = TextComponent(
-      text: 'FIRE WIZARD',
+      text: game.isNetworkMatch
+          ? 'HOST • ${_characterName(_leftCharacter.characterType)}'
+          : _characterName(_leftCharacter.characterType),
       textRenderer: TextPaint(style: labelStyle),
       position: Vector2(16, 12),
     );
     _enemyLabel = TextComponent(
-      text: 'KNIGHT',
+      text: game.isNetworkMatch
+          ? 'CLIENT • ${_characterName(_rightCharacter.characterType)}'
+          : _characterName(_rightCharacter.characterType),
       textRenderer: TextPaint(style: labelStyle),
       position: Vector2(game.size.x - 16, 12),
       anchor: Anchor.topRight,
@@ -144,14 +169,14 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     const barPad = 16.0;
     const borderRadius = 6.0;
 
-    // P1 health bar (left)
+    // In LAN matches both screens use the same world-side mapping: Host left, Client right.
     _drawHealthBar(
       canvas,
       left: barPad,
       top: barY,
       width: barWidth,
       height: barHeight,
-      ratio: (player.hp / player.maxHp).clamp(0, 1),
+      ratio: (_leftCharacter.hp / _leftCharacter.maxHp).clamp(0, 1),
       radius: borderRadius,
       isPlayer: true,
     );
@@ -163,7 +188,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       top: barY,
       width: barWidth,
       height: barHeight,
-      ratio: (enemy.hp / enemy.maxHp).clamp(0, 1),
+      ratio: (_rightCharacter.hp / _rightCharacter.maxHp).clamp(0, 1),
       radius: borderRadius,
       isPlayer: false,
     );
