@@ -325,6 +325,16 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     });
   }
 
+  /// Present the Host's authoritative result locally before opening GameOver.
+  void showNetworkResult({required bool victory, required String message}) {
+    if (!isLoaded || _matchOver) return;
+    _animatingRound = false;
+    _roundHoldTimer = 0;
+    _roundBanner.isShowing = false;
+    _roundBanner.scale = Vector2.all(0);
+    _showWin(victory: victory, msg: message);
+  }
+
   /// Hiện round banner khi bắt đầu hoặc restart trận
   void startRoundIntro() {
     if (!isLoaded) return;

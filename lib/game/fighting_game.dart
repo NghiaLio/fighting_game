@@ -360,7 +360,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     } else if (message['type'] == 'match_result' && !networkHost) {
       final hostWon = message['victory'] == true;
       final isDraw = message['message'] == 'DRAW!';
-      onMatchEnd(
+      hud.showNetworkResult(
         victory: isDraw ? false : !hostWon,
         message: isDraw
             ? 'DRAW!'
