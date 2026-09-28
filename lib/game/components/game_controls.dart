@@ -205,10 +205,11 @@ class GameControls extends Component with HasGameReference {
   }
 
   void _sendNetworkInput() {
+    final runOnly = _runHeld && !_leftHeld && !_rightHeld;
     onNetworkInput?.call(PlayerInput(
       sequence: 0,
-      left: _leftHeld,
-      right: _rightHeld,
+      left: _leftHeld || (runOnly && !player.facingRight),
+      right: _rightHeld || (runOnly && player.facingRight),
       sprint: _runHeld || _leftDashing || _rightDashing,
       action: _actionPulse,
     ));
@@ -252,8 +253,14 @@ class GameControls extends Component with HasGameReference {
       activeColor: const Color(0xFF90CAF9),
       label: 'LEFT',
       iconSize: 22,
-      onHoldChanged: (held) => _leftHeld = held,
-      onDoubleTapChanged: (dashing) => _leftDashing = dashing,
+      onHoldChanged: (held) {
+        _leftHeld = held;
+        _sendNetworkInput();
+      },
+      onDoubleTapChanged: (dashing) {
+        _leftDashing = dashing;
+        _sendNetworkInput();
+      },
     );
 
     _rightBtn = _MobaCircleButton(
@@ -264,8 +271,14 @@ class GameControls extends Component with HasGameReference {
       activeColor: const Color(0xFF90CAF9),
       label: 'RIGHT',
       iconSize: 22,
-      onHoldChanged: (held) => _rightHeld = held,
-      onDoubleTapChanged: (dashing) => _rightDashing = dashing,
+      onHoldChanged: (held) {
+        _rightHeld = held;
+        _sendNetworkInput();
+      },
+      onDoubleTapChanged: (dashing) {
+        _rightDashing = dashing;
+        _sendNetworkInput();
+      },
     );
 
     _jumpBtn = _MobaCircleButton(
@@ -287,7 +300,10 @@ class GameControls extends Component with HasGameReference {
       activeColor: const Color(0xFFFFCC80),
       label: 'RUN',
       iconSize: 20,
-      onHoldChanged: (held) => _runHeld = held,
+      onHoldChanged: (held) {
+        _runHeld = held;
+        _sendNetworkInput();
+      },
     );
 
     // -------------------------------------------------------------

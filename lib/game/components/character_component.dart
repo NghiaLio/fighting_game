@@ -292,8 +292,8 @@ class CharacterComponent extends PositionComponent
     if (x is num) {
       if (reconcilePosition) {
         final error = x.toDouble() - position.x;
-        if (error.abs() > 8) {
-          position.x += (error * 0.12).clamp(-5.0, 5.0).toDouble();
+        if (error.abs() > 24) {
+          position.x += (error * 0.10).clamp(-3.0, 3.0).toDouble();
         }
       } else {
         position.x = x.toDouble();
@@ -302,8 +302,8 @@ class CharacterComponent extends PositionComponent
     if (y is num) {
       if (reconcilePosition) {
         final error = y.toDouble() - position.y;
-        if (error.abs() > 8) {
-          position.y += (error * 0.12).clamp(-5.0, 5.0).toDouble();
+        if (error.abs() > 24) {
+          position.y += (error * 0.10).clamp(-3.0, 3.0).toDouble();
         }
       } else {
         position.y = y.toDouble();

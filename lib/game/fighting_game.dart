@@ -67,9 +67,9 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   StreamSubscription<String>? _networkErrorSubscription;
   final Stopwatch _networkClock = Stopwatch()..start();
   final List<_TimedMatchSnapshot> _snapshotBuffer = [];
-  Map<String, dynamic>? _pendingInput;
   double _networkSendTimer = 0;
   int _serverTick = 0;
+  int _lastClientReconciledTick = -1;
   int _lastInputSequence = -1;
   bool _networkEnded = false;
 
@@ -333,7 +333,13 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       final sequence = message['sequence'];
       if (sequence is int && sequence > _lastInputSequence) {
         _lastInputSequence = sequence;
-        _pendingInput = message;
+        final action = message['action'];
+        enemy?.applyRemoteInput(
+          left: message['left'] == true,
+          right: message['right'] == true,
+          sprint: message['sprint'] == true,
+          action: action is int ? action : 0,
+        );
       }
     } else if (message['type'] == 'snapshot' && !networkHost) {
       _snapshotBuffer.add(_TimedMatchSnapshot(_networkClock.elapsed, message));
@@ -365,17 +371,6 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   }
 
   void _applyNetworkUpdates() {
-    final input = _pendingInput;
-    if (input != null) {
-      _pendingInput = null;
-      final action = input['action'];
-      enemy?.applyRemoteInput(
-        left: input['left'] == true,
-        right: input['right'] == true,
-        sprint: input['sprint'] == true,
-        action: action is int ? action : 0,
-      );
-    }
     if (!networkHost && _snapshotBuffer.isNotEmpty) {
       _applyInterpolatedSnapshot();
     }
@@ -403,17 +398,41 @@ class FightingGame extends FlameGame with HasCollisionDetection {
               .clamp(0.0, 1.0)
               .toDouble();
     final hostState = _interpolateActor(before.data['host'], after.data['host'], amount);
-    final clientState = _snapshotBuffer.last.data['client'];
+    final newest = _snapshotBuffer.last;
+    final clientState = newest.data['client'];
     if (hostState == null || clientState == null) return;
-    enemy?.applyNetworkSnapshot(hostState, showDamageEffects: true);
-    if (clientState is Map<String, dynamic>) {
+    final localHostState = _toLocalCoordinates(hostState, after.data);
+    enemy?.applyNetworkSnapshot(localHostState, showDamageEffects: true);
+    final newestTick = newest.data['serverTick'];
+    if (clientState is Map<String, dynamic> &&
+        newestTick is int && newestTick != _lastClientReconciledTick) {
+      _lastClientReconciledTick = newestTick;
       player?.applyNetworkSnapshot(
-        clientState,
+        _toLocalCoordinates(clientState, newest.data),
         reconcilePosition: true,
         syncState: false,
         showDamageEffects: true,
       );
     }
+  }
+
+  Map<String, dynamic> _toLocalCoordinates(
+    Map<String, dynamic> actor,
+    Map<String, dynamic> snapshot,
+  ) {
+    final result = Map<String, dynamic>.from(actor);
+    final sourceWidth = snapshot['worldWidth'];
+    final sourceGroundY = snapshot['groundY'];
+    final x = actor['x'];
+    final y = actor['y'];
+    if (sourceWidth is num && sourceWidth > 0 && x is num) {
+      result['x'] = x / sourceWidth * mapWidth;
+    }
+    final localGroundY = size.y * groundFraction;
+    if (sourceGroundY is num && sourceGroundY > 0 && y is num) {
+      result['y'] = y / sourceGroundY * localGroundY;
+    }
+    return result;
   }
 
   Map<String, dynamic>? _interpolateActor(Object? older, Object? newer, double amount) {
@@ -441,6 +460,8 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       'type': 'snapshot',
       'serverTick': ++_serverTick,
       'ackInputSequence': _lastInputSequence,
+      'worldWidth': mapWidth,
+      'groundY': size.y * groundFraction,
       'host': state(player!),
       'client': state(enemy!),
       'round': currentLevel,
