@@ -1,5 +1,6 @@
 import 'package:fighting_game/enums/character_state.dart';
 import 'package:fighting_game/enums/character_type.dart';
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 
@@ -10,7 +11,10 @@ SpriteAnimation getPlayerAnimation({
   required bool loop,
 }) {
   final image = Flame.images.fromCache(
-    '${characterType.spritePath}/${characterState.spritePath}',
+    AppAssets.characterStateFlamePath(
+      characterType.spritePath,
+      characterState.spritePath,
+    ),
   );
   final frameCount = image.width ~/ 128;
   return SpriteAnimation.fromFrameData(

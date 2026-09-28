@@ -70,6 +70,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   double _networkSendTimer = 0;
   int _serverTick = 0;
   int _lastClientReconciledTick = -1;
+  bool _hasInitialNetworkSnapshot = false;
   int _lastInputSequence = -1;
   bool _networkEnded = false;
 
@@ -409,11 +410,14 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       _lastClientReconciledTick = newestTick;
       player?.applyNetworkSnapshot(
         _toLocalCoordinates(clientState, newest.data),
-        reconcilePosition: true,
+        // The first authoritative packet establishes the spawn positions.
+        // Later packets reconcile gently to preserve local input response.
+        reconcilePosition: _hasInitialNetworkSnapshot,
         syncState: false,
         syncDamageState: true,
         showDamageEffects: true,
       );
+      _hasInitialNetworkSnapshot = true;
     }
   }
 

@@ -106,6 +106,18 @@ class AppAssets {
       'assets/images/$spriteFolder/Idle.png';
 
   /// Tạo đường dẫn Sprite cho Flame Engine
-  static String characterStateFlamePath(String spriteFolder, String stateFile) =>
-      '$spriteFolder/$stateFile';
+  static String characterStateFlamePath(String spriteFolder, String stateFile) {
+    // These skeleton sprite sheets do not include a dedicated jump sheet.
+    // Reuse Idle so selecting one cannot fail while preloading a LAN match.
+    const noJumpSpriteFolders = {
+      'Skeleton_Archer',
+      'Skeleton_Spearman',
+      'Skeleton_Warrior',
+    };
+    final resolvedState = stateFile == 'Jump.png' &&
+            noJumpSpriteFolders.contains(spriteFolder)
+        ? 'Idle.png'
+        : stateFile;
+    return '$spriteFolder/$resolvedState';
+  }
 }

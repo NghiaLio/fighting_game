@@ -62,6 +62,25 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
           // ─── 1. Game canvas ───────────────────────────────────────────
           GameWidget<FightingGame>(
             game: widget._game,
+            loadingBuilder: (_) => const ColoredBox(
+              color: Colors.black,
+              child: Center(
+                child: CircularProgressIndicator(color: Colors.amber),
+              ),
+            ),
+            errorBuilder: (_, error) => ColoredBox(
+              color: Colors.black,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    'Không thể tải trận đấu.\n$error',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
             overlayBuilderMap: {
               'GameOver': (context, activeGame) =>
                   activeGame.isNetworkMatch

@@ -105,6 +105,12 @@ class _LanVersusScreenState extends State<LanVersusScreen> {
         }
         break;
       case 'player_ready':
+        final selectedName = message['character'] as String?;
+        final selectedType =
+            CharacterType.values.where((value) => value.name == selectedName);
+        if (_hosting && selectedType.isNotEmpty) {
+          _opponentCharacter = selectedType.first;
+        }
         setState(() => _peerReady = message['ready'] == true);
         if (_hosting && _myReady && _peerReady) _startNetworkMatch();
         break;
@@ -268,10 +274,14 @@ class _LanVersusScreenState extends State<LanVersusScreen> {
 
   void _toggleReady() {
     _myReady = !_myReady;
-    _session.sendControl({'type': 'player_ready', 'ready': _myReady});
     if (!_hosting) {
       _session.sendControl({'type': 'player_config', 'character': _character.name});
     }
+    _session.sendControl({
+      'type': 'player_ready',
+      'ready': _myReady,
+      if (!_hosting) 'character': _character.name,
+    });
     setState(
       () => _status = _myReady ? 'Bạn đã sẵn sàng.' : 'Bạn chưa sẵn sàng.',
     );
