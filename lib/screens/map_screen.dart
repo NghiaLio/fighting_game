@@ -1,37 +1,13 @@
 import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/game_typography.dart';
-import 'package:fighting_game/controllers/game_match_controller.dart';
-import 'package:fighting_game/screens/character_select_screen.dart';
-import 'package:fighting_game/screens/home_screen.dart';
-import 'package:fighting_game/services/audio_service.dart';
-import 'package:fighting_game/services/progress_service.dart';
+
 import 'package:fighting_game/utils/map_tileset.dart';
 import 'package:fighting_game/widgets/home_settings_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-/// Dữ liệu mô tả 1 màn chơi trên Bản Đồ Chiến Dịch
-class MapStageData {
-  final int stageNumber;
-  final String title;
-  final MapTile tile;
-  final Offset relativePos; // (0.0 -> 1.0) theo chiều rộng & chiều cao bản đồ
-  final int stars; // 0..3
-  final bool isUnlocked;
-  final String description;
-  final String bossName;
-
-  const MapStageData({
-    required this.stageNumber,
-    required this.title,
-    required this.tile,
-    required this.relativePos,
-    this.stars = 0,
-    this.isUnlocked = true,
-    this.description = '',
-    this.bossName = 'Chiến Binh Hắc Ám',
-  });
-}
+import 'package:fighting_game/constants/app_strings.dart';
+import 'package:fighting_game/controllers/map_controller.dart';
+import 'package:fighting_game/models/map_stage_data.dart';
 
 /// Màn hình Bản Đồ Chế Độ Chiến Dịch (Campaign Map Screen)
 /// Tái hiện 100% giao diện bản đồ pixel fantasy theo thiết kế chuẩn.
@@ -45,85 +21,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _heroPulseController;
-  int _selectedStageIndex = 0; // 0 = Pedestal xuất phát, 1..7 = Các màn chơi
-
-  // Tọa độ vị trí bệ đá xuất phát của Tướng
-  static const Offset _pedestalPos = Offset(0.058, 0.745);
-
-  // Danh sách các màn chơi hiển thị trên Bản Đồ (Khớp vị trí với background_map.png)
-  final List<MapStageData> _stages = const [
-    MapStageData(
-      stageNumber: 1,
-      title: 'Rừng Cổ Thụ',
-      tile: MapTile.stage1Forest,
-      relativePos: Offset(0.155, 0.710),
-      stars: 3,
-      isUnlocked: true,
-      description:
-          'Cánh rừng nguyên sinh rậm rạp, nơi trú ngụ của các chiến binh Goblin.',
-      bossName: 'Thủ Lĩnh Goblin',
-    ),
-    MapStageData(
-      stageNumber: 2,
-      title: 'Hẻm Sa Mạc',
-      tile: MapTile.stage2Desert,
-      relativePos: Offset(0.245, 0.585),
-      stars: 3,
-      isUnlocked: true,
-      description: 'Vùng đất cằn cỗi nhiều vách đá cuồng phong khắc nghiệt.',
-      bossName: 'Bát Quái Kiếm Sĩ',
-    ),
-    MapStageData(
-      stageNumber: 3,
-      title: 'Vực Nham Thạch',
-      tile: MapTile.stage3Lava,
-      relativePos: Offset(0.380, 0.490),
-      stars: 3,
-      isUnlocked: true,
-      description: 'Dòng sông dung nham sôi trào cuộn sóng dưới lòng đất sâu.',
-      bossName: 'Hỏa Ma Pháp Sĩ',
-    ),
-    MapStageData(
-      stageNumber: 4,
-      title: 'Thung Lũng Chiều',
-      tile: MapTile.stage4Jungle,
-      relativePos: Offset(0.525, 0.625),
-      stars: 3,
-      isUnlocked: true,
-      description: 'Thung lũng ngập tràn ánh hoàng hôn cùng tàn tích cổ xưa.',
-      bossName: 'Cung Thủ Lãng Khách',
-    ),
-    MapStageData(
-      stageNumber: 5,
-      title: 'Tuyết Sơn Cổ',
-      tile: MapTile.stage5Ice,
-      relativePos: Offset(0.648, 0.345),
-      stars: 2,
-      isUnlocked: true,
-      description: 'Rặng núi tuyết phủ quanh năm vĩnh cữu tàn khốc.',
-      bossName: 'Hiệp Sĩ Băng Giá',
-    ),
-    MapStageData(
-      stageNumber: 6,
-      title: 'Đỉnh Giông Bão',
-      tile: MapTile.stage6DarkStone,
-      relativePos: Offset(0.772, 0.415),
-      stars: 2,
-      isUnlocked: true,
-      description: 'Đỉnh núi cao chót vót luôn bị sấm sét bao phủ dồn dập.',
-      bossName: 'Lôi Thần Pháp Sĩ',
-    ),
-    MapStageData(
-      stageNumber: 7,
-      title: 'Đền Phế Tích',
-      tile: MapTile.stage7Dungeon,
-      relativePos: Offset(0.885, 0.565),
-      stars: 2,
-      isUnlocked: true,
-      description: 'Ngôi đền bí ẩn lưu giữ sức mạnh cổ đại tà ác.',
-      bossName: 'Chiến Binh Xương Cổ',
-    ),
-  ];
+  final MapController controller = Get.put(MapController());
 
   @override
   void initState() {
@@ -143,19 +41,9 @@ class _MapScreenState extends State<MapScreen>
     super.dispose();
   }
 
-  // Tính tổng số sao đã đạt được
-  int get _totalEarnedStars =>
-      _stages.fold(0, (sum, stage) => sum + stage.stars);
-  int get _totalMaxStars => _stages.length * 3;
-
   void _onSelectStageNode(int index, MapStageData stage) {
-    setState(() => _selectedStageIndex = index + 1);
-    AudioService.playButtonClick(sfx: 'button_2.mp3');
+    controller.onSelectStageNode(index);
     _showStageDetailsModal(context, stage);
-  }
-
-  void _onBackToHome() {
-    Get.offAll(() => const HomeScreen());
   }
 
   void _onOpenSettings() {
@@ -164,47 +52,11 @@ class _MapScreenState extends State<MapScreen>
       barrierDismissible: true,
       builder: (_) => HomeSettingsDialog(
         onResetConfirmed: () async {
-          await ProgressService.setLevel(1);
-          GameMatchController.to.reloadLevel();
+          await controller.onResetProgress();
           if (mounted) Navigator.of(context).pop();
         },
       ),
     );
-  }
-
-  void _onOpenBookCodex() {
-    AudioService.playButtonClick(sfx: 'button_2.mp3');
-    Get.snackbar(
-      'SÁCH TRI THỨC',
-      'Tính năng Sách Tri Thức đang được cập nhật!',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF1E100A),
-      colorText: const Color(0xFFFFD54F),
-      margin: const EdgeInsets.all(16),
-      icon: const Icon(Icons.menu_book_rounded, color: Colors.amber),
-    );
-  }
-
-  void _onOpenTrophyLeaderboard() {
-    AudioService.playButtonClick(sfx: 'button_2.mp3');
-    Get.snackbar(
-      'BẢNG XẾP HẠNG',
-      'Tổng số sao chiến dịch đã đạt: $_totalEarnedStars/$_totalMaxStars ⭐',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF1E100A),
-      colorText: const Color(0xFFFFD54F),
-      margin: const EdgeInsets.all(16),
-      icon: const Icon(Icons.emoji_events_rounded, color: Colors.amber),
-    );
-  }
-
-  void _startStage(MapStageData stage) {
-    Navigator.of(context).pop(); // Đóng modal
-    // Cập nhật level hiện tại trong GameMatchController
-    GameMatchController.to.currentLevel.value = stage.stageNumber;
-    ProgressService.setLevel(stage.stageNumber);
-
-    Get.to(() => const CharacterSelectScreen());
   }
 
   @override
@@ -219,13 +71,12 @@ class _MapScreenState extends State<MapScreen>
             final canvasWidth = constraints.maxWidth;
             final canvasHeight = constraints.maxHeight;
 
-            // Tính toán vị trí các node theo tọa độ tương đối
             final List<Offset> points = [
               Offset(
-                _pedestalPos.dx * canvasWidth,
-                _pedestalPos.dy * canvasHeight,
+                controller.pedestalPos.dx * canvasWidth,
+                controller.pedestalPos.dy * canvasHeight,
               ),
-              ..._stages.map(
+              ...controller.stages.map(
                 (s) => Offset(
                   s.relativePos.dx * canvasWidth,
                   s.relativePos.dy * canvasHeight,
@@ -251,9 +102,8 @@ class _MapScreenState extends State<MapScreen>
                 ),
 
                 // 3. Render Các Khung Màn Chơi (Stage Nodes 1..7)
-                ...List.generate(_stages.length, (index) {
-                  final stage = _stages[index];
-                  final isSelected = _selectedStageIndex == index + 1;
+                ...List.generate(controller.stages.length, (index) {
+                  final stage = controller.stages[index];
                   final nodeX = stage.relativePos.dx * canvasWidth;
                   final nodeY = stage.relativePos.dy * canvasHeight;
 
@@ -264,14 +114,14 @@ class _MapScreenState extends State<MapScreen>
                   return Positioned(
                     left: nodeX - nodeWidth / 2,
                     top: nodeY - nodeHeight / 2,
-                    child: Column(
+                    child: Obx(() => Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         MapStageNodeWidget(
                           stageNumber: stage.stageNumber,
                           onTap: () => _onSelectStageNode(index, stage),
                           isUnlocked: stage.isUnlocked,
-                          isSelected: isSelected,
+                          isSelected: controller.selectedStageIndex.value == index + 1,
                           stars: stage.stars,
                           width: nodeWidth,
                           height: nodeHeight,
@@ -282,7 +132,7 @@ class _MapScreenState extends State<MapScreen>
                           child: _buildStarRatingBar(stage.stars),
                         ),
                       ],
-                    ),
+                    )),
                   );
                 }),
 
@@ -310,7 +160,7 @@ class _MapScreenState extends State<MapScreen>
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            'BẢN ĐỒ CHIẾN ĐẤU',
+                            AppStrings.mapTitle,
                             style: GameTypography.pixel(
                               color: const Color(0xFFFFD54F),
                               fontSize: 13,
@@ -349,7 +199,7 @@ class _MapScreenState extends State<MapScreen>
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                '$_totalEarnedStars/$_totalMaxStars',
+                                '${controller.totalEarnedStars}/${controller.totalMaxStars}',
                                 style: GameTypography.pixel(
                                   color: Colors.white,
                                   fontSize: 13,
@@ -377,21 +227,21 @@ class _MapScreenState extends State<MapScreen>
                         tile: MapTile.buttonBack,
                         width: 58,
                         height: 46,
-                        onTap: _onBackToHome,
+                        onTap: controller.onBackToHome,
                       ),
                       const SizedBox(width: 10),
                       MapIconButton(
                         tile: MapTile.buttonBook,
                         width: 58,
                         height: 46,
-                        onTap: _onOpenBookCodex,
+                        onTap: controller.onOpenBookCodex,
                       ),
                       const SizedBox(width: 10),
                       MapIconButton(
                         tile: MapTile.buttonTrophy,
                         width: 58,
                         height: 46,
-                        onTap: _onOpenTrophyLeaderboard,
+                        onTap: controller.onOpenTrophyLeaderboard,
                       ),
                       const SizedBox(width: 10),
                       MapIconButton(
@@ -439,13 +289,13 @@ class _MapScreenState extends State<MapScreen>
     );
   }
 
-  /// Render Nhân Vật Token Đứng Trên Bệ Đá / Node Đang Chọn
   Widget _buildHeroTokenWidget(
     List<Offset> points,
     double width,
     double height,
   ) {
-    final currentPos = points[_selectedStageIndex.clamp(0, points.length - 1)];
+    return Obx(() {
+      final currentPos = points[controller.selectedStageIndex.value.clamp(0, points.length - 1)];
 
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 450),
@@ -538,6 +388,7 @@ class _MapScreenState extends State<MapScreen>
         ),
       ),
     );
+    });
   }
 
   /// Hộp thoại xem chi tiết màn chơi khi click vào 1 Node
@@ -567,7 +418,7 @@ class _MapScreenState extends State<MapScreen>
               children: [
                 // Khung Tiêu Đề Màn Chơi
                 Text(
-                  'MÀN ${stage.stageNumber}: ${stage.title.toUpperCase()}',
+                  '${AppStrings.mapStagePrefix} ${stage.stageNumber}: ${stage.title.toUpperCase()}',
                   textAlign: TextAlign.center,
                   style: GameTypography.pixel(
                     color: const Color(0xFFFFD54F),
@@ -596,7 +447,7 @@ class _MapScreenState extends State<MapScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'ĐỐI THỦ: ${stage.bossName}',
+                              '${AppStrings.mapOpponentPrefix} ${stage.bossName}',
                               style: GameTypography.pixel(
                                 color: Colors.orangeAccent,
                                 fontSize: 11,
@@ -630,15 +481,15 @@ class _MapScreenState extends State<MapScreen>
                   child: Column(
                     children: [
                       _buildObjectiveRow(
-                        '⭐ Hoàn thành chiến thắng',
+                        AppStrings.mapObjective1,
                         stage.stars >= 1,
                       ),
                       _buildObjectiveRow(
-                        '⭐⭐ Máu còn trên 50%',
+                        AppStrings.mapObjective2,
                         stage.stars >= 2,
                       ),
                       _buildObjectiveRow(
-                        '⭐⭐⭐ Thắng trong 60 giây',
+                        AppStrings.mapObjective3,
                         stage.stars >= 3,
                       ),
                     ],
@@ -662,9 +513,9 @@ class _MapScreenState extends State<MapScreen>
                             ),
                           ),
                         ),
-                        onPressed: () => _startStage(stage),
+                        onPressed: () => controller.startStage(stage),
                         child: Text(
-                          'BẮT ĐẦU CHƠI',
+                          AppStrings.battleNow,
                           style: GameTypography.pixel(
                             color: Colors.white,
                             fontSize: 13,
