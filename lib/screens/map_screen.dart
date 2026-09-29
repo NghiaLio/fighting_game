@@ -42,7 +42,8 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMixin {
+class _MapScreenState extends State<MapScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _heroPulseController;
   int _selectedStageIndex = 0; // 0 = Pedestal xuất phát, 1..7 = Các màn chơi
 
@@ -58,7 +59,8 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
       relativePos: Offset(0.155, 0.710),
       stars: 3,
       isUnlocked: true,
-      description: 'Cánh rừng nguyên sinh rậm rạp, nơi trú ngụ của các chiến binh Goblin.',
+      description:
+          'Cánh rừng nguyên sinh rậm rạp, nơi trú ngụ của các chiến binh Goblin.',
       bossName: 'Thủ Lĩnh Goblin',
     ),
     MapStageData(
@@ -219,9 +221,15 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
 
             // Tính toán vị trí các node theo tọa độ tương đối
             final List<Offset> points = [
-              Offset(_pedestalPos.dx * canvasWidth, _pedestalPos.dy * canvasHeight),
+              Offset(
+                _pedestalPos.dx * canvasWidth,
+                _pedestalPos.dy * canvasHeight,
+              ),
               ..._stages.map(
-                (s) => Offset(s.relativePos.dx * canvasWidth, s.relativePos.dy * canvasHeight),
+                (s) => Offset(
+                  s.relativePos.dx * canvasWidth,
+                  s.relativePos.dy * canvasHeight,
+                ),
               ),
             ];
 
@@ -295,7 +303,11 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                         width: 260,
                         height: 58,
                         child: Container(
-                          padding: const EdgeInsets.only(left: 60, right: 20),
+                          padding: const EdgeInsets.only(
+                            left: 60,
+                            right: 20,
+                            bottom: 10,
+                          ),
                           alignment: Alignment.center,
                           child: Text(
                             'BẢN ĐỒ CHIẾN ĐẤU',
@@ -310,10 +322,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                                   offset: Offset(1.5, 1.5),
                                   blurRadius: 3,
                                 ),
-                                Shadow(
-                                  color: Color(0xFFD84315),
-                                  blurRadius: 6,
-                                ),
+                                Shadow(color: Color(0xFFD84315), blurRadius: 6),
                               ],
                             ),
                           ),
@@ -416,12 +425,14 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
             color: isFilled ? const Color(0xFFFFC107) : const Color(0xFF424242),
             shadows: isFilled
                 ? const [
-                    Shadow(color: Colors.black, blurRadius: 4, offset: Offset(1, 1)),
+                    Shadow(
+                      color: Colors.black,
+                      blurRadius: 4,
+                      offset: Offset(1, 1),
+                    ),
                     Shadow(color: Color(0xFFFF8F00), blurRadius: 6),
                   ]
-                : const [
-                    Shadow(color: Colors.black, blurRadius: 2),
-                  ],
+                : const [Shadow(color: Colors.black, blurRadius: 2)],
           ),
         );
       }),
@@ -429,7 +440,11 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
   }
 
   /// Render Nhân Vật Token Đứng Trên Bệ Đá / Node Đang Chọn
-  Widget _buildHeroTokenWidget(List<Offset> points, double width, double height) {
+  Widget _buildHeroTokenWidget(
+    List<Offset> points,
+    double width,
+    double height,
+  ) {
     final currentPos = points[_selectedStageIndex.clamp(0, points.length - 1)];
 
     return AnimatedPositioned(
@@ -456,7 +471,9 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                       width: 44,
                       height: 18,
                       decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(Radius.elliptical(22, 9)),
+                        borderRadius: const BorderRadius.all(
+                          Radius.elliptical(22, 9),
+                        ),
                         color: const Color(0xFFFFC107).withValues(alpha: 0.35),
                         boxShadow: const [
                           BoxShadow(
@@ -494,7 +511,10 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                       height: 36,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFFFD54F), width: 2),
+                        border: Border.all(
+                          color: const Color(0xFFFFD54F),
+                          width: 2,
+                        ),
                         boxShadow: const [
                           BoxShadow(color: Colors.black45, blurRadius: 6),
                         ],
@@ -535,7 +555,11 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: const Color(0xFFFFC107), width: 2),
               boxShadow: const [
-                BoxShadow(color: Colors.black87, blurRadius: 20, spreadRadius: 4),
+                BoxShadow(
+                  color: Colors.black87,
+                  blurRadius: 20,
+                  spreadRadius: 4,
+                ),
               ],
             ),
             child: Column(
@@ -550,9 +574,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.2,
-                    shadows: const [
-                      Shadow(color: Colors.black, blurRadius: 4),
-                    ],
+                    shadows: const [Shadow(color: Colors.black, blurRadius: 4)],
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -567,11 +589,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                   ),
                   child: Row(
                     children: [
-                      MapTileWidget(
-                        tile: stage.tile,
-                        width: 90,
-                        height: 84,
-                      ),
+                      MapTileWidget(tile: stage.tile, width: 90, height: 84),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
@@ -611,9 +629,18 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                   ),
                   child: Column(
                     children: [
-                      _buildObjectiveRow('⭐ Hoàn thành chiến thắng', stage.stars >= 1),
-                      _buildObjectiveRow('⭐⭐ Máu còn trên 50%', stage.stars >= 2),
-                      _buildObjectiveRow('⭐⭐⭐ Thắng trong 60 giây', stage.stars >= 3),
+                      _buildObjectiveRow(
+                        '⭐ Hoàn thành chiến thắng',
+                        stage.stars >= 1,
+                      ),
+                      _buildObjectiveRow(
+                        '⭐⭐ Máu còn trên 50%',
+                        stage.stars >= 2,
+                      ),
+                      _buildObjectiveRow(
+                        '⭐⭐⭐ Thắng trong 60 giây',
+                        stage.stars >= 3,
+                      ),
                     ],
                   ),
                 ),
@@ -629,7 +656,10 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
-                            side: const BorderSide(color: Color(0xFFFFD54F), width: 1.5),
+                            side: const BorderSide(
+                              color: Color(0xFFFFD54F),
+                              width: 1.5,
+                            ),
                           ),
                         ),
                         onPressed: () => _startStage(stage),

@@ -18,66 +18,61 @@ class CharacterSelectTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      top: 6,
-      left: 16,
-      right: 16,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Nút quay lại sảnh chính (Sử dụng slenderBarShort từ select_per)
-          GamePressable(
-            onTap: onBack,
-            pressDepth: 2.0,
-            pressScale: 0.90,
-            child: SelectPerWidget(
-              tile: SelectPerTile.slenderBarShort,
-              width: 100,
-              height: 40,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Ui2FlagWidget(tile: Ui2FlagTile.arrowLeft, height: 14),
-                  const SizedBox(width: 6),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5.0),
-                    child: Text(
-                      AppStrings.charSelectHome,
-                      style: GameTypography.pixel(
-                        color: const Color(0xFFFFD54F),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.8,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Chế độ thi đấu (Sử dụng slenderBarShort từ select_per)
-          SelectPerWidget(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Nút quay lại sảnh chính (Sử dụng slenderBarShort từ select_per)
+        GamePressable(
+          onTap: onBack,
+          pressDepth: 2.0,
+          pressScale: 0.90,
+          child: SelectPerWidget(
             tile: SelectPerTile.slenderBarShort,
             width: 100,
             height: 40,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 5.0),
-                child: Text(
-                  AppStrings.charSelectMode,
-                  style: GameTypography.pixel(
-                    color: const Color(0xFFFFD54F),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.6,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Ui2FlagWidget(tile: Ui2FlagTile.arrowLeft, height: 14),
+                const SizedBox(width: 6),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: Text(
+                    AppStrings.charSelectHome,
+                    style: GameTypography.pixel(
+                      color: const Color(0xFFFFD54F),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.8,
+                    ),
                   ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Chế độ thi đấu (Sử dụng slenderBarShort từ select_per)
+        SelectPerWidget(
+          tile: SelectPerTile.slenderBarShort,
+          width: 100,
+          height: 40,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: Text(
+                AppStrings.charSelectMode,
+                style: GameTypography.pixel(
+                  color: const Color(0xFFFFD54F),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.6,
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

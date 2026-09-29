@@ -59,7 +59,7 @@ class _HeroUnlockDialogState extends State<HeroUnlockDialog> {
           width: 390,
           height: 260,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(42, 40, 42, 24),
+            padding: const EdgeInsets.fromLTRB(42, 90, 42, 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

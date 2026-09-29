@@ -93,28 +93,28 @@ class _MobaCircleButton extends PositionComponent
     // 1. Dark frosted circular background + Contact Flash
     final bgPaint = Paint()
       ..color = _isPressed
-          ? activeColor.withValues(alpha: 0.55)
-          : const Color(0xD8101424);
+          ? activeColor.withValues(alpha: 0.45)
+          : const Color(0x44101424);
     canvas.drawCircle(center, radius, bgPaint);
 
     // 1b. Glow aura khi ấn xuống
     if (_isPressed) {
       final glowPaint = Paint()
-        ..color = activeColor.withValues(alpha: 0.35)
+        ..color = activeColor.withValues(alpha: 0.25)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
       canvas.drawCircle(center, radius - 2, glowPaint);
     }
 
     // 2. Outer decorative ring
     final outerRingPaint = Paint()
-      ..color = _isPressed ? activeColor : borderColor
+      ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = _isPressed ? 2.8 : 2.0;
     canvas.drawCircle(center, radius - 1, outerRingPaint);
 
     // 3. Inner subtle accent circle
     final innerRingPaint = Paint()
-      ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.45)
+      ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     canvas.drawCircle(center, radius - 4.5, innerRingPaint);
@@ -122,10 +122,12 @@ class _MobaCircleButton extends PositionComponent
     // 4. Sharp, un-stretched centered icon
     if (_sprite != null) {
       final iconOffset = Offset(radius - iconSize / 2, radius - iconSize / 2);
+      final iconPaint = Paint()..color = const Color(0x99FFFFFF);
       _sprite!.render(
         canvas,
         position: Vector2(iconOffset.dx, iconOffset.dy),
         size: Vector2.all(iconSize),
+        overridePaint: iconPaint,
       );
     }
 
@@ -134,12 +136,12 @@ class _MobaCircleButton extends PositionComponent
       text: TextSpan(
         text: label,
         style: TextStyle(
-          color: _isPressed ? Colors.white : Colors.white70,
-          fontSize: 8.5,
+          color: _isPressed ? Colors.white.withValues(alpha: 0.9) : Colors.white.withValues(alpha: 0.5),
+          fontSize: 9.0,
           fontWeight: FontWeight.bold,
           shadows: const [
             Shadow(
-              color: Colors.black,
+              color: Colors.black54,
               blurRadius: 2,
               offset: Offset(0, 1),
             ),
@@ -241,9 +243,9 @@ class GameControls extends Component with HasGameReference {
     // -------------------------------------------------------------
     // LEFT D-PAD CLUSTER (Clean circular cluster)
     // -------------------------------------------------------------
-    final dpadCenter = Vector2(82, sh - 68);
-    const dpadRadius = 23.0;
-    const dpadSpacing = 48.0;
+    final dpadCenter = Vector2(110, sh - 90);
+    const dpadRadius = 32.0;
+    const dpadSpacing = 74.0;
 
     _leftBtn = _MobaCircleButton(
       imagePath: AppAssets.btnLeft,
@@ -252,7 +254,7 @@ class GameControls extends Component with HasGameReference {
       borderColor: const Color(0xFF78909C),
       activeColor: const Color(0xFF90CAF9),
       label: 'LEFT',
-      iconSize: 22,
+      iconSize: 28,
       onHoldChanged: (held) {
         _leftHeld = held;
         _sendNetworkInput();
@@ -270,7 +272,7 @@ class GameControls extends Component with HasGameReference {
       borderColor: const Color(0xFF78909C),
       activeColor: const Color(0xFF90CAF9),
       label: 'RIGHT',
-      iconSize: 22,
+      iconSize: 28,
       onHoldChanged: (held) {
         _rightHeld = held;
         _sendNetworkInput();
@@ -288,18 +290,18 @@ class GameControls extends Component with HasGameReference {
       borderColor: const Color(0xFF66BB6A),
       activeColor: const Color(0xFFA5D6A7),
       label: 'JUMP',
-      iconSize: 22,
+      iconSize: 28,
       onTap: () => _pressAction(5),
     );
 
     _runBtn = _MobaCircleButton(
       imagePath: AppAssets.btnSprint,
       position: dpadCenter,
-      radius: dpadRadius - 2,
+      radius: dpadRadius - 4,
       borderColor: const Color(0xFFFFA726),
       activeColor: const Color(0xFFFFCC80),
       label: 'RUN',
-      iconSize: 20,
+      iconSize: 24,
       onHoldChanged: (held) {
         _runHeld = held;
         _sendNetworkInput();
@@ -310,8 +312,8 @@ class GameControls extends Component with HasGameReference {
     // RIGHT MOBA COMBAT CLUSTER (Main Attack + Radial Skill Arc)
     // -------------------------------------------------------------
     // Main Normal Attack (Big central button under thumb)
-    final mainAtkCenter = Vector2(sw - 58, sh - 58);
-    const mainRadius = 32.0;
+    final mainAtkCenter = Vector2(sw - 90, sh - 90);
+    const mainRadius = 42.0;
 
     _atk1Btn = _MobaCircleButton(
       imagePath: AppAssets.btnAttack,
@@ -320,43 +322,43 @@ class GameControls extends Component with HasGameReference {
       borderColor: const Color(0xFFFFCA28), // Golden highlight
       activeColor: const Color(0xFFFFE082),
       label: 'ATK 1',
-      iconSize: 28,
+      iconSize: 36,
       onTap: () => _pressAction(1),
     );
 
     // Skill 1 (ATK 2) - Positioned to the left of main attack
     _atk2Btn = _MobaCircleButton(
       imagePath: AppAssets.btnAttack,
-      position: mainAtkCenter + Vector2(-68, -6),
-      radius: 23.0,
+      position: mainAtkCenter + Vector2(-90, -10),
+      radius: 30.0,
       borderColor: const Color(0xFF26C6DA), // Cyan
       activeColor: const Color(0xFF80DEEA),
       label: 'ATK 2',
-      iconSize: 20,
+      iconSize: 26,
       onTap: () => _pressAction(2),
     );
 
     // Skill 2 (ATK 3) - Positioned diagonally top-left
     _atk3Btn = _MobaCircleButton(
       imagePath: AppAssets.btnAttack,
-      position: mainAtkCenter + Vector2(-54, -54),
-      radius: 23.0,
+      position: mainAtkCenter + Vector2(-70, -70),
+      radius: 30.0,
       borderColor: const Color(0xFFFF7043), // Fiery Orange
       activeColor: const Color(0xFFFFAB91),
       label: 'ATK 3',
-      iconSize: 20,
+      iconSize: 26,
       onTap: () => _pressAction(3),
     );
 
     // Skill 3 / Ultimate (Special) - Positioned directly above main attack
     _skillBtn = _MobaCircleButton(
       imagePath: AppAssets.btnSpecial,
-      position: mainAtkCenter + Vector2(-6, -68),
-      radius: 24.0,
+      position: mainAtkCenter + Vector2(-10, -90),
+      radius: 30.0,
       borderColor: const Color(0xFFAB47BC), // Arcane Purple
       activeColor: const Color(0xFFCE93D8),
       label: 'ULT',
-      iconSize: 22,
+      iconSize: 26,
       onTap: () => _pressAction(4),
     );
   }
@@ -369,19 +371,19 @@ class GameControls extends Component with HasGameReference {
   }
 
   void _repositionButtons(double sw, double sh) {
-    final dpadCenter = Vector2(82, sh - 68);
-    const dpadSpacing = 48.0;
+    final dpadCenter = Vector2(110, sh - 90);
+    const dpadSpacing = 74.0;
 
     _leftBtn.position = dpadCenter + Vector2(-dpadSpacing, 0);
     _rightBtn.position = dpadCenter + Vector2(dpadSpacing, 0);
     _jumpBtn.position = dpadCenter + Vector2(0, -dpadSpacing);
     _runBtn.position = dpadCenter;
 
-    final mainAtkCenter = Vector2(sw - 58, sh - 58);
+    final mainAtkCenter = Vector2(sw - 90, sh - 90);
     _atk1Btn.position = mainAtkCenter;
-    _atk2Btn.position = mainAtkCenter + Vector2(-68, -6);
-    _atk3Btn.position = mainAtkCenter + Vector2(-54, -54);
-    _skillBtn.position = mainAtkCenter + Vector2(-6, -68);
+    _atk2Btn.position = mainAtkCenter + Vector2(-90, -10);
+    _atk3Btn.position = mainAtkCenter + Vector2(-70, -70);
+    _skillBtn.position = mainAtkCenter + Vector2(-10, -90);
   }
 
   @override

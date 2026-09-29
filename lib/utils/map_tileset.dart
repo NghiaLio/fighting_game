@@ -403,7 +403,6 @@ class _MapStageNodeWidgetState extends State<MapStageNodeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final tile = MapTile.stageTile(widget.stageNumber);
     final scale = widget.isUnlocked
         ? (_isPressed ? 0.93 : (_isHovered || widget.isSelected ? 1.05 : 1.0))
         : 0.95;
@@ -459,13 +458,31 @@ class _MapStageNodeWidgetState extends State<MapStageNodeWidget> {
                         0.2126, 0.7152, 0.0722, 0, 0, // Blue
                         0,      0,      0,      0.65, 0, // Alpha
                       ]),
-                child: MapTileWidget(
-                  tile: tile,
+                child: SizedBox(
                   width: widget.width,
                   height: widget.height,
                   child: Stack(
                     alignment: Alignment.center,
+                    fit: StackFit.expand,
                     children: [
+                      // Background Image
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset(
+                          'assets/images/Backgrounds/bg${((widget.stageNumber - 1) % 7) + 1}.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      // Viền bao quanh
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFF5D4037),
+                            width: 4.0,
+                          ),
+                        ),
+                      ),
                       // Tên màn chơi (nếu có)
                       if (widget.stageTitle != null)
                         Positioned(

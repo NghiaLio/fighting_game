@@ -131,26 +131,15 @@ class HomeScreen extends StatelessWidget {
                       height: 38,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const UiTileWidget(
-                              tile: UiTile.rubyGem,
-                              width: 20,
-                              height: 22,
+                        child: Obx(
+                          () => Text(
+                            '${ProgressService.coinBalance.value}',
+                            style: GameTypography.pixel(
+                              color: const Color(0xFFFFD54F),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
                             ),
-                            const SizedBox(width: 8),
-                            Obx(
-                              () => Text(
-                                '${ProgressService.coinBalance.value}',
-                                style: GameTypography.pixel(
-                                  color: const Color(0xFFFFD54F),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -186,79 +175,83 @@ class HomeScreen extends StatelessWidget {
                 // Bên trái: Bảng da cuộn (Parchment Board) hiển thị màn chơi
                 Flexible(
                   flex: 4,
-                  child: UiTileWidget(
-                    tile: UiTile.parchmentBoard,
-                    height: (size.height * 0.65).clamp(240.0, 320.0),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(36, 42, 36, 28),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Text(
-                              AppStrings.campaignTitle,
-                              style: GameTypography.pixel(
-                                color: const Color(0xFF3E2723),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 2.0,
-                              ),
-                            ),
-                          ),
-                          const Divider(
-                            color: Color(0xFF8D6E63),
-                            thickness: 1.5,
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            AppStrings.currentStage,
-                            style: GameTypography.pixel(
-                              color: const Color(0xFF4E342E),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            AppStrings.opponent,
-                            style: GameTypography.pixel(
-                              color: const Color(0xFF4E342E),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            AppStrings.matchMode,
-                            style: GameTypography.pixel(
-                              color: const Color(0xFFB71C1C),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          const Spacer(),
-                          Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4E342E),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
+                  child: GamePressable(
+                    onTap: controller.openMap,
+                    pressScale: 0.98,
+                    child: UiTileWidget(
+                      tile: UiTile.parchmentBoard,
+                      height: (size.height * 0.65).clamp(240.0, 320.0),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(36, 42, 36, 28),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
                               child: Text(
-                                AppStrings.progressMaps,
+                                AppStrings.campaignTitle,
                                 style: GameTypography.pixel(
-                                  color: const Color(0xFFFFD54F),
-                                  fontSize: 11,
+                                  color: const Color(0xFF3E2723),
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.2,
+                                  letterSpacing: 2.0,
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                            const Divider(
+                              color: Color(0xFF8D6E63),
+                              thickness: 1.5,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              AppStrings.currentStage,
+                              style: GameTypography.pixel(
+                                color: const Color(0xFF4E342E),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              AppStrings.opponent,
+                              style: GameTypography.pixel(
+                                color: const Color(0xFF4E342E),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              AppStrings.matchMode,
+                              style: GameTypography.pixel(
+                                color: const Color(0xFFB71C1C),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            const Spacer(),
+                            Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF4E342E),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  AppStrings.progressMaps,
+                                  style: GameTypography.pixel(
+                                    color: const Color(0xFFFFD54F),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
