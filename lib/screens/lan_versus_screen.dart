@@ -1,439 +1,363 @@
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:fighting_game/enums/character_type.dart';
-import 'package:fighting_game/screens/game_play_screen.dart';
-import 'package:fighting_game/services/network/lan_match_session.dart';
+import 'package:fighting_game/controllers/lan_versus_controller.dart';
+import 'package:fighting_game/constants/app_assets.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class LanVersusScreen extends StatefulWidget {
+class LanVersusScreen extends StatelessWidget {
   const LanVersusScreen({super.key});
 
   @override
-  State<LanVersusScreen> createState() => _LanVersusScreenState();
-}
+  Widget build(BuildContext context) {
+    final controller = Get.put(LanVersusController());
 
-class _LanVersusScreenState extends State<LanVersusScreen> {
-  final _session = LanMatchSession();
-  final _ipController = TextEditingController();
-  StreamSubscription<Map<String, dynamic>>? _messageSubscription;
-  StreamSubscription<String>? _errorSubscription;
-  CharacterType _character = CharacterType.fireWizard;
-  CharacterType _opponentCharacter = CharacterType.knight1;
-  String _status = 'Tạo phòng hoặc nhập IPv4 của Host để tham gia.';
-  bool _hosting = false;
-  bool _connected = false;
-  bool _peerReady = false;
-  bool _myReady = false;
-  bool _busy = false;
-  bool _scanning = false;
-  bool _ipEdited = false;
-  bool _roomEnded = false;
-  bool _handedOff = false;
-  int _rttMs = 0;
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1. Phông nền Dark Fantasy
+          Image.asset(
+            AppAssets.bgHome,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
 
-  @override
-  void initState() {
-    super.initState();
-    _messageSubscription = _session.messages.listen(_onMessage);
-    _errorSubscription = _session.errors.listen(_onSessionError);
-    unawaited(_fillCurrentWifiAddress());
-  }
-
-  void _onSessionError(String message) {
-    if (!mounted) return;
-    final disconnected = message.contains('ngắt kết nối') ||
-        message.contains('Kết nối TCP lỗi') ||
-        message.contains('mất kết nối');
-    setState(() {
-      _status = disconnected ? 'Đối thủ đã ngắt kết nối.' : message;
-      if (disconnected) {
-        _connected = false;
-        _peerReady = false;
-        _myReady = false;
-        _roomEnded = true;
-      }
-    });
-    if (disconnected) unawaited(_session.close());
-  }
-
-  Future<void> _fillCurrentWifiAddress() async {
-    try {
-      final address = await LanMatchSession.currentLanAddress();
-      if (!mounted || _ipEdited || address == null) return;
-      _ipController.text = address;
-    } catch (_) {
-      // Keep manual entry available when the platform does not expose interfaces.
-    }
-  }
-
-  void _onMessage(Map<String, dynamic> message) {
-    if (!mounted) return;
-    switch (message['type']) {
-      case 'host_ready':
-      case 'hello_ack':
-        setState(() {
-          _connected = true;
-          _status = 'Đã kết nối. Đang chờ cấu hình phòng...';
-        });
-        _session.startHeartbeat();
-        if (_hosting) _sendRoomConfig();
-        break;
-      case 'hello':
-        if (_hosting) {
-          setState(() {
-            _connected = true;
-            _status = 'Đối thủ đã vào phòng. Chọn nhân vật rồi sẵn sàng.';
-          });
-          _sendRoomConfig();
-          _session.startHeartbeat();
-        }
-        break;
-      case 'room_config':
-        final name = message['hostCharacter'] as String?;
-        final type = CharacterType.values.where((value) => value.name == name);
-        setState(() {
-          if (!_hosting && type.isNotEmpty) _opponentCharacter = type.first;
-          _status = 'Đã nhận cấu hình từ Host. Chọn sẵn sàng để xác nhận.';
-        });
-        break;
-      case 'player_config':
-        final name = message['character'] as String?;
-        final type = CharacterType.values.where((value) => value.name == name);
-        if (_hosting && type.isNotEmpty) {
-          setState(() => _opponentCharacter = type.first);
-        }
-        break;
-      case 'player_ready':
-        final selectedName = message['character'] as String?;
-        final selectedType =
-            CharacterType.values.where((value) => value.name == selectedName);
-        if (_hosting && selectedType.isNotEmpty) {
-          _opponentCharacter = selectedType.first;
-        }
-        setState(() => _peerReady = message['ready'] == true);
-        if (_hosting && _myReady && _peerReady) _startNetworkMatch();
-        break;
-      case 'room_left':
-        setState(() {
-          _connected = false;
-          _peerReady = false;
-          _myReady = false;
-          _roomEnded = true;
-          _status = 'Đối thủ đã rời phòng.';
-        });
-        unawaited(_session.close());
-        break;
-      case 'match_start':
-        final hostName = message['hostCharacter'] as String?;
-        final clientName = message['clientCharacter'] as String?;
-        final hostType = CharacterType.values.where((value) => value.name == hostName);
-        final clientType = CharacterType.values.where((value) => value.name == clientName);
-        _launchNetworkMatch(
-          player: _hosting ? _character : (clientType.isNotEmpty ? clientType.first : _character),
-          enemy: _hosting ? _opponentCharacter : (hostType.isNotEmpty ? hostType.first : _opponentCharacter),
-          host: _hosting,
-        );
-        break;
-      case 'heartbeat_ack':
-        final rtt = message['rttMs'];
-        if (rtt is int) setState(() => _rttMs = rtt);
-        break;
-    }
-  }
-
-  void _sendRoomConfig() {
-    _session.sendControl({
-      'type': 'room_config',
-      'hostCharacter': _character.name,
-      'map': 1,
-      'rounds': 3,
-    });
-  }
-
-  void _launchNetworkMatch({
-    required CharacterType player,
-    required CharacterType enemy,
-    required bool host,
-  }) {
-    if (_handedOff || !mounted) return;
-    _handedOff = true;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => GamePlayScreen(
-          playerCharacter: player,
-          enemyCharacter: enemy,
-          networkSession: _session,
-          networkHost: host,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _host() async {
-    setState(() {
-      _busy = true;
-      _hosting = true;
-      _status = 'Đang mở phòng LAN...';
-    });
-    try {
-      await _session.host();
-      if (mounted)
-        setState(() {
-          _busy = false;
-          _status = 'Đang chờ đối thủ. TCP cổng ${LanMatchSession.tcpPort}.';
-        });
-    } catch (error) {
-      if (mounted)
-        setState(() {
-          _busy = false;
-          _hosting = false;
-          _status = 'Không thể mở phòng: $error';
-        });
-    }
-  }
-
-  Future<void> _join() async {
-    setState(() {
-      _busy = true;
-      _status = 'Đang kết nối tới Host...';
-    });
-    try {
-      await _session.join(_ipController.text);
-      if (mounted)
-        setState(() {
-          _busy = false;
-          _status = 'Đã kết nối, đang đồng bộ phòng...';
-        });
-    } catch (error) {
-      if (mounted)
-        setState(() {
-          _busy = false;
-          _status = 'Kết nối thất bại: $error';
-        });
-    }
-  }
-
-  Future<void> _scanForHost() async {
-    setState(() {
-      _scanning = true;
-      _status = 'Đang quét các phòng PvP trong mạng Wi-Fi hiện tại...';
-    });
-    try {
-      final hosts = await LanMatchSession.scanForHosts();
-      log('Found hosts: $hosts');
-      if (!mounted) return;
-      if (hosts.isEmpty) {
-        setState(() {
-          _scanning = false;
-          _status =
-              'Không tìm thấy phòng. Kiểm tra Host đã tạo phòng và cùng mạng Wi-Fi.';
-        });
-        return;
-      }
-      final selected = hosts.length == 1
-          ? hosts.first
-          : await showDialog<String>(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Chọn phòng tìm thấy'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: hosts
-                      .map(
-                        (ip) => ListTile(
-                          leading: const Icon(Icons.sports_kabaddi),
-                          title: Text(ip),
-                          onTap: () => Navigator.pop(context, ip),
-                        ),
-                      )
-                      .toList(),
-                ),
+          // 2. Lớp phủ Vignette tối điện ảnh
+          Container(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment.center,
+                radius: 1.1,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.55),
+                  Colors.black.withValues(alpha: 0.88),
+                ],
               ),
-            );
-      if (!mounted) return;
-      if (selected != null) {
-        _ipController.text = selected;
-        _ipEdited = true;
-      }
-      setState(() {
-        _scanning = false;
-        _status = selected == null
-            ? 'Đã tìm thấy ${hosts.length} phòng.'
-            : 'Đã điền IP Host: $selected';
-      });
-    } catch (error) {
-      if (mounted) {
-        setState(() {
-          _scanning = false;
-          _status = 'Không quét được mạng hiện tại: $error';
-        });
-      }
-    }
-  }
-
-  void _toggleReady() {
-    _myReady = !_myReady;
-    if (!_hosting) {
-      _session.sendControl({'type': 'player_config', 'character': _character.name});
-    }
-    _session.sendControl({
-      'type': 'player_ready',
-      'ready': _myReady,
-      if (!_hosting) 'character': _character.name,
-    });
-    setState(
-      () => _status = _myReady ? 'Bạn đã sẵn sàng.' : 'Bạn chưa sẵn sàng.',
-    );
-    if (_hosting && _myReady && _peerReady) _startNetworkMatch();
-  }
-
-  void _startNetworkMatch() {
-    _session.sendControl({
-      'type': 'match_start',
-      'rounds': 3,
-      'hostCharacter': _character.name,
-      'clientCharacter': _opponentCharacter.name,
-    });
-    _launchNetworkMatch(player: _character, enemy: _opponentCharacter, host: true);
-  }
-
-  @override
-  void dispose() {
-    _messageSubscription?.cancel();
-    _errorSubscription?.cancel();
-    _ipController.dispose();
-    if (!_handedOff) unawaited(_session.leaveRoom());
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFF111113),
-    appBar: AppBar(
-      title: const Text('PvP qua mạng LAN'),
-      backgroundColor: const Color(0xFF1E100A),
-    ),
-    body: Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _status,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 18),
-                ),
-                const SizedBox(height: 12),
-                if (_connected)
-                  Text(
-                    'UDP RTT: ${_rttMs}ms  •  ${_peerReady ? 'Đối thủ sẵn sàng' : 'Đối thủ chưa sẵn sàng'}',
-                    style: const TextStyle(color: Colors.amber),
-                  ),
-                const SizedBox(height: 20),
-                DropdownButtonFormField<CharacterType>(
-                  value: _character,
-                  dropdownColor: const Color(0xFF28211B),
-                  decoration: const InputDecoration(
-                    labelText: 'Nhân vật của bạn',
-                    labelStyle: TextStyle(color: Colors.amber),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: CharacterType.values
-                      .map(
-                        (type) => DropdownMenuItem(
-                          value: type,
-                          child: Text(type.name),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: _roomEnded
-                      ? null
-                      : (value) {
-                          if (value != null) {
-                            setState(() => _character = value);
-                            if (_hosting && _connected) _sendRoomConfig();
-                            if (!_hosting && _connected) {
-                              _session.sendControl({'type': 'player_config', 'character': value.name});
-                            }
-                          }
-                        },
-                ),
-                // const SizedBox(height: 16),
-                if (!_hosting)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _ipController,
-                          onChanged: (_) => _ipEdited = true,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          style: const TextStyle(color: Colors.white),
-                          decoration: const InputDecoration(
-                            labelText: 'IPv4 LAN (tự lấy từ Wi-Fi)',
-                            hintText: 'IP của Host khi tham gia phòng',
-                            labelStyle: TextStyle(color: Colors.white70),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        onPressed: _scanning || _busy ? null : _scanForHost,
-                        icon: _scanning
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.wifi_find),
-                        label: Text(_scanning ? 'ĐANG QUÉT' : 'QUÉT IP'),
-                      ),
-                    ],
-                  ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    if (!_connected && !_roomEnded)
-                      FilledButton(
-                        onPressed: _busy || _hosting ? null : _host,
-                        child: const Text('TẠO PHÒNG'),
-                      ),
-                    if (!_connected && !_hosting && !_roomEnded)
-                      FilledButton(
-                        onPressed: _busy ? null : _join,
-                        child: const Text('THAM GIA'),
-                      ),
-                    if (_connected && !_roomEnded)
-                      FilledButton(
-                        onPressed: _toggleReady,
-                        child: Text(_myReady ? 'HỦY SẴN SÀNG' : 'SẴN SÀNG'),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Cả hai thiết bị cần chung Wi-Fi/hotspot. Host cần cho phép ứng dụng qua firewall.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white54, fontSize: 12),
-                ),
-              ],
             ),
           ),
+
+          // 3. Nút Back góc trái
+          Positioned(
+            top: 16,
+            left: 16,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFFFFD54F)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+
+          // 4. Nội dung chính
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 580),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E140E).withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFFFC107), width: 2),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black87,
+                      blurRadius: 24,
+                      spreadRadius: 8,
+                    ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  child: Obx(() => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Tiêu đề
+                      const Text(
+                        'PVP LAN MATCH',
+                        style: TextStyle(
+                          fontFamily: 'Pixel',
+                          color: Color(0xFFFFD54F),
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2.0,
+                          shadows: [
+                            Shadow(color: Colors.black, offset: Offset(2, 2), blurRadius: 4),
+                            Shadow(color: Color(0xFFD84315), blurRadius: 8),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Trạng thái hệ thống
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black45,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFF5D4037)),
+                        ),
+                        child: Text(
+                          controller.status.value,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: 'Pixel',
+                            color: Colors.white,
+                            fontSize: 12,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Thông số mạng
+                      if (controller.connected.value) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.wifi, color: Colors.amber, size: 16),
+                            const SizedBox(width: 8),
+                            Text(
+                              'UDP RTT: ${controller.rttMs.value}ms',
+                              style: const TextStyle(
+                                fontFamily: 'Pixel',
+                                color: Colors.amber,
+                                fontSize: 11,
+                              ),
+                            ),
+                            const SizedBox(width: 24),
+                            Icon(
+                              controller.peerReady.value ? Icons.check_circle_rounded : Icons.pending_rounded,
+                              color: controller.peerReady.value ? Colors.greenAccent : Colors.orangeAccent,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              controller.peerReady.value ? 'OPPONENT READY' : 'WAITING FOR OPPONENT',
+                              style: TextStyle(
+                                fontFamily: 'Pixel',
+                                color: controller.peerReady.value ? Colors.greenAccent : Colors.orangeAccent,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+
+                      // Dropdown chọn nhân vật
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<CharacterType>(
+                              value: controller.character.value,
+                              dropdownColor: const Color(0xFF28211B),
+                              style: const TextStyle(
+                                fontFamily: 'Pixel',
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                              decoration: const InputDecoration(
+                                labelText: 'YOUR HERO',
+                                labelStyle: TextStyle(
+                                  fontFamily: 'Pixel',
+                                  color: Color(0xFFFFC107),
+                                  fontSize: 12,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFF5D4037)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Color(0xFFFFC107)),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              ),
+                              items: CharacterType.values.map((type) {
+                                return DropdownMenuItem(
+                                  value: type,
+                                  child: Text(type.name.toUpperCase()),
+                                );
+                              }).toList(),
+                              onChanged: controller.roomEnded.value
+                                  ? null
+                                  : (value) {
+                                      if (value != null) {
+                                        controller.setCharacter(value);
+                                      }
+                                    },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Nhập IP / Quét IP
+                      if (!controller.hosting.value) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: controller.ipController,
+                                onChanged: (_) => controller.setIpEdited(),
+                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                style: const TextStyle(
+                                  fontFamily: 'Pixel',
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                                decoration: const InputDecoration(
+                                  labelText: 'HOST IPv4 (LAN)',
+                                  hintText: 'Enter Host IP',
+                                  labelStyle: TextStyle(
+                                    fontFamily: 'Pixel',
+                                    color: Color(0xFFFFC107),
+                                    fontSize: 11,
+                                  ),
+                                  hintStyle: TextStyle(
+                                    fontFamily: 'Pixel',
+                                    color: Colors.white30,
+                                    fontSize: 11,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Color(0xFF5D4037)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Color(0xFFFFC107)),
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFD84315),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                  side: const BorderSide(color: Color(0xFFFFD54F)),
+                                ),
+                              ),
+                              onPressed: controller.scanning.value || controller.busy.value 
+                                  ? null 
+                                  : () => controller.scanForHost(context),
+                              icon: controller.scanning.value
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Icon(Icons.wifi_find, size: 18),
+                              label: Text(
+                                controller.scanning.value ? 'SCANNING' : 'SCAN IP',
+                                style: const TextStyle(
+                                  fontFamily: 'Pixel',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+
+                      // Nút tương tác chính (Tạo/Vào/Ready)
+                      Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          if (!controller.connected.value && !controller.roomEnded.value)
+                            _buildActionButton(
+                              title: 'CREATE ROOM',
+                              icon: Icons.add_moderator_rounded,
+                              onPressed: controller.busy.value || controller.hosting.value ? null : controller.host,
+                              isPrimary: true,
+                            ),
+                          if (!controller.connected.value && !controller.hosting.value && !controller.roomEnded.value)
+                            _buildActionButton(
+                              title: 'JOIN MATCH',
+                              icon: Icons.login_rounded,
+                              onPressed: controller.busy.value ? null : controller.join,
+                              isPrimary: false,
+                            ),
+                          if (controller.connected.value && !controller.roomEnded.value)
+                            _buildActionButton(
+                              title: controller.myReady.value ? 'CANCEL READY' : 'READY',
+                              icon: controller.myReady.value ? Icons.cancel_rounded : Icons.check_circle_rounded,
+                              onPressed: controller.toggleReady,
+                              isPrimary: !controller.myReady.value,
+                              color: controller.myReady.value ? const Color(0xFFC62828) : const Color(0xFF2E7D32),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Ghi chú
+                      const Text(
+                        'Both devices must be on the same Wi-Fi/Hotspot.\nHost must allow application through firewall.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Pixel',
+                          color: Colors.white54,
+                          fontSize: 10,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  )),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required String title,
+    required IconData icon,
+    required VoidCallback? onPressed,
+    required bool isPrimary,
+    Color? color,
+  }) {
+    final bgColor = color ?? (isPrimary ? const Color(0xFF006064) : const Color(0xFF424242));
+    final borderColor = color != null
+        ? color.withValues(alpha: 0.5)
+        : (isPrimary ? const Color(0xFF00E5FF) : Colors.grey);
+
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor,
+        foregroundColor: Colors.white,
+        disabledBackgroundColor: Colors.black45,
+        disabledForegroundColor: Colors.white30,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        elevation: isPrimary ? 8 : 2,
+        shadowColor: bgColor.withValues(alpha: 0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: onPressed != null ? borderColor : Colors.transparent, width: 1.5),
         ),
       ),
-    ),
-  );
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Pixel',
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
 }
