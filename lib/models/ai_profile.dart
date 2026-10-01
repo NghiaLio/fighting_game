@@ -23,46 +23,45 @@ class AiProfile {
 
   /// Tạo cấu hình AI leo thang kết hợp giữa Map (1..7) và Round (1..3)
   factory AiProfile.forMapAndRound(int mapLevel, int round) {
-    // 1. Hệ số nền tảng của từng Map (1..7)
-    final mapIndex = (mapLevel - 1).clamp(0, 6);
-    final baseHpMult = 1.0 + (mapIndex * 0.25);       // Map 1: 1.0x -> Map 7: 2.5x HP
-    final baseDmgMult = 1.0 + (mapIndex * 0.125);     // Map 1: 1.0x -> Map 7: 1.75x Dmg
-    final mapSpeedBoost = mapIndex * 0.08;             // Càng map sau phản xạ càng nhanh
+    const hpByMap = [1.0, 1.15, 1.30, 1.50, 1.75, 2.0, 2.5];
+    const damageByMap = [1.0, 1.10, 1.20, 1.30, 1.40, 1.55, 1.75];
+    final mapIndex = (mapLevel - 1).clamp(0, 6).toInt();
+    final mapHp = hpByMap[mapIndex];
+    final mapDamage = damageByMap[mapIndex];
 
-    // 2. Hệ số leo thang qua 3 Round trong Map đó
     return switch (round) {
       1 => AiProfile(
-        minThinkDelay: (1.2 - mapSpeedBoost).clamp(0.4, 1.4),
-        maxThinkDelay: (1.5 - mapSpeedBoost).clamp(0.6, 1.8),
-        blockChance: (0.0 + mapIndex * 0.05).clamp(0.0, 0.35),
-        comboChance: 0.10,
-        jumpChance: 0.08,
-        specialChance: 0.15,
+        minThinkDelay: 1.0,
+        maxThinkDelay: 1.4,
+        blockChance: 0,
+        comboChance: 0,
+        jumpChance: 0.05,
+        specialChance: 0.10,
         runThreshold: 240,
-        hpMultiplier: baseHpMult,
-        damageMultiplier: baseDmgMult,
+        hpMultiplier: mapHp,
+        damageMultiplier: mapDamage,
       ),
       2 => AiProfile(
-        minThinkDelay: (0.6 - mapSpeedBoost * 0.5).clamp(0.25, 0.8),
-        maxThinkDelay: (0.85 - mapSpeedBoost * 0.5).clamp(0.4, 1.0),
-        blockChance: (0.35 + mapIndex * 0.06).clamp(0.35, 0.65),
+        minThinkDelay: 0.5,
+        maxThinkDelay: 0.75,
+        blockChance: 0.35,
         comboChance: 0.45,
         jumpChance: 0.25,
-        specialChance: 0.45,
+        specialChance: 0.40,
         runThreshold: 190,
-        hpMultiplier: baseHpMult * 1.05,
-        damageMultiplier: baseDmgMult * 1.05,
+        hpMultiplier: mapHp * 1.05,
+        damageMultiplier: mapDamage * 1.05,
       ),
-      _ => AiProfile( // Round 3: Thử thách cực hạn / Boss Thức Tỉnh
-        minThinkDelay: (0.22 - mapSpeedBoost * 0.3).clamp(0.12, 0.35),
-        maxThinkDelay: (0.38 - mapSpeedBoost * 0.3).clamp(0.20, 0.55),
-        blockChance: (0.70 + mapIndex * 0.04).clamp(0.70, 0.90),
+      _ => AiProfile(
+        minThinkDelay: 0.15,
+        maxThinkDelay: 0.30,
+        blockChance: 0.75,
         comboChance: 0.85,
-        jumpChance: 0.50,
+        jumpChance: 0.55,
         specialChance: 0.80,
         runThreshold: 150,
-        hpMultiplier: baseHpMult * 1.15,
-        damageMultiplier: baseDmgMult * 1.15,
+        hpMultiplier: mapHp * 1.15,
+        damageMultiplier: mapDamage * 1.15,
       ),
     };
   }

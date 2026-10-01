@@ -33,7 +33,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   final CharacterType playerCharacter;
   final CharacterType enemyCharacter;
-  final int level; // level ban đầu khi khởi tạo
+  final int level; // Campaign map (1..7)
   final LanMatchSession? networkSession;
   final bool networkHost;
 
@@ -56,8 +56,12 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   bool isVictory = false;
   String endMessage = '';
 
-  /// Round hiện tại — cập nhật khi gọi startNewLevel()
-  int currentLevel = 1;
+  /// Stage map and gauntlet round are separate progression axes.
+  int get mapLevel => level.clamp(1, 7).toInt();
+  int currentRound = 1;
+  int playerRoundWins = 0;
+  int enemyRoundWins = 0;
+  double _roundStartMana = 0;
 
   /// true: đang trong pha giới thiệu round (banner hiện) → character không được di chuyển/tấn công
   bool isIntroPlaying = true;
@@ -89,7 +93,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   String _getRandomBackground() {
     if (isNetworkMatch) return allBackgrounds.first;
-    return allBackgrounds[Random().nextInt(allBackgrounds.length)];
+    return allBackgrounds[mapLevel - 1];
   }
 
   void _changeBackground() {
@@ -103,7 +107,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    currentLevel = level; // khởi tạo từ constructor param
+    currentRound = 1;
 
     // Cache all dynamic character states and control assets
     const states = [
@@ -181,6 +185,9 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     );
     await stage.add(p1);
 
+    final enemyAiProfile = isNetworkMatch
+        ? null
+        : AiProfile.forMapAndRound(mapLevel, currentRound);
     final e1 = CharacterComponent(
       characterType: enemyCharacter,
       startX: remoteStartX,
@@ -188,12 +195,11 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       isPlayer: false,
       facingRight: !networkHost,
       maxHp: maxHp,
+      aiProfile: enemyAiProfile,
     );
     if (isNetworkMatch) {
       e1.remoteControlled = true;
       if (!networkHost) e1.networkReplica = true;
-    } else {
-      e1.aiProfile = AiProfile.forMapAndRound(1, currentLevel);
     }
     await stage.add(e1);
 
@@ -203,7 +209,9 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     enemy = e1;
 
     // Center camera on player initially
-    cameraX = (p1.position.x - gameSize.x / 2).clamp(0.0, mapWidth - gameSize.x);
+    cameraX = (p1.position.x - gameSize.x / 2)
+        .clamp(0.0, mapWidth - gameSize.x)
+        .toDouble();
     stage.position.x = -cameraX;
 
     // 3. UI overlays (HUD & Controls) stay fixed on screen
@@ -217,13 +225,21 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     )..priority = 10);
 
     // 4. Giới thiệu round (banner + âm thanh) trước khi gameplay bắt đầu
-    hud.setRound(level);
+    hud.setRound(currentRound);
     hud.startRoundIntro();
   }
 
   void onMatchEnd({required bool victory, required String message}) {
     if (_networkEnded) return;
     _networkEnded = true;
+    if (!isNetworkMatch) {
+      if (victory) {
+        playerRoundWins++;
+      } else {
+        enemyRoundWins++;
+      }
+      hud.recordRoundResult(playerWon: victory);
+    }
     if (isNetworkMatch && networkHost) {
       networkSession!.sendControl({
         'type': 'match_result',
@@ -241,21 +257,30 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   void restartMatch() {
     AudioService.stopMatchEnd();
+    _networkEnded = false;
     isIntroPlaying = true; // khởi lại intro khi restart
     overlays.remove('GameOver');
     if (Get.isRegistered<GameMatchController>()) {
       GameMatchController.to.restartMatch();
     }
     if (player == null || enemy == null) return;
-    player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);
+    hud.clearRoundResult(currentRound);
+    player!.resetCharacter(
+      startX: mapWidth * 0.30,
+      faceRight: true,
+      startingMana: _roundStartMana,
+    );
     enemy!.resetCharacter(
       startX: mapWidth * 0.55,
       faceRight: false,
-      newAiProfile: AiProfile.forMapAndRound(1, currentLevel),
+      newAiProfile: AiProfile.forMapAndRound(mapLevel, currentRound),
     );
     _changeBackground();
+    hud.setRound(currentRound);
     hud.startRoundIntro(); // hiện banner round sau restart
-    cameraX = (player!.position.x - size.x / 2).clamp(0.0, mapWidth - size.x);
+    cameraX = (player!.position.x - size.x / 2)
+        .clamp(0.0, mapWidth - size.x)
+        .toDouble();
     stage.position.x = -cameraX;
   }
 
@@ -264,32 +289,69 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     isIntroPlaying = false;
   }
 
-  /// Chuyển sang level mới mà không cần navigate (dùng khi thắng + bấm Continue)
-  void startNewLevel(int newLevel) {
-    currentLevel = newLevel; // cập nhật trước tiên
+  /// Begin the next gauntlet round after a round victory.
+  void startNextRound() {
+    if (currentRound >= 3 || player == null || enemy == null) return;
+    currentRound++;
+    _roundStartMana = player!.mana * 0.5;
     AudioService.stopMatchEnd();
     isIntroPlaying = true;
     isVictory = false;
     endMessage = '';
+    _networkEnded = false;
     overlays.remove('GameOver');
     if (Get.isRegistered<GameMatchController>()) {
       GameMatchController.to.restartMatch();
-      // Sync level vào GameMatchController để onWinCurrentLevel() đọc đúng
-      GameMatchController.to.currentLevel.value = newLevel;
     }
+    player!.resetCharacter(
+      startX: mapWidth * 0.30,
+      faceRight: true,
+      startingMana: _roundStartMana,
+    );
+    enemy!.resetCharacter(
+      startX: mapWidth * 0.55,
+      faceRight: false,
+      newAiProfile: AiProfile.forMapAndRound(mapLevel, currentRound),
+    );
+    _changeBackground();
+    hud.setRound(currentRound);
+    hud.startRoundIntro();
+    cameraX = (player!.position.x - size.x / 2)
+        .clamp(0.0, mapWidth - size.x)
+        .toDouble();
+    stage.position.x = -cameraX;
+  }
+
+  /// Restart the selected campaign map from Round 1.
+  void restartStage() {
+    currentRound = 1;
+    playerRoundWins = 0;
+    enemyRoundWins = 0;
+    _roundStartMana = 0;
     if (player == null || enemy == null) return;
+    AudioService.stopMatchEnd();
+    isIntroPlaying = true;
+    isVictory = false;
+    endMessage = '';
+    _networkEnded = false;
+    overlays.remove('GameOver');
     player!.resetCharacter(startX: mapWidth * 0.30, faceRight: true);
     enemy!.resetCharacter(
       startX: mapWidth * 0.55,
       faceRight: false,
-      newAiProfile: AiProfile.forMapAndRound(1, currentLevel),
+      newAiProfile: AiProfile.forMapAndRound(mapLevel, currentRound),
     );
-    _changeBackground();
-    hud.setRound(newLevel);
+    hud.resetGauntlet();
+    hud.setRound(currentRound);
     hud.startRoundIntro();
-    cameraX = (player!.position.x - size.x / 2).clamp(0.0, mapWidth - size.x);
+    cameraX = (player!.position.x - size.x / 2)
+        .clamp(0.0, mapWidth - size.x)
+        .toDouble();
     stage.position.x = -cameraX;
   }
+
+  /// Backwards-compatible call site for callers using the old round API.
+  void startNewLevel(int newRound) => startNextRound();
 
   // Screen Shake (mục D trong docs/03_vfx_and_game_feel.md)
   double _shakeTimer = 0;
@@ -298,6 +360,10 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   void triggerScreenShake({double duration = 0.18, double intensity = 5.0}) {
     _shakeTimer = duration;
     _shakeIntensity = intensity;
+  }
+
+  void onComboHit(bool isPlayer, int hits) {
+    hud.showCombo(isPlayer: isPlayer, hits: hits);
   }
 
   void spawnHitSpark(Vector2 pos, {bool isHeavy = false}) {
@@ -458,6 +524,8 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       'x': character.position.x,
       'y': character.position.y,
       'hp': character.hp,
+      'mana': character.mana,
+      'comboHits': character.comboHits,
       'facingRight': character.facingRight,
       'state': character.networkState,
     };
@@ -469,7 +537,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       'groundY': size.y * groundFraction,
       'host': state(player!),
       'client': state(enemy!),
-      'round': currentLevel,
+      'round': currentRound,
     });
   }
 
@@ -508,12 +576,13 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
     // Center view on player
     final targetCameraX = (player!.position.x - size.x / 2)
-        .clamp(0.0, mapWidth - size.x);
+        .clamp(0.0, mapWidth - size.x)
+        .toDouble();
 
     // Smooth exponential lerp
     const lerpSpeed = 6.0;
     cameraX += (targetCameraX - cameraX) * (1.0 - exp(-lerpSpeed * dt));
-    cameraX = cameraX.clamp(0.0, mapWidth - size.x);
+    cameraX = cameraX.clamp(0.0, mapWidth - size.x).toDouble();
 
     stage.position.x = -cameraX;
     stage.position.y = 0;

@@ -108,31 +108,35 @@ class _MapScreenState extends State<MapScreen>
                   final nodeY = stage.relativePos.dy * canvasHeight;
 
                   // Kích thước chuẩn khung màn chơi
-                  const nodeWidth = 118.0;
-                  const nodeHeight = 110.0;
+                  const nodeWidth = 70.0;
+                  const nodeHeight = 70.0;
 
                   return Positioned(
                     left: nodeX - nodeWidth / 2,
                     top: nodeY - nodeHeight / 2,
-                    child: Obx(() => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        MapStageNodeWidget(
-                          stageNumber: stage.stageNumber,
-                          onTap: () => _onSelectStageNode(index, stage),
-                          isUnlocked: stage.isUnlocked,
-                          isSelected: controller.selectedStageIndex.value == index + 1,
-                          stars: stage.stars,
-                          width: nodeWidth,
-                          height: nodeHeight,
-                        ),
-                        // Thanh hiển thị 3 Ngôi Sao bên dưới khung màn chơi
-                        Transform.translate(
-                          offset: const Offset(0, -22),
-                          child: _buildStarRatingBar(stage.stars),
-                        ),
-                      ],
-                    )),
+                    child: Obx(
+                      () => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          MapStageNodeWidget(
+                            stageNumber: stage.stageNumber,
+                            onTap: () => _onSelectStageNode(index, stage),
+                            isUnlocked: stage.isUnlocked,
+                            isSelected:
+                                controller.selectedStageIndex.value ==
+                                index + 1,
+                            stars: stage.stars,
+                            width: nodeWidth,
+                            height: nodeHeight,
+                          ),
+                          // Thanh hiển thị 3 Ngôi Sao bên dưới khung màn chơi
+                          Transform.translate(
+                            offset: const Offset(0, -22),
+                            child: _buildStarRatingBar(stage.stars),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 }),
 
@@ -186,30 +190,16 @@ class _MapScreenState extends State<MapScreen>
                         height: 48,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 36, right: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.star_rounded,
-                                color: Color(0xFFFFC107),
-                                size: 18,
-                                shadows: [
-                                  Shadow(color: Colors.black, blurRadius: 4),
-                                ],
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                '${controller.totalEarnedStars}/${controller.totalMaxStars}',
-                                style: GameTypography.pixel(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w900,
-                                  shadows: const [
-                                    Shadow(color: Colors.black, blurRadius: 4),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            '${controller.totalEarnedStars}/${controller.totalMaxStars}',
+                            style: GameTypography.pixel(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              shadows: const [
+                                Shadow(color: Colors.black, blurRadius: 4),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -295,99 +285,105 @@ class _MapScreenState extends State<MapScreen>
     double height,
   ) {
     return Obx(() {
-      final currentPos = points[controller.selectedStageIndex.value.clamp(0, points.length - 1)];
+      final currentPos =
+          points[controller.selectedStageIndex.value.clamp(
+            0,
+            points.length - 1,
+          )];
 
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.easeInOutCubic,
-      left: currentPos.dx - 32,
-      top: currentPos.dy - 46,
-      child: IgnorePointer(
-        child: AnimatedBuilder(
-          animation: _heroPulseController,
-          builder: (context, child) {
-            final scaleGlow = 1.0 + (_heroPulseController.value * 0.15);
+      return AnimatedPositioned(
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOutCubic,
+        left: currentPos.dx - 32,
+        top: currentPos.dy - 46,
+        child: IgnorePointer(
+          child: AnimatedBuilder(
+            animation: _heroPulseController,
+            builder: (context, child) {
+              final scaleGlow = 1.0 + (_heroPulseController.value * 0.15);
 
-            return SizedBox(
-              width: 64,
-              height: 64,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Vòng hào quang bệ đá phát sáng màu vàng kim
-                  Transform.scale(
-                    scale: scaleGlow,
-                    child: Container(
-                      width: 44,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.elliptical(22, 9),
-                        ),
-                        color: const Color(0xFFFFC107).withValues(alpha: 0.35),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0xFFFF9800),
-                            blurRadius: 14,
-                            spreadRadius: 3,
+              return SizedBox(
+                width: 64,
+                height: 64,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Vòng hào quang bệ đá phát sáng màu vàng kim
+                    Transform.scale(
+                      scale: scaleGlow,
+                      child: Container(
+                        width: 44,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.elliptical(22, 9),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Mũi tên chỉ hướng trên đầu nhân vật
-                  Positioned(
-                    top: 0,
-                    child: Transform.translate(
-                      offset: Offset(0, _heroPulseController.value * -4),
-                      child: const Icon(
-                        Icons.arrow_drop_down_rounded,
-                        color: Color(0xFFFFD54F),
-                        size: 26,
-                        shadows: [
-                          Shadow(color: Colors.black, blurRadius: 4),
-                          Shadow(color: Color(0xFFFF6F00), blurRadius: 8),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Sprite/Icon Nhân Vật Hiệp Sĩ Cờ Đỏ
-                  Positioned(
-                    bottom: 8,
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFFFFD54F),
-                          width: 2,
-                        ),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black45, blurRadius: 6),
-                        ],
-                        gradient: const LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Color(0xFFD32F2F), Color(0xFF7B1FA2)],
+                          color: const Color(
+                            0xFFFFC107,
+                          ).withValues(alpha: 0.35),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0xFFFF9800),
+                              blurRadius: 14,
+                              spreadRadius: 3,
+                            ),
+                          ],
                         ),
                       ),
-                      child: const Icon(
-                        Icons.shield_rounded,
-                        color: Colors.white,
-                        size: 20,
+                    ),
+
+                    // Mũi tên chỉ hướng trên đầu nhân vật
+                    Positioned(
+                      top: 0,
+                      child: Transform.translate(
+                        offset: Offset(0, _heroPulseController.value * -4),
+                        child: const Icon(
+                          Icons.arrow_drop_down_rounded,
+                          color: Color(0xFFFFD54F),
+                          size: 26,
+                          shadows: [
+                            Shadow(color: Colors.black, blurRadius: 4),
+                            Shadow(color: Color(0xFFFF6F00), blurRadius: 8),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+
+                    // Sprite/Icon Nhân Vật Hiệp Sĩ Cờ Đỏ
+                    Positioned(
+                      bottom: 8,
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFFFFD54F),
+                            width: 2,
+                          ),
+                          boxShadow: const [
+                            BoxShadow(color: Colors.black45, blurRadius: 6),
+                          ],
+                          gradient: const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Color(0xFFD32F2F), Color(0xFF7B1FA2)],
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.shield_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
-      ),
-    );
+      );
     });
   }
 
@@ -413,121 +409,123 @@ class _MapScreenState extends State<MapScreen>
                 ),
               ],
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Khung Tiêu Đề Màn Chơi
-                Text(
-                  '${AppStrings.mapStagePrefix} ${stage.stageNumber}: ${stage.title.toUpperCase()}',
-                  textAlign: TextAlign.center,
-                  style: GameTypography.pixel(
-                    color: const Color(0xFFFFD54F),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
-                    shadows: const [Shadow(color: Colors.black, blurRadius: 4)],
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Xem trước Khung Sprite
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.black45,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF5D4037)),
-                  ),
-                  child: Row(
-                    children: [
-                      MapTileWidget(tile: stage.tile, width: 90, height: 84),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${AppStrings.mapOpponentPrefix} ${stage.bossName}',
-                              style: GameTypography.pixel(
-                                color: Colors.orangeAccent,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              stage.description,
-                              style: const TextStyle(
-                                color: Color(0xFFD7CCC8),
-                                fontSize: 11,
-                                height: 1.3,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 14),
-
-                // Yêu cầu 3 sao
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2C1B12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildObjectiveRow(
-                        AppStrings.mapObjective1,
-                        stage.stars >= 1,
-                      ),
-                      _buildObjectiveRow(
-                        AppStrings.mapObjective2,
-                        stage.stars >= 2,
-                      ),
-                      _buildObjectiveRow(
-                        AppStrings.mapObjective3,
-                        stage.stars >= 3,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-
-                // Nút Bắt Đầu Chiếm Đấu
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD84315),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            side: const BorderSide(
-                              color: Color(0xFFFFD54F),
-                              width: 1.5,
-                            ),
-                          ),
-                        ),
-                        onPressed: () => controller.startStage(stage),
-                        child: Text(
-                          AppStrings.battleNow,
-                          style: GameTypography.pixel(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Khung Tiêu Đề Màn Chơi
+                  Text(
+                    '${AppStrings.mapStagePrefix} ${stage.stageNumber}: ${stage.title.toUpperCase()}',
+                    textAlign: TextAlign.center,
+                    style: GameTypography.pixel(
+                      color: const Color(0xFFFFD54F),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                      shadows: const [Shadow(color: Colors.black, blurRadius: 4)],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 12),
+              
+                  // Xem trước Khung Sprite
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF5D4037)),
+                    ),
+                    child: Row(
+                      children: [
+                        MapTileWidget(tile: stage.tile, width: 90, height: 84),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${AppStrings.mapOpponentPrefix} ${stage.bossName}',
+                                style: GameTypography.pixel(
+                                  color: Colors.orangeAccent,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                stage.description,
+                                style: const TextStyle(
+                                  color: Color(0xFFD7CCC8),
+                                  fontSize: 11,
+                                  height: 1.3,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+              
+                  // Yêu cầu 3 sao
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2C1B12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildObjectiveRow(
+                          AppStrings.mapObjective1,
+                          stage.stars >= 1,
+                        ),
+                        _buildObjectiveRow(
+                          AppStrings.mapObjective2,
+                          stage.stars >= 2,
+                        ),
+                        _buildObjectiveRow(
+                          AppStrings.mapObjective3,
+                          stage.stars >= 3,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+              
+                  // Nút Bắt Đầu Chiếm Đấu
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD84315),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: const BorderSide(
+                                color: Color(0xFFFFD54F),
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                          onPressed: () => controller.startStage(stage),
+                          child: Text(
+                            AppStrings.battleNow,
+                            style: GameTypography.pixel(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

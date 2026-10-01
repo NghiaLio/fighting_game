@@ -18,7 +18,7 @@ class MapController extends GetxController {
   final Offset pedestalPos = const Offset(0.058, 0.745);
 
   // Danh sách các màn chơi hiển thị trên Bản Đồ
-  final List<MapStageData> stages = const [
+  static const List<MapStageData> _stageDefinitions = [
     MapStageData(
       stageNumber: 1,
       title: AppStrings.mapStage1Title,
@@ -91,6 +91,19 @@ class MapController extends GetxController {
     ),
   ];
 
+  List<MapStageData> get stages => _stageDefinitions
+      .map((stage) => MapStageData(
+            stageNumber: stage.stageNumber,
+            title: stage.title,
+            tile: stage.tile,
+            relativePos: stage.relativePos,
+            stars: stage.stars,
+            isUnlocked: stage.stageNumber <= ProgressService.highestUnlockedMap,
+            description: stage.description,
+            bossName: stage.bossName,
+          ))
+      .toList(growable: false);
+
   int get totalEarnedStars => stages.fold(0, (sum, stage) => sum + stage.stars);
   int get totalMaxStars => stages.length * 3;
 
@@ -131,6 +144,7 @@ class MapController extends GetxController {
 
   void startStage(MapStageData stage) {
     Get.back(); // Đóng modal (nếu có modal đang mở)
+    if (stage.stageNumber > ProgressService.highestUnlockedMap) return;
     
     // Cập nhật level hiện tại trong GameMatchController
     GameMatchController.to.currentLevel.value = stage.stageNumber;
@@ -140,7 +154,7 @@ class MapController extends GetxController {
   }
 
   Future<void> onResetProgress() async {
-    await ProgressService.setLevel(1);
+    await ProgressService.resetCampaign();
     GameMatchController.to.reloadLevel();
   }
 }

@@ -41,6 +41,10 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   late TextComponent _timerText;
   late TextComponent _p1Label;
   late TextComponent _enemyLabel;
+  late TextComponent _comboText;
+  double _comboTimer = 0;
+  final List<bool> _playerRoundResults = List<bool>.filled(3, false);
+  final List<bool> _enemyRoundResults = List<bool>.filled(3, false);
   Sprite? _winSprite;
   Sprite? _loseSprite;
   late _BannerComponent _winBanner;
@@ -49,6 +53,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
 
   // Round intro banner
   late _BannerComponent _roundBanner;
+  late TextComponent _roundCaption;
   Sprite? _round1Sprite;
   Sprite? _round2Sprite;
   Sprite? _round3Sprite;
@@ -120,6 +125,19 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       position: Vector2(game.size.x / 2, 10),
       anchor: Anchor.topCenter,
     );
+    _comboText = TextComponent(
+      text: '',
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Color(0xFFFFD54F),
+          fontSize: 22,
+          fontWeight: FontWeight.w900,
+          shadows: [Shadow(blurRadius: 6, color: Colors.black)],
+        ),
+      ),
+      position: Vector2(game.size.x / 2, 66),
+      anchor: Anchor.topCenter,
+    );
 
     _winSprite = await game.loadSprite(AppAssets.vfxWin);
     _loseSprite = await game.loadSprite(AppAssets.vfxLose);
@@ -146,7 +164,30 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       priority: 20, // Cao hơn winBanner
     );
 
-    await addAll([_p1Label, _enemyLabel, _timerText, _winBanner, _roundBanner]);
+    _roundCaption = TextComponent(
+      text: '',
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Color(0xFFFF5252),
+          fontSize: 16,
+          fontWeight: FontWeight.w900,
+          shadows: [Shadow(blurRadius: 5, color: Colors.black)],
+        ),
+      ),
+      position: Vector2(game.size.x / 2, game.size.y / 2 + 52),
+      anchor: Anchor.topCenter,
+      priority: 21,
+    );
+
+    await addAll([
+      _p1Label,
+      _enemyLabel,
+      _timerText,
+      _comboText,
+      _winBanner,
+      _roundBanner,
+      _roundCaption,
+    ]);
   }
 
   @override
@@ -155,8 +196,10 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     if (!isLoaded) return;
     _enemyLabel.position = Vector2(size.x - 16, 12);
     _timerText.position = Vector2(size.x / 2, 10);
+    _comboText.position = Vector2(size.x / 2, 66);
     _winBanner.position = Vector2(size.x / 2, size.y / 2 - 20);
     _roundBanner.position = Vector2(size.x / 2, size.y / 2);
+    _roundCaption.position = Vector2(size.x / 2, size.y / 2 + 52);
   }
 
   @override
@@ -176,9 +219,21 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       top: barY,
       width: barWidth,
       height: barHeight,
-      ratio: (_leftCharacter.hp / _leftCharacter.maxHp).clamp(0, 1),
+      ratio: (_leftCharacter.hp / _leftCharacter.maxHp).clamp(0, 1).toDouble(),
       radius: borderRadius,
       isPlayer: true,
+    );
+
+    _drawManaBar(
+      canvas,
+      left: barPad,
+      top: barY + barHeight + 3,
+      width: barWidth,
+      height: 7,
+      ratio: (_leftCharacter.mana / CharacterComponent.maxMana)
+          .clamp(0, 1)
+          .toDouble(),
+      rightAligned: false,
     );
 
     // Enemy health bar (right)
@@ -188,10 +243,100 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
       top: barY,
       width: barWidth,
       height: barHeight,
-      ratio: (_rightCharacter.hp / _rightCharacter.maxHp).clamp(0, 1),
+      ratio: (_rightCharacter.hp / _rightCharacter.maxHp).clamp(0, 1).toDouble(),
       radius: borderRadius,
       isPlayer: false,
     );
+    _drawManaBar(
+      canvas,
+      left: gameSize.x - barPad - barWidth,
+      top: barY + barHeight + 3,
+      width: barWidth,
+      height: 7,
+      ratio: (_rightCharacter.mana / CharacterComponent.maxMana)
+          .clamp(0, 1)
+          .toDouble(),
+      rightAligned: true,
+    );
+    _drawRoundBadges(canvas, left: barPad + 3,
+        wins: _playerRoundResults.where((won) => won).length,
+        color: const Color(0xFFFFD54F));
+    _drawRoundBadges(canvas, left: gameSize.x - barPad - 42,
+        wins: _enemyRoundResults.where((won) => won).length,
+        color: const Color(0xFFEF5350));
+  }
+
+  void _drawManaBar(
+    Canvas canvas, {
+    required double left,
+    required double top,
+    required double width,
+    required double height,
+    required double ratio,
+    required bool rightAligned,
+  }) {
+    final background = RRect.fromLTRBR(
+      left, top, left + width, top + height, const Radius.circular(4),
+    );
+    canvas.drawRRect(background, Paint()..color = Colors.black54);
+    final fillWidth = width * ratio;
+    final fillLeft = rightAligned ? left + width - fillWidth : left;
+    canvas.drawRRect(
+      RRect.fromLTRBR(fillLeft, top, fillLeft + fillWidth, top + height,
+          const Radius.circular(4)),
+      Paint()..color = const Color(0xFF26D9E8),
+    );
+  }
+
+  void _drawRoundBadges(
+    Canvas canvas, {
+    required double left,
+    required int wins,
+    required Color color,
+  }) {
+    for (var i = 0; i < 3; i++) {
+      final active = i < wins;
+      canvas.drawCircle(
+        Offset(left + i * 15, 64),
+        5,
+        Paint()..color = active ? color : const Color(0xFF77716A),
+      );
+      canvas.drawCircle(
+        Offset(left + i * 15, 64),
+        5,
+        Paint()
+          ..color = active ? Colors.white70 : const Color(0xFFB08D57)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1,
+      );
+    }
+  }
+
+  void showCombo({required bool isPlayer, required int hits}) {
+    if (!isLoaded || hits < 2) return;
+    _comboText.text = hits >= 3
+        ? '${isPlayer ? 'YOU' : 'CPU'} • COMBO FINISH!'
+        : '${isPlayer ? 'YOU' : 'CPU'} • $hits HITS!';
+    _comboTimer = 1.2;
+  }
+
+  void recordRoundResult({required bool playerWon}) {
+    final index = (_currentRound - 1).clamp(0, 2).toInt();
+    _playerRoundResults[index] = playerWon;
+    _enemyRoundResults[index] = !playerWon;
+  }
+
+  void clearRoundResult(int round) {
+    final index = (round - 1).clamp(0, 2).toInt();
+    _playerRoundResults[index] = false;
+    _enemyRoundResults[index] = false;
+  }
+
+  void resetGauntlet() {
+    for (var i = 0; i < 3; i++) {
+      _playerRoundResults[i] = false;
+      _enemyRoundResults[i] = false;
+    }
   }
 
   void _drawHealthBar(
@@ -246,6 +391,10 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   @override
   void update(double dt) {
     super.update(dt);
+    if (_comboTimer > 0) {
+      _comboTimer -= dt;
+      if (_comboTimer <= 0) _comboText.text = '';
+    }
 
     // ─── Win/Lose banner animation ───────────────────────────────────────
     if (_animatingBanner) {
@@ -274,6 +423,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
         // Scale-out & bắt đầu game
         _roundBanner.isShowing = false;
         _roundBanner.scale = Vector2.all(0.0);
+        _roundCaption.text = '';
         // Phát âm thanh FIGHT
         AudioService.playSkillSfx(AppAssets.fight);
         game.onRoundIntroDone();
@@ -297,10 +447,8 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     } else if (_matchTime <= 0) {
       if (player.hp > enemy.hp) {
         _showWin(victory: true, msg: 'YOU WIN!');
-      } else if (enemy.hp > player.hp) {
-        _showWin(victory: false, msg: 'ENEMY WINS!');
       } else {
-        _showWin(victory: false, msg: 'DRAW!');
+        _showWin(victory: false, msg: 'TIME OVER - DEFEAT!');
       }
     }
   }
@@ -332,6 +480,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     _roundHoldTimer = 0;
     _roundBanner.isShowing = false;
     _roundBanner.scale = Vector2.all(0);
+    _roundCaption.text = '';
     _showWin(victory: victory, msg: message);
   }
 
@@ -371,7 +520,10 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   }
 
   void setRound(int round) {
-    _currentRound = round.clamp(1, 3);
+    _currentRound = round.clamp(1, 3).toInt();
+    _roundCaption.text = _currentRound == 3
+        ? 'FINAL ROUND • SUDDEN DEATH'
+        : '';
   }
 
   void resetHud() {

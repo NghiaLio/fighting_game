@@ -3,13 +3,11 @@ import 'package:get/get.dart';
 
 /// Quản lý tiến trình chơi game (level) bằng Hive storage.
 ///
-/// - Có 3 level: 1, 2, 3.
-/// - Level hiện tại là level chưa win → lần sau vào game sẽ bắt đầu ở đây.
-/// - Khi win level N mà N < 3 → lưu N+1 làm level hiện tại.
-/// - Khi win level 3 → reset về 1 (hoàn thành campaign).
+/// Stores the current campaign map and the furthest unlocked map.
 class ProgressService {
   static const String _boxName = 'progress';
   static const String _keyCurrentLevel = 'current_level';
+  static const String _keyHighestUnlockedMap = 'highest_unlocked_map';
   static const String _keyCoins = 'coins';
   static const String _keyUnlockedHeroes = 'unlocked_heroes';
 
@@ -24,9 +22,15 @@ class ProgressService {
         _box?.get(_keyCoins, defaultValue: 9999) as int? ?? 9999;
   }
 
-  /// Level hiện tại (1–3). Trả về 1 nếu chưa có dữ liệu.
+  /// Selected campaign map (1..7). Defaults to the first map.
   static int get currentLevel {
-    return _box?.get(_keyCurrentLevel, defaultValue: 1) as int? ?? 1;
+    final saved = _box?.get(_keyCurrentLevel, defaultValue: 1) as int? ?? 1;
+    return saved.clamp(1, 7).toInt();
+  }
+
+  static int get highestUnlockedMap {
+    final saved = _box?.get(_keyHighestUnlockedMap, defaultValue: 1) as int? ?? 1;
+    return saved.clamp(1, 7).toInt();
   }
 
   static int get coins => coinBalance.value;
@@ -52,18 +56,21 @@ class ProgressService {
 
   /// Lưu level mới
   static Future<void> setLevel(int level) async {
-    final clamped = level.clamp(1, 3);
+    final clamped = level.clamp(1, 7).toInt();
     await _box?.put(_keyCurrentLevel, clamped);
   }
 
-  /// Gọi khi người chơi thắng 1 level.
-  /// - Nếu vừa thắng level N (N < 3) → set level hiện tại = N+1
-  /// - Nếu vừa thắng level 3 → reset về 1
+  /// Called only after the player wins all three rounds on a map.
   static Future<void> onWinLevel(int winLevel) async {
-    if (winLevel >= 3) {
-      await setLevel(1); // Hoàn thành campaign → reset
-    } else {
-      await setLevel(winLevel + 1);
+    final nextMap = (winLevel + 1).clamp(1, 7).toInt();
+    if (nextMap > highestUnlockedMap) {
+      await _box?.put(_keyHighestUnlockedMap, nextMap);
     }
+    await setLevel(nextMap);
+  }
+
+  static Future<void> resetCampaign() async {
+    await _box?.put(_keyHighestUnlockedMap, 1);
+    await setLevel(1);
   }
 }

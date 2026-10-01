@@ -3,6 +3,7 @@ import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/hero_roster_data.dart';
 import 'package:fighting_game/controllers/character_select_controller.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
+import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/screens/character_select/widgets/character_monument_stage.dart';
 import 'package:fighting_game/screens/character_select/widgets/character_roster_panel.dart';
 import 'package:fighting_game/screens/character_select/widgets/character_select_top_bar.dart';
@@ -30,6 +31,15 @@ class CharacterSelectScreen extends StatelessWidget {
     Get.off(
       () => GamePlayScreen(
         playerCharacter: controller.selectedHero.type,
+        enemyCharacter: switch (matchCtrl.currentLevel.value) {
+          1 => CharacterType.skeletonWarrior,
+          2 => CharacterType.skeletonSpearman,
+          3 => CharacterType.skeletonArcher,
+          4 => CharacterType.knight2,
+          5 => CharacterType.samurai,
+          6 => CharacterType.lightningWizard,
+          _ => CharacterType.samuraiCommander,
+        },
         level: matchCtrl.currentLevel.value,
       ),
     );

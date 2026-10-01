@@ -5,6 +5,8 @@ import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/screens/home_screen.dart';
+import 'package:fighting_game/screens/map_screen.dart';
+import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/pause_menu/pause_menu_action_button.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +18,7 @@ import 'package:get/get.dart';
 /// - Nếu thua: CONTINUE → chơi lại cùng level; EXIT → về home
 class ContinuePromptOverlay extends StatelessWidget {
   final FightingGame game;
-  final int level; // giữ lại để tương thích, nhưng logic dùng game.currentLevel
+  final int level; // giữ lại để tương thích với route hiện tại
 
   const ContinuePromptOverlay({
     super.key,
@@ -24,26 +26,22 @@ class ContinuePromptOverlay extends StatelessWidget {
     this.level = 1,
   });
 
-  /// Round hiện tại — luôn đọc từ game để phản ánh đúng sau startNewLevel()
-  int get _currentLevel => game.currentLevel;
+  int get _nextRound => (game.currentRound + 1).clamp(1, 3).toInt();
+  bool get _isFinalRound => game.currentRound >= 3;
 
-  /// Round tiếp theo (không vượt 3)
-  int get _nextLevel => (_currentLevel + 1).clamp(1, 3);
-
-  /// true: đang ở round cuối (round 3)
-  bool get _isFinalRound => _currentLevel >= 3;
-
-  void _onContinue() {
+  Future<void> _onContinue() async {
     AudioService.stopMatchEnd();
     if (game.isVictory) {
-      // Lưu tiến trình Hive (fire-and-forget)
-      GameMatchController.to.onWinCurrentLevel();
       if (_isFinalRound) {
-        // Xong round 3 → về HomeScreen (campaign hoàn thành)
-        Get.offAll(() => const HomeScreen());
+        await ProgressService.onWinLevel(game.mapLevel);
+        GameMatchController.to.currentLevel.value = ProgressService.currentLevel;
+        if (game.mapLevel >= 7) {
+          Get.offAll(() => const HomeScreen());
+        } else {
+          Get.offAll(() => const MapScreen());
+        }
       } else {
-        // Reset game tại chỗ với round mới
-        game.startNewLevel(_nextLevel);
+        game.startNextRound();
       }
     } else {
       // Thua → chơi lại cùng level
@@ -53,7 +51,7 @@ class ContinuePromptOverlay extends StatelessWidget {
 
   void _onExit() {
     AudioService.stopMatchEnd();
-    Get.offAll(() => const HomeScreen());
+    Get.offAll(() => const MapScreen());
   }
 
   @override
@@ -75,7 +73,10 @@ class ContinuePromptOverlay extends StatelessWidget {
           builder: (context, animValue, child) {
             return Transform.scale(
               scale: animValue,
-              child: Opacity(opacity: animValue.clamp(0.0, 1.0), child: child),
+              child: Opacity(
+                opacity: animValue.clamp(0.0, 1.0).toDouble(),
+                child: child,
+              ),
             );
           },
           child: Material(
@@ -132,9 +133,11 @@ class ContinuePromptOverlay extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
-                              isVictory
-                                  ? AppStrings.victorySubtitle
-                                  : AppStrings.defeatSubtitle,
+                            isVictory
+                                ? (_isFinalRound
+                                    ? 'Map ${game.mapLevel} cleared: all 3 rounds won.'
+                                    : 'Round ${game.currentRound}/3 cleared. Mana carries over at 50%.')
+                                : 'Defeat in Round ${game.currentRound}/3. Retry or restart this map.',
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -156,20 +159,22 @@ class ContinuePromptOverlay extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 9.0),
                                 child: PauseMenuActionButton.secondary(
-                                  label: AppStrings.exitAction,
-                                  icon: Icons.exit_to_app_rounded,
+                                  label: isVictory ? 'MAP' : 'RESTART STAGE',
+                                  icon: isVictory
+                                      ? Icons.map_outlined
+                                      : Icons.restart_alt_rounded,
                                   width: 114,
                                   height: 38,
                                   fontSize: 10.5,
-                                  onTap: _onExit,
+                                  onTap: isVictory ? _onExit : game.restartStage,
                                 ),
                               ),
 
                               // Nút CONTINUE / ROUND X
                               PauseMenuActionButton.resume(
                                 label: game.isVictory
-                                    ? (_isFinalRound ? 'CONTINUE' : 'ROUND $_nextLevel')
-                                    : 'RETRY',
+                                    ? (_isFinalRound ? 'CLEAR MAP' : 'ROUND $_nextRound')
+                                    : 'RETRY ROUND',
                                 icon: Icons.play_arrow_rounded,
                                 width: 114,
                                 height: 38,

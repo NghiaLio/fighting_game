@@ -19,7 +19,8 @@ class CharacterComponent extends PositionComponent
   final double groundY;
   final bool isPlayer;
   bool facingRight;
-  final double maxHp;
+  final double baseMaxHp;
+  double maxHp;
 
   late PlayerStats stats;
   late PlayerSpriteSettings spriteSettings;
@@ -31,9 +32,12 @@ class CharacterComponent extends PositionComponent
   bool networkReplica = false;
 
   double hp = 100;
+  double mana = 0;
+  static const double maxMana = 100;
   CharacterState _state = CharacterState.idle;
 
   SpriteAnimationComponent? _animComp;
+  CircleComponent? _guardAura;
   void Function()? _stopSkillAudio;
 
   // Physics
@@ -74,9 +78,22 @@ class CharacterComponent extends PositionComponent
   double _deadTimer = 0;
   double _deadDuration = 1.1;
 
+  bool _guarding = false;
+  bool _guardDecisionMade = false;
+  int _guardHits = 0;
+  double _guardBreakTimer = 0;
+  double _comboWindowTimer = 0;
+  int _comboHits = 0;
+  CharacterState? _nextComboAttack;
+  bool _comboInProgress = false;
+  bool _comboAction = false;
+  bool _aiComboAttempted = false;
+  int _lastNetworkComboShown = 0;
+
   // AI
   final _rng = Random();
   double _aiTimer = 0;
+  double _whiffPunishTimer = 0;
 
   // Game Feel & VFX States (theo docs/03_vfx_and_game_feel.md)
   double _hitStopTimer = 0;
@@ -96,13 +113,18 @@ class CharacterComponent extends PositionComponent
     required this.groundY,
     required this.isPlayer,
     required this.facingRight,
-    required this.maxHp,
-  }) : super(
+    required double maxHp,
+    AiProfile? aiProfile,
+  }) : baseMaxHp = maxHp,
+       maxHp = maxHp * PlayerStats.fromPlayerType(characterType).healthMultiplier *
+           (isPlayer ? 1 : (aiProfile?.hpMultiplier ?? 1)),
+       aiProfile = aiProfile,
+       super(
          position: Vector2(startX, 0),
          anchor: Anchor.bottomCenter,
          priority: 1,
        ) {
-    hp = maxHp;
+    hp = this.maxHp;
   }
 
   @override
@@ -130,15 +152,34 @@ class CharacterComponent extends PositionComponent
     );
     await add(hitbox);
 
+    _guardAura = CircleComponent(
+      radius: 64,
+      position: Vector2(0, -76),
+      anchor: Anchor.center,
+      priority: 2,
+      paint: Paint()
+        ..color = const Color(0xBB43D9FF)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4,
+    )..renderShape = false;
+    await add(_guardAura!);
+
     await _switchState(CharacterState.idle);
   }
 
-  void resetCharacter({required double startX, required bool faceRight, AiProfile? newAiProfile}) {
+  void resetCharacter({
+    required double startX,
+    required bool faceRight,
+    AiProfile? newAiProfile,
+    double startingMana = 0,
+  }) {
     if (newAiProfile != null) {
       aiProfile = newAiProfile;
     }
-    final effectiveMaxHp = isPlayer ? maxHp : maxHp * (aiProfile?.hpMultiplier ?? 1.0);
-    hp = effectiveMaxHp;
+    maxHp = baseMaxHp * stats.healthMultiplier *
+        (isPlayer ? 1 : (aiProfile?.hpMultiplier ?? 1));
+    hp = maxHp;
+    mana = startingMana.clamp(0, maxMana).toDouble();
     position.x = startX;
     position.y = groundY;
     facingRight = faceRight;
@@ -158,7 +199,18 @@ class CharacterComponent extends PositionComponent
     _isDying = false;
     isDeadCompleted = false;
     _deadTimer = 0;
+    _guarding = false;
+    _guardDecisionMade = false;
+    _guardHits = 0;
+    _guardBreakTimer = 0;
+    _comboWindowTimer = 0;
+    _comboHits = 0;
+    _nextComboAttack = null;
+    _comboInProgress = false;
+    _aiComboAttempted = false;
+    _lastNetworkComboShown = 0;
     _aiTimer = 0;
+    _whiffPunishTimer = 0;
     movingLeft = false;
     movingRight = false;
     sprinting = false;
@@ -211,6 +263,21 @@ class CharacterComponent extends PositionComponent
 
     if (isDeadCompleted) return;
 
+    if (!game.isNetworkMatch || game.networkHost) {
+      mana = (mana + 2 * dt).clamp(0, maxMana).toDouble();
+    }
+    if (_comboWindowTimer > 0) {
+      _comboWindowTimer -= dt;
+      if (_comboWindowTimer <= 0) {
+        _comboWindowTimer = 0;
+        _nextComboAttack = null;
+        _comboInProgress = false;
+        _aiComboAttempted = false;
+        _comboHits = 0;
+      }
+    }
+    if (_whiffPunishTimer > 0) _whiffPunishTimer -= dt;
+
     // C. Cơ chế Khựng khung hình (Hit-Stop / Freeze Frame) theo docs/03_vfx_and_game_feel.md
     if (_hitStopTimer > 0) {
       _hitStopTimer -= dt;
@@ -236,6 +303,7 @@ class CharacterComponent extends PositionComponent
 
     if (networkReplica) {
       _flipSprite();
+      _guardAura?.renderShape = _guarding;
       return;
     }
 
@@ -253,12 +321,15 @@ class CharacterComponent extends PositionComponent
     _updateAttack(dt);
     _updateHurt(dt);
     _updateLanding(dt);
+    _guardAura?.renderShape = _guarding;
     _flipSprite();
     _clampToScreen();
   }
 
   bool get isDead => hp <= 0;
   String get networkState => _state.name;
+  int get comboHits => _comboHits;
+  bool get _opponentIsAttacking => opponent?._isAttacking ?? false;
 
   void applyRemoteInput({
     required bool left,
@@ -288,6 +359,8 @@ class CharacterComponent extends PositionComponent
     final x = snapshot['x'];
     final y = snapshot['y'];
     final remoteHp = snapshot['hp'];
+    final remoteMana = snapshot['mana'];
+    final remoteComboHits = snapshot['comboHits'];
     final remoteFacing = snapshot['facingRight'];
     final stateName = snapshot['state'];
     if (x is num) {
@@ -312,12 +385,23 @@ class CharacterComponent extends PositionComponent
     }
     if (remoteHp is num) {
       final oldHp = hp;
-      hp = remoteHp.toDouble().clamp(0, maxHp);
+      hp = remoteHp.toDouble().clamp(0, maxHp).toDouble();
       if (showDamageEffects && hp < oldHp) {
         final damage = oldHp - hp;
         game.spawnHitSpark(Vector2(position.x, position.y - 75));
         game.spawnFloatingDamage(Vector2(position.x, position.y - 120), damage);
         game.triggerScreenShake(duration: 0.14, intensity: 3);
+      }
+    }
+    if (remoteMana is num) {
+      mana = remoteMana.toDouble().clamp(0, maxMana).toDouble();
+    }
+    if (remoteComboHits is int) {
+      if (remoteComboHits >= 2 && remoteComboHits != _lastNetworkComboShown) {
+        game.onComboHit(isPlayer, remoteComboHits);
+        _lastNetworkComboShown = remoteComboHits;
+      } else if (remoteComboHits < 2) {
+        _lastNetworkComboShown = 0;
       }
     }
     if (syncState && remoteFacing is bool) facingRight = remoteFacing;
@@ -356,28 +440,49 @@ class CharacterComponent extends PositionComponent
   }
 
   void _handlePlayerInput(double dt) {
-    if (_isAttacking || _isHurt || _isLanding || isDead) return;
+    final requestedAttack = wantsAttack1
+        ? CharacterState.attack1
+        : wantsAttack2
+        ? CharacterState.attack2
+        : wantsAttack3
+        ? CharacterState.attack3
+        : wantsSpecial
+        ? CharacterState.special
+        : null;
+    wantsAttack1 = false;
+    wantsAttack2 = false;
+    wantsAttack3 = false;
+    wantsSpecial = false;
 
-    if (wantsAttack1) {
-      wantsAttack1 = false;
-      _startAttack(CharacterState.attack1);
+    if (_isAttacking) {
+      if (requestedAttack != null &&
+          _comboWindowTimer > 0 &&
+          requestedAttack == _nextComboAttack) {
+        _startAttack(requestedAttack);
+      }
       return;
     }
-    if (wantsAttack2) {
-      wantsAttack2 = false;
-      _startAttack(CharacterState.attack2);
+    if (_isHurt || _isLanding || isDead || _isDying) return;
+
+    if (requestedAttack != null) {
+      if (opponent != null) facingRight = opponent!.position.x >= position.x;
+      _startAttack(requestedAttack);
       return;
     }
-    if (wantsAttack3) {
-      wantsAttack3 = false;
-      _startAttack(CharacterState.attack3);
+
+    final movingBack = (movingLeft && facingRight) ||
+        (movingRight && !facingRight);
+    final dist = opponent == null
+        ? double.infinity
+        : (opponent!.position.x - position.x).abs();
+    _guarding = movingBack &&
+        _opponentIsAttacking &&
+        dist <= opponent!.stats.getAttackReach(CharacterState.attack1) + 30;
+    if (_guarding) {
+      _velocityX = 0;
       return;
     }
-    if (wantsSpecial) {
-      wantsSpecial = false;
-      _startAttack(CharacterState.special);
-      return;
-    }
+    _guardHits = 0;
     if (wantsJump && _onGround) {
       wantsJump = false;
       _velocityY = -stats.jumpPower;
@@ -407,7 +512,21 @@ class CharacterComponent extends PositionComponent
   }
 
   void _handleAI(double dt, AiProfile ai) {
-    if (_isAttacking || _isHurt || _isLanding || isDead) return;
+    if (_isAttacking) {
+      if (_comboWindowTimer > 0 &&
+          _nextComboAttack != null &&
+          !_aiComboAttempted) {
+        _aiComboAttempted = true;
+        if (_rng.nextDouble() < ai.comboChance) {
+          _startAttack(_nextComboAttack!);
+        }
+      }
+      return;
+    }
+    if (_isHurt || _isLanding || isDead || _isDying) {
+      _guarding = false;
+      return;
+    }
     if (opponent == null || opponent!.isDead) {
       _velocityX = 0;
       _switchState(CharacterState.idle);
@@ -419,10 +538,25 @@ class CharacterComponent extends PositionComponent
     final dist = dx.abs();
     final opponentIsAttacking = opponent!._isAttacking;
     final atkReach = stats.getAttackReach(CharacterState.attack1);
+    final heavyReach = stats.getAttackReach(CharacterState.attack3);
+    final specialReach = stats.getAttackReach(CharacterState.special);
+    final favorsSpecialRange = mana >= 50 && ai.specialChance >= 0.35;
+    final preferredReach = favorsSpecialRange
+        ? specialReach
+        : mana >= 25 && ai.specialChance >= 0.35
+        ? max(atkReach, heavyReach)
+        : atkReach;
 
-    // 1. Phản xạ Phòng Thủ (Block Behavior):
-    if (opponentIsAttacking && dist <= atkReach + 30 && _rng.nextDouble() < ai.blockChance) {
-      _velocityX = (dx > 0 ? -1 : 1) * stats.walkSpeed * 80;
+    // 1. Guard only when a nearby attack is actually in progress.
+    if (!opponentIsAttacking) {
+      _guardDecisionMade = false;
+      _guarding = false;
+    } else if (!_guardDecisionMade && dist <= atkReach + 30) {
+      _guardDecisionMade = true;
+      _guarding = _rng.nextDouble() < ai.blockChance;
+    }
+    if (_guarding) {
+      _velocityX = 0;
       facingRight = dx > 0;
       return;
     }
@@ -438,10 +572,31 @@ class CharacterComponent extends PositionComponent
     }
 
     // 3. Di Chuyển Định Vị (Spacing & Approach):
-    if (dist > ai.runThreshold) {
+    if (dist > preferredReach && dist > ai.runThreshold) {
       _velocityX = (dx > 0 ? 1 : -1) * stats.runSpeed * 100;
       facingRight = dx > 0;
       if (_onGround) _switchState(CharacterState.run);
+    } else if (dist > preferredReach || dist > atkReach) {
+      _velocityX = (dx > 0 ? 1 : -1) * stats.walkSpeed * 100;
+      facingRight = dx > 0;
+      if (dist > preferredReach || _aiTimer > 0) {
+        if (_onGround) _switchState(CharacterState.walk);
+      } else if (_onGround) {
+        _aiTimer = ai.minThinkDelay +
+            _rng.nextDouble() * (ai.maxThinkDelay - ai.minThinkDelay);
+        if (opponent!._whiffPunishTimer > 0) {
+          _startAttack(CharacterState.attack1);
+        } else if (favorsSpecialRange && dist <= specialReach &&
+            _rng.nextDouble() < ai.specialChance) {
+          _startAttack(CharacterState.special);
+        } else if (mana >= 25 && dist <= heavyReach &&
+            _rng.nextDouble() < ai.specialChance) {
+          _startAttack(CharacterState.attack3);
+        } else {
+          _velocityX = (dx > 0 ? 1 : -1) * stats.walkSpeed * 100;
+          _switchState(CharacterState.walk);
+        }
+      }
     } else if (dist > atkReach) {
       _velocityX = (dx > 0 ? 1 : -1) * stats.walkSpeed * 100;
       facingRight = dx > 0;
@@ -454,14 +609,18 @@ class CharacterComponent extends PositionComponent
           _aiTimer = ai.minThinkDelay + _rng.nextDouble() * (ai.maxThinkDelay - ai.minThinkDelay);
 
           final randSkill = _rng.nextDouble();
-          if (randSkill < 0.35) {
+          if (opponent!._whiffPunishTimer > 0) {
+            _startAttack(CharacterState.attack1);
+          } else if (mana >= 50 && _rng.nextDouble() < ai.specialChance) {
+            _startAttack(CharacterState.special);
+          } else if (randSkill < 0.35) {
             _startAttack(CharacterState.attack1);
           } else if (randSkill < 0.65) {
             _startAttack(CharacterState.attack2);
-          } else if (randSkill < 0.65 + ai.specialChance * 0.20) {
+          } else if (randSkill < 0.85 && mana >= 25) {
             _startAttack(CharacterState.attack3);
           } else {
-            _startAttack(CharacterState.special); // ULT bùng nổ
+            _startAttack(CharacterState.attack1);
           }
         } else {
           _switchState(CharacterState.idle);
@@ -508,6 +667,25 @@ class CharacterComponent extends PositionComponent
   }
 
   void _startAttack(CharacterState attackState) {
+    final cost = switch (attackState) {
+      CharacterState.attack3 => 25.0,
+      CharacterState.special => 50.0,
+      _ => 0.0,
+    };
+    if (mana < cost) return;
+
+    _comboAction = _comboWindowTimer > 0 &&
+        _nextComboAttack == attackState;
+    if (_comboAction) {
+      _comboWindowTimer = 0;
+      _nextComboAttack = null;
+    } else {
+      _comboInProgress = attackState == CharacterState.attack1;
+      _comboHits = 0;
+      _nextComboAttack = null;
+      _comboWindowTimer = 0;
+    }
+    mana = (mana - cost).clamp(0, maxMana).toDouble();
     _isAttacking = true;
     _hasDealtDamage = false;
     _hasSpawnedProjectile = false;
@@ -550,6 +728,13 @@ class CharacterComponent extends PositionComponent
     if (_attackTimer <= 0) {
       _isAttacking = false;
       _attackTimer = 0;
+      if (!_hasDealtDamage && _state != CharacterState.special) {
+        _whiffPunishTimer = 0.6;
+        _comboInProgress = false;
+        _comboHits = 0;
+        _nextComboAttack = null;
+        _comboWindowTimer = 0;
+      }
       _switchState(CharacterState.idle);
     }
   }
@@ -559,13 +744,9 @@ class CharacterComponent extends PositionComponent
     final spawnX = position.x + (facingRight ? 45.0 : -45.0);
     final spawnY = position.y - 75.0;
 
-    double multiplier = 1.0;
-    if (isPlayer) {
-      if (game.currentLevel == 2) multiplier = 0.7;
-      if (game.currentLevel >= 3) multiplier = 0.5;
-    } else if (aiProfile != null) {
-      multiplier = aiProfile!.damageMultiplier;
-    }
+    final multiplier = !isPlayer && aiProfile != null
+        ? aiProfile!.damageMultiplier
+        : 1.0;
 
     final fireball = FireballComponent(
       caster: this,
@@ -589,7 +770,8 @@ class CharacterComponent extends PositionComponent
       return;
     }
 
-    final dx = (opponent!.position.x - position.x).abs();
+    final forwardDistance =
+        (opponent!.position.x - position.x) * (facingRight ? 1 : -1);
 
     // Check reach dynamically per character archetype from PlayerStats
     final reach = stats.getAttackReach(_state);
@@ -612,17 +794,44 @@ class CharacterComponent extends PositionComponent
         break;
     }
 
-    if (dx <= reach) {
+    if (forwardDistance >= -20 && forwardDistance <= reach) {
       _hasDealtDamage = true;
-      
-      // Giảm sát thương của người chơi qua từng round để tăng độ khó
-      double playerDamageMultiplier = 1.0;
-      if (isPlayer) {
-        if (game.currentLevel == 2) playerDamageMultiplier = 0.85;
-        if (game.currentLevel >= 3) playerDamageMultiplier = 0.70;
+      final normalHit = _state == CharacterState.attack1 ||
+          _state == CharacterState.attack2 ||
+          _state == CharacterState.attack3;
+      if (normalHit && (!game.isNetworkMatch || game.networkHost)) {
+        mana = (mana + 10).clamp(0, maxMana).toDouble();
       }
+
+      if (_state == CharacterState.attack1) {
+        _comboHits = 1;
+        _comboInProgress = true;
+        _nextComboAttack = CharacterState.attack2;
+        _comboWindowTimer = 0.2;
+        _aiComboAttempted = false;
+      } else if (_comboAction && _state == CharacterState.attack2) {
+        _comboHits = 2;
+        _nextComboAttack = CharacterState.attack3;
+        _comboWindowTimer = 0.2;
+        _aiComboAttempted = false;
+      } else if (_comboAction && _state == CharacterState.attack3) {
+        _comboHits = 3;
+        _nextComboAttack = CharacterState.special;
+        _comboWindowTimer = 0.2;
+        _aiComboAttempted = false;
+        opponent!.applyComboHitStun();
+      } else {
+        _comboHits = 1;
+        _comboInProgress = false;
+        _nextComboAttack = null;
+        _comboWindowTimer = 0;
+      }
+      if (_comboHits >= 2) game.onComboHit(isPlayer, _comboHits);
       
-      final dmg = stats.getAttackPower(_state) * multiplier * (!isPlayer && aiProfile != null ? aiProfile!.damageMultiplier : playerDamageMultiplier);
+      final dmg = stats.getAttackPower(_state) * multiplier *
+          (!isPlayer && aiProfile != null
+              ? aiProfile!.damageMultiplier
+              : 1.0);
       final isHeavy = _state == CharacterState.attack3 || _state == CharacterState.special;
 
       // A. Hiệu ứng tia lửa va chạm (Hit Sparks) tại điểm tiếp xúc vũ khí
@@ -654,13 +863,33 @@ class CharacterComponent extends PositionComponent
 
   void receiveDamage(double dmg) {
     if (isDead) return;
+
+    mana = (mana + 5).clamp(0, maxMana).toDouble();
+
+    if (_guarding) {
+      _guardHits++;
+      if (_guardHits <= 4) {
+        final guardedDamage = dmg * 0.2 / stats.attackResistance;
+        hp = (hp - guardedDamage).clamp(0, maxHp).toDouble();
+        _velocityX = (facingRight ? -1 : 1) * 24;
+        if (hp <= 0) {
+          _guarding = false;
+          _switchState(CharacterState.dead, forceReset: true);
+        }
+        return;
+      }
+      _guarding = false;
+      _guardHits = 0;
+      _guardBreakTimer = 1.2;
+    }
+    dmg /= stats.attackResistance;
     
     if (_isAttacking) {
       _stopSkillAudio?.call();
       _stopSkillAudio = null;
     }
 
-    hp = (hp - dmg).clamp(0, maxHp);
+    hp = (hp - dmg).clamp(0, maxHp).toDouble();
     _isAttacking = false;
     _attackTimer = 0;
     _isLanding = false;
@@ -676,7 +905,24 @@ class CharacterComponent extends PositionComponent
       _switchState(CharacterState.dead, forceReset: true);
     } else {
       _switchState(CharacterState.hurt, forceReset: true);
+      if (_guardBreakTimer > 0) {
+        _hurtTimer = _guardBreakTimer;
+        _hurtDuration = _guardBreakTimer;
+        _guardBreakTimer = 0;
+      }
     }
+  }
+
+  void applyComboHitStun() {
+    if (isDead) return;
+    _isAttacking = false;
+    _attackTimer = 0;
+    _isLanding = false;
+    _isHurt = true;
+    _hurtDuration = 0.45;
+    _hurtTimer = _hurtDuration;
+    _velocityX = (facingRight ? -1 : 1) * 55;
+    _switchState(CharacterState.hurt, forceReset: true);
   }
 
   void _updateHurt(double dt) {
@@ -706,7 +952,7 @@ class CharacterComponent extends PositionComponent
     const safeMargin = 150.0;
     final minX = safeMargin;
     final maxX = game.mapWidth > 0 ? (game.mapWidth - safeMargin) : (game.size.x - safeMargin);
-    position.x = position.x.clamp(minX, maxX);
+    position.x = position.x.clamp(minX, maxX).toDouble();
   }
 
   void _updateSprintDust(double dt) {

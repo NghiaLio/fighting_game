@@ -345,7 +345,7 @@ class GameControls extends Component with HasGameReference {
       radius: 30.0,
       borderColor: const Color(0xFFFF7043), // Fiery Orange
       activeColor: const Color(0xFFFFAB91),
-      label: 'ATK 3',
+      label: 'ATK 3 • 25',
       iconSize: 26,
       onTap: () => _pressAction(3),
     );
@@ -357,7 +357,7 @@ class GameControls extends Component with HasGameReference {
       radius: 30.0,
       borderColor: const Color(0xFFAB47BC), // Arcane Purple
       activeColor: const Color(0xFFCE93D8),
-      label: 'ULT',
+      label: 'ULT • 50',
       iconSize: 26,
       onTap: () => _pressAction(4),
     );
