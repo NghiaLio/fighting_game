@@ -300,13 +300,13 @@ class HomeScreen extends StatelessWidget {
                                   label: AppStrings.battleNow,
                                   icon: Icons.sports_kabaddi_rounded,
                                   width: 290,
-                                  height: 48,
-                                  fontSize: 16,
+                                  height: 42,
+                                  fontSize: 15,
                                   textColor: const Color(0xFFFFD54F),
                                   contentOffsetY: 5,
                                   onTap: controller.startBattle,
                                 ),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 5),
 
                                 // Nút Chọn Anh Hùng
                                 UiTileButton(
@@ -314,12 +314,12 @@ class HomeScreen extends StatelessWidget {
                                   label: AppStrings.heroesRoster,
                                   icon: Icons.shield_rounded,
                                   width: 250,
-                                  height: 48,
-                                  fontSize: 13,
+                                  height: 36,
+                                  fontSize: 12,
                                   textColor: Colors.amber.shade200,
                                   onTap: controller.openCharacterSelect,
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 5),
 
                                 // Nút Cài Đặt
                                 UiTileButton(
@@ -327,24 +327,50 @@ class HomeScreen extends StatelessWidget {
                                   label: 'PvP qua mạng LAN',
                                   icon: Icons.wifi_tethering_rounded,
                                   width: 250,
-                                  height: 44,
-                                  fontSize: 13,
+                                  height: 36,
+                                  fontSize: 12,
                                   textColor: Colors.lightGreenAccent,
                                   onTap: controller.openLanVersus,
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 5),
 
-                                // Nút Cài Đặt
+                                // Nút Quick Versus
                                 UiTileButton(
                                   tile: UiTile.longButton,
-                                  label: AppStrings.settings,
-                                  icon: Icons.settings_rounded,
+                                  label: 'ĐẤU NHANH VS AI',
+                                  icon: Icons.bolt_rounded,
                                   width: 250,
-                                  height: 48,
-                                  fontSize: 13,
-                                  textColor: Colors.amber.shade200,
-                                  onTap: controller.openSettings,
+                                  height: 36,
+                                  fontSize: 12,
+                                  textColor: Colors.cyanAccent,
+                                  onTap: controller.openQuickVersus,
                                 ),
+                                const SizedBox(height: 5),
+
+                                // Nút Training
+                                UiTileButton(
+                                  tile: UiTile.longButton,
+                                  label: 'TRAINING',
+                                  icon: Icons.fitness_center_rounded,
+                                  width: 250,
+                                  height: 36,
+                                  fontSize: 12,
+                                  textColor: Colors.tealAccent,
+                                  onTap: controller.openTraining,
+                                ),
+                                const SizedBox(height: 5),
+
+                                // Nút Cài Đặt
+                                // UiTileButton(
+                                //   tile: UiTile.longButton,
+                                //   label: AppStrings.settings,
+                                //   icon: Icons.settings_rounded,
+                                //   width: 250,
+                                //   height: 36,
+                                //   fontSize: 12,
+                                //   textColor: Colors.amber.shade200,
+                                //   onTap: controller.openSettings,
+                                // ),
                               ],
                             ),
                           ),

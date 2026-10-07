@@ -1,1 +1,1 @@
-enum GameMode { arcade, lanVersus }
+enum GameMode { arcade, lanVersus, quickVersus, training }

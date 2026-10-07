@@ -1,6 +1,7 @@
 import 'package:fighting_game/constants/pause_menu_assets.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/enums/character_type.dart';
+import 'package:fighting_game/models/ai_profile.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/services/network/lan_match_session.dart';
 import 'package:fighting_game/screens/home_screen.dart';
@@ -21,6 +22,8 @@ class GamePlayScreen extends StatefulWidget {
   final int level;
   final LanMatchSession? networkSession;
   final bool networkHost;
+  final AiProfile? customAiProfile;
+  final bool isTrainingMode;
 
   GamePlayScreen({
     super.key,
@@ -29,12 +32,16 @@ class GamePlayScreen extends StatefulWidget {
     this.level = 1,
     this.networkSession,
     this.networkHost = true,
+    this.customAiProfile,
+    this.isTrainingMode = false,
   }) : _game = FightingGame(
           playerCharacter: playerCharacter,
           enemyCharacter: enemyCharacter,
           level: level,
           networkSession: networkSession,
           networkHost: networkHost,
+          customAiProfile: customAiProfile,
+          isTrainingMode: isTrainingMode,
         );
 
   final FightingGame _game;

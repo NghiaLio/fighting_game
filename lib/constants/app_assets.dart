@@ -28,11 +28,11 @@ class AppAssets {
   // 2. TÀI NGUYÊN FLAME ENGINE (Flame Image Assets)
   // ==========================================
   // Phông nền đấu trường (Arena Backgrounds)
-  static const String arenaBg1 = 'Backgrounds/bg1.png';
-  static const String arenaBg2 = 'Backgrounds/bg2.png';
-  static const String arenaBg3 = 'Backgrounds/bg3.png';
-  static const String arenaBg4 = 'Backgrounds/bg4.png';
-  static const String arenaBg5 = 'Backgrounds/bg5.png';
+  static const String arenaBg1 = 'Bg2/bg1.png';
+  static const String arenaBg2 = 'Bg2/bg2.png';
+  static const String arenaBg3 = 'Bg2/bg3.png';
+  static const String arenaBg4 = 'Bg2/bg4.png';
+  static const String arenaBg5 = 'Bg2/bg5.png';
   static const String arenaBg6 = 'Backgrounds/bg6.png';
   static const String arenaBg7 = 'Backgrounds/bg7.png';
 

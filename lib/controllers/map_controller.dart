@@ -97,7 +97,7 @@ class MapController extends GetxController {
             title: stage.title,
             tile: stage.tile,
             relativePos: stage.relativePos,
-            stars: stage.stars,
+            stars: ProgressService.getStageStars(stage.stageNumber),
             isUnlocked: stage.stageNumber <= ProgressService.highestUnlockedMap,
             description: stage.description,
             bossName: stage.bossName,

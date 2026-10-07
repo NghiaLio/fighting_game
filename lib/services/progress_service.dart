@@ -10,6 +10,7 @@ class ProgressService {
   static const String _keyHighestUnlockedMap = 'highest_unlocked_map';
   static const String _keyCoins = 'coins';
   static const String _keyUnlockedHeroes = 'unlocked_heroes';
+  static const String _keyStageStars = 'stage_stars';
 
   static Box? _box;
   static final RxInt coinBalance = 9999.obs;
@@ -72,5 +73,21 @@ class ProgressService {
   static Future<void> resetCampaign() async {
     await _box?.put(_keyHighestUnlockedMap, 1);
     await setLevel(1);
+  }
+
+  static int getStageStars(int stageNumber) {
+    final map = _box?.get(_keyStageStars, defaultValue: <String, int>{}) as Map?;
+    return map?['stage_$stageNumber'] ?? 0;
+  }
+
+  static Future<void> saveStageStars(int stageNumber, int stars) async {
+    final map = Map<String, int>.from(
+      (_box?.get(_keyStageStars, defaultValue: <String, int>{}) as Map?) ?? {},
+    );
+    final key = 'stage_$stageNumber';
+    if (stars > (map[key] ?? 0)) {
+      map[key] = stars;
+      await _box?.put(_keyStageStars, map);
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:fighting_game/enums/character_state.dart';
 import 'package:fighting_game/enums/character_type.dart';
+import 'package:fighting_game/game/components/arrow_component.dart';
 import 'package:fighting_game/game/components/fireball_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/game/utils/character_sprite_animations.dart';
@@ -95,6 +96,14 @@ class CharacterComponent extends PositionComponent
   double _aiTimer = 0;
   double _whiffPunishTimer = 0;
 
+  // AI Pattern Recognition Memory
+  final Map<CharacterState, int> _opponentAttackHistory = {};
+  CharacterState? _mostUsedOpponentAttack;
+  int _totalTrackedAttacks = 0;
+
+  // AI HP-Aware Strategy
+  double _retreatTimer = 0;
+
   // Game Feel & VFX States (theo docs/03_vfx_and_game_feel.md)
   double _hitStopTimer = 0;
   double _damageFlashTimer = 0;
@@ -102,6 +111,40 @@ class CharacterComponent extends PositionComponent
 
   void hitStop(double duration) {
     _hitStopTimer = duration;
+  }
+
+  CharacterState get currentAttackState => _state;
+
+  void _recordOpponentPattern(CharacterState state) {
+    _opponentAttackHistory[state] = (_opponentAttackHistory[state] ?? 0) + 1;
+    _totalTrackedAttacks++;
+    if (_totalTrackedAttacks % 3 == 0) {
+      _mostUsedOpponentAttack = _opponentAttackHistory.entries
+          .reduce((a, b) => a.value > b.value ? a : b).key;
+    }
+  }
+
+  /// 0=aggro, 1=trading, 2=defensive, 3=desperation
+  int _computeStrategy() {
+    final myRatio = hp / maxHp;
+    final opRatio = opponent != null ? opponent!.hp / opponent!.maxHp : 1.0;
+    if (myRatio < 0.20) return 3;
+    if (myRatio < 0.40) return 2;
+    if ((myRatio - opRatio).abs() < 0.20) return 1;
+    return 0;
+  }
+
+  bool _isOpponentCornered() {
+    if (opponent == null) return false;
+    const threshold = 200.0;
+    final ox = opponent!.position.x;
+    return ox <= threshold || ox >= (game.mapWidth - threshold);
+  }
+
+  bool _isSelfCornered() {
+    const threshold = 180.0;
+    return position.x <= threshold ||
+        position.x >= (game.mapWidth - threshold);
   }
 
   // Scale for rendering the sprite: 128x128 pixel art scaled 2.5x -> 320x320
@@ -211,6 +254,10 @@ class CharacterComponent extends PositionComponent
     _lastNetworkComboShown = 0;
     _aiTimer = 0;
     _whiffPunishTimer = 0;
+    _opponentAttackHistory.clear();
+    _mostUsedOpponentAttack = null;
+    _totalTrackedAttacks = 0;
+    _retreatTimer = 0;
     movingLeft = false;
     movingRight = false;
     sprinting = false;
@@ -529,39 +576,89 @@ class CharacterComponent extends PositionComponent
     }
     if (opponent == null || opponent!.isDead) {
       _velocityX = 0;
+      sprinting = false;
       _switchState(CharacterState.idle);
       return;
     }
 
     _aiTimer -= dt;
+    if (_retreatTimer > 0) _retreatTimer -= dt;
     final dx = opponent!.position.x - position.x;
     final dist = dx.abs();
     final opponentIsAttacking = opponent!._isAttacking;
     final atkReach = stats.getAttackReach(CharacterState.attack1);
     final heavyReach = stats.getAttackReach(CharacterState.attack3);
     final specialReach = stats.getAttackReach(CharacterState.special);
-    final favorsSpecialRange = mana >= 50 && ai.specialChance >= 0.35;
+
+    // HP-Aware Strategy
+    final strategy = _computeStrategy();
+    double effBlockChance = ai.blockChance;
+    double effSpecialChance = ai.specialChance;
+    double effMinDelay = ai.minThinkDelay;
+    double effMaxDelay = ai.maxThinkDelay;
+    double effComboChance = ai.comboChance;
+    if (strategy == 3) {
+      effBlockChance = 0.0;
+      effSpecialChance = 1.0;
+      effMinDelay = 0.05;
+      effMaxDelay = 0.15;
+    } else if (strategy == 2) {
+      effBlockChance = (ai.blockChance * 1.6).clamp(0.0, 1.0);
+      effSpecialChance = (ai.specialChance - 0.2).clamp(0.0, 1.0);
+      effMinDelay = ai.minThinkDelay + 0.2;
+      effMaxDelay = ai.maxThinkDelay + 0.2;
+    } else if (strategy == 1) {
+      effBlockChance = (ai.blockChance + 0.15).clamp(0.0, 1.0);
+    }
+
+    final favorsSpecialRange = mana >= 50 && effSpecialChance >= 0.35;
     final preferredReach = favorsSpecialRange
         ? specialReach
-        : mana >= 25 && ai.specialChance >= 0.35
+        : mana >= 25 && effSpecialChance >= 0.35
         ? max(atkReach, heavyReach)
         : atkReach;
 
-    // 1. Guard only when a nearby attack is actually in progress.
+    // Trading retreat
+    if (_retreatTimer > 0 && strategy == 1) {
+      final retreatDir = dx > 0 ? -1.0 : 1.0;
+      _velocityX = retreatDir * stats.runSpeed * 80;
+      facingRight = dx > 0;
+      sprinting = false;
+      if (_onGround) _switchState(CharacterState.run);
+      return;
+    }
+
+    // 1. Guard
     if (!opponentIsAttacking) {
       _guardDecisionMade = false;
       _guarding = false;
     } else if (!_guardDecisionMade && dist <= atkReach + 30) {
       _guardDecisionMade = true;
-      _guarding = _rng.nextDouble() < ai.blockChance;
+      _guarding = _rng.nextDouble() < effBlockChance;
     }
     if (_guarding) {
       _velocityX = 0;
+      sprinting = false;
       facingRight = dx > 0;
       return;
     }
 
-    // 2. Phản xạ Nhảy né đạn / Áp sát trên không:
+    // 2a. Pattern Counter
+    final mostUsed = _mostUsedOpponentAttack;
+    if (mostUsed != null &&
+        (_opponentAttackHistory[mostUsed] ?? 0) >= 3 &&
+        opponentIsAttacking &&
+        opponent!._state == mostUsed) {
+      final counterChance = (effBlockChance + 0.30).clamp(0.0, 1.0);
+      if (_onGround && _rng.nextDouble() < counterChance) {
+        _velocityY = -stats.jumpPower;
+        _onGround = false;
+        _switchState(CharacterState.jump);
+        return;
+      }
+    }
+
+    // 2b. Jump dodge
     if (_onGround && _rng.nextDouble() < ai.jumpChance * dt) {
       if (opponentIsAttacking || opponent!.position.y < position.y - 20) {
         _velocityY = -stats.jumpPower * 0.95;
@@ -571,26 +668,49 @@ class CharacterComponent extends PositionComponent
       }
     }
 
-    // 3. Di Chuyển Định Vị (Spacing & Approach):
+    // 2c. Corner Escape
+    if (_isSelfCornered() && _onGround && _rng.nextDouble() < 0.65) {
+      _velocityY = -stats.jumpPower * 1.05;
+      _velocityX = (dx > 0 ? -1 : 1) * stats.runSpeed * 70;
+      _onGround = false;
+      _switchState(CharacterState.jump);
+      return;
+    }
+
+    // Corner Pressure
+    final opponentCornered = _isOpponentCornered();
+    if (opponentCornered) {
+      effComboChance = (effComboChance + 0.25).clamp(0.0, 1.0);
+      effMinDelay *= 0.65;
+      effMaxDelay *= 0.65;
+    }
+
+    // 3. Movement
     if (dist > preferredReach && dist > ai.runThreshold) {
       _velocityX = (dx > 0 ? 1 : -1) * stats.runSpeed * 100;
       facingRight = dx > 0;
+      sprinting = true;
+      movingLeft = dx < 0;
+      movingRight = dx > 0;
       if (_onGround) _switchState(CharacterState.run);
     } else if (dist > preferredReach || dist > atkReach) {
       _velocityX = (dx > 0 ? 1 : -1) * stats.walkSpeed * 100;
       facingRight = dx > 0;
+      sprinting = false;
+      movingLeft = dx < 0;
+      movingRight = dx > 0;
       if (dist > preferredReach || _aiTimer > 0) {
         if (_onGround) _switchState(CharacterState.walk);
       } else if (_onGround) {
-        _aiTimer = ai.minThinkDelay +
-            _rng.nextDouble() * (ai.maxThinkDelay - ai.minThinkDelay);
+        _aiTimer = effMinDelay +
+            _rng.nextDouble() * (effMaxDelay - effMinDelay);
         if (opponent!._whiffPunishTimer > 0) {
           _startAttack(CharacterState.attack1);
         } else if (favorsSpecialRange && dist <= specialReach &&
-            _rng.nextDouble() < ai.specialChance) {
+            _rng.nextDouble() < effSpecialChance) {
           _startAttack(CharacterState.special);
         } else if (mana >= 25 && dist <= heavyReach &&
-            _rng.nextDouble() < ai.specialChance) {
+            _rng.nextDouble() < effSpecialChance) {
           _startAttack(CharacterState.attack3);
         } else {
           _velocityX = (dx > 0 ? 1 : -1) * stats.walkSpeed * 100;
@@ -600,18 +720,24 @@ class CharacterComponent extends PositionComponent
     } else if (dist > atkReach) {
       _velocityX = (dx > 0 ? 1 : -1) * stats.walkSpeed * 100;
       facingRight = dx > 0;
+      sprinting = false;
+      movingLeft = dx < 0;
+      movingRight = dx > 0;
       if (_onGround) _switchState(CharacterState.walk);
     } else {
-      // 4. Ra Đòn & Nối Chuỗi Combo Dựa Trên Cấp Độ AI:
+      // 4. Attack decision
       _velocityX = 0;
+      sprinting = false;
+      movingLeft = false;
+      movingRight = false;
       if (_onGround) {
         if (_aiTimer <= 0) {
-          _aiTimer = ai.minThinkDelay + _rng.nextDouble() * (ai.maxThinkDelay - ai.minThinkDelay);
+          _aiTimer = effMinDelay + _rng.nextDouble() * (effMaxDelay - effMinDelay);
 
           final randSkill = _rng.nextDouble();
           if (opponent!._whiffPunishTimer > 0) {
             _startAttack(CharacterState.attack1);
-          } else if (mana >= 50 && _rng.nextDouble() < ai.specialChance) {
+          } else if (mana >= 50 && _rng.nextDouble() < effSpecialChance) {
             _startAttack(CharacterState.special);
           } else if (randSkill < 0.35) {
             _startAttack(CharacterState.attack1);
@@ -622,6 +748,7 @@ class CharacterComponent extends PositionComponent
           } else {
             _startAttack(CharacterState.attack1);
           }
+          if (strategy == 1 && _isAttacking) _retreatTimer = 0.4;
         } else {
           _switchState(CharacterState.idle);
         }
@@ -631,7 +758,7 @@ class CharacterComponent extends PositionComponent
   }
 
   void _applyPhysics(double dt) {
-    const gravity = 1200.0;
+    const gravity = 800.0;
     if (!_onGround) {
       _velocityY += gravity * dt;
     }
@@ -692,18 +819,15 @@ class CharacterComponent extends PositionComponent
     _velocityX = 0;
     _switchState(attackState, forceReset: true);
 
-    // Chỉ phát âm thanh kỹ năng khi người chơi tung chiêu
-    if (isPlayer) {
-      final sfx = skillAudio?.getSfxForState(attackState);
-      if (sfx != null) {
-        AudioService.playSkillSfx(sfx).then((stopFn) {
-          if (_isAttacking) {
-            _stopSkillAudio = stopFn;
-          } else {
-            stopFn?.call();
-          }
-        });
-      }
+    final sfx = skillAudio?.getSfxForState(attackState);
+    if (sfx != null) {
+      AudioService.playSkillSfx(sfx, volumeMultiplier: isPlayer ? 1.0 : 0.65).then((stopFn) {
+        if (_isAttacking) {
+          _stopSkillAudio = stopFn;
+        } else {
+          stopFn?.call();
+        }
+      });
     }
   }
 
@@ -718,6 +842,16 @@ class CharacterComponent extends PositionComponent
         _attackTimer <= _currentAttackDuration * 0.55) {
       _hasSpawnedProjectile = true;
       _spawnFireball();
+    }
+
+    // Archer Special spawns a fast arrow projectile
+    if (_state == CharacterState.special &&
+        (characterType == CharacterType.skeletonArcher ||
+         characterType == CharacterType.samuraiArcher) &&
+        !_hasSpawnedProjectile &&
+        _attackTimer <= _currentAttackDuration * 0.5) {
+      _hasSpawnedProjectile = true;
+      _spawnArrow();
     }
 
     // Trigger melee/sweep damage at the apex of attack
@@ -761,12 +895,34 @@ class CharacterComponent extends PositionComponent
     parent!.add(fireball);
   }
 
+  void _spawnArrow() {
+    if (parent == null || opponent == null) return;
+    final spawnX = position.x + (facingRight ? 45.0 : -45.0);
+    final spawnY = position.y - 75.0;
+
+    final multiplier = !isPlayer && aiProfile != null
+        ? aiProfile!.damageMultiplier
+        : 1.0;
+
+    final arrow = ArrowComponent(
+      caster: this,
+      target: opponent!,
+      startPos: Vector2(spawnX, spawnY),
+      facingRight: facingRight,
+      damage: stats.getAttackPower(CharacterState.special) * 7.0 * multiplier,
+    );
+    parent!.add(arrow);
+  }
+
   void _tryDealDamage() {
     if (!game.canResolveCombat) return;
     if (opponent == null || opponent!.isDead) return;
 
     // Fire Wizard special damage is dealt upon projectile impact
-    if (_state == CharacterState.special && characterType == CharacterType.fireWizard) {
+    if (_state == CharacterState.special &&
+        (characterType == CharacterType.fireWizard ||
+         characterType == CharacterType.skeletonArcher ||
+         characterType == CharacterType.samuraiArcher)) {
       return;
     }
 
@@ -865,6 +1021,16 @@ class CharacterComponent extends PositionComponent
     if (isDead) return;
 
     mana = (mana + 5).clamp(0, maxMana).toDouble();
+
+    if (!isPlayer && opponent != null) {
+      final opState = opponent!._state;
+      if (opState == CharacterState.attack1 ||
+          opState == CharacterState.attack2 ||
+          opState == CharacterState.attack3 ||
+          opState == CharacterState.special) {
+        _recordOpponentPattern(opState);
+      }
+    }
 
     if (_guarding) {
       _guardHits++;

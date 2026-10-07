@@ -33,6 +33,8 @@ class ContinuePromptOverlay extends StatelessWidget {
     AudioService.stopMatchEnd();
     if (game.isVictory) {
       if (_isFinalRound) {
+        final stars = game.computeStarRating();
+        await ProgressService.saveStageStars(game.mapLevel, stars);
         await ProgressService.onWinLevel(game.mapLevel);
         GameMatchController.to.currentLevel.value = ProgressService.currentLevel;
         if (game.mapLevel >= 7) {

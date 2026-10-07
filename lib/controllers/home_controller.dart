@@ -1,8 +1,10 @@
 import 'package:fighting_game/controllers/game_match_controller.dart';
+import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
 import 'package:fighting_game/screens/map_screen.dart';
 import 'package:fighting_game/screens/lan_versus_screen.dart';
+import 'package:fighting_game/screens/quick_versus_screen.dart';
 import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:fighting_game/widgets/home_settings_dialog.dart';
@@ -70,6 +72,20 @@ class HomeController extends GetxController
 
   void openLanVersus() {
     Get.to(() => const LanVersusScreen());
+  }
+
+  void openQuickVersus() {
+    Get.to(() => const QuickVersusScreen());
+  }
+
+  void openTraining() {
+    Get.off(
+      () => GamePlayScreen(
+        playerCharacter: CharacterType.fireWizard,
+        enemyCharacter: CharacterType.knight1,
+        isTrainingMode: true,
+      ),
+    );
   }
 
   @override

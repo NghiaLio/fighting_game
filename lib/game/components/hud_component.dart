@@ -432,6 +432,12 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
 
     if (_matchOver) return;
 
+    // Training mode: no timer, no win/lose conditions
+    if (game.isTrainingMode) {
+      _timerText.text = '--';
+      return;
+    }
+
     _matchTime -= dt;
     if (_matchTime < 0) _matchTime = 0;
     _timerText.text = _matchTime.ceil().toString();

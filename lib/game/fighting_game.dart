@@ -36,6 +36,8 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   final int level; // Campaign map (1..7)
   final LanMatchSession? networkSession;
   final bool networkHost;
+  final AiProfile? customAiProfile;
+  final bool isTrainingMode;
 
   FightingGame({
     this.playerCharacter = CharacterType.fireWizard,
@@ -43,6 +45,8 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     this.level = 1,
     this.networkSession,
     this.networkHost = true,
+    this.customAiProfile,
+    this.isTrainingMode = false,
   });
 
   late PositionComponent stage;
@@ -187,7 +191,9 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
     final enemyAiProfile = isNetworkMatch
         ? null
-        : AiProfile.forMapAndRound(mapLevel, currentRound);
+        : (isTrainingMode
+            ? null
+            : (customAiProfile ?? AiProfile.forMapAndRound(mapLevel, currentRound)));
     final e1 = CharacterComponent(
       characterType: enemyCharacter,
       startX: remoteStartX,
@@ -273,7 +279,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     enemy!.resetCharacter(
       startX: mapWidth * 0.55,
       faceRight: false,
-      newAiProfile: AiProfile.forMapAndRound(mapLevel, currentRound),
+      newAiProfile: (customAiProfile ?? AiProfile.forMapAndRound(mapLevel, currentRound)),
     );
     _changeBackground();
     hud.setRound(currentRound);
@@ -311,7 +317,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     enemy!.resetCharacter(
       startX: mapWidth * 0.55,
       faceRight: false,
-      newAiProfile: AiProfile.forMapAndRound(mapLevel, currentRound),
+      newAiProfile: (customAiProfile ?? AiProfile.forMapAndRound(mapLevel, currentRound)),
     );
     _changeBackground();
     hud.setRound(currentRound);
@@ -339,7 +345,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     enemy!.resetCharacter(
       startX: mapWidth * 0.55,
       faceRight: false,
-      newAiProfile: AiProfile.forMapAndRound(mapLevel, currentRound),
+      newAiProfile: (customAiProfile ?? AiProfile.forMapAndRound(mapLevel, currentRound)),
     );
     hud.resetGauntlet();
     hud.setRound(currentRound);
@@ -352,6 +358,14 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   /// Backwards-compatible call site for callers using the old round API.
   void startNewLevel(int newRound) => startNextRound();
+
+  int computeStarRating() {
+    if (player == null) return 1;
+    final finalHpRatio = player!.hp / player!.maxHp;
+    if (finalHpRatio > 0.7) return 3;
+    if (finalHpRatio > 0.30) return 2;
+    return 1;
+  }
 
   // Screen Shake (mục D trong docs/03_vfx_and_game_feel.md)
   double _shakeTimer = 0;
@@ -381,6 +395,9 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   @override
   void update(double dt) {
     super.update(dt);
+    if (isTrainingMode && enemy != null && !enemy!.isDead) {
+      enemy!.hp = (enemy!.hp + 50 * dt).clamp(0, enemy!.maxHp).toDouble();
+    }
     _networkSendTimer -= dt;
     if (isNetworkMatch && !_networkEnded &&
         networkSession!.timeSinceLastPacket > const Duration(seconds: 2)) {
