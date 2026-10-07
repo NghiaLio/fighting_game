@@ -6,6 +6,7 @@ class AppAssets {
   // 1. GIAO DIỆN FLUTTER (Flutter UI Assets)
   // ==========================================
   static const String bgHome = 'assets/images/Bg2/bg_home.png';
+  static const String bgHome2 = 'assets/images/Bg_homes/bg_home.png';
   static const String mapMenuBoard = 'assets/images/Bg2/map_menu.png';
   static const String homeMenuBoard = 'assets/images/Bg2/menu_home.png';
   static const String gameLogo = 'assets/images/Bg_homes/logo.png';

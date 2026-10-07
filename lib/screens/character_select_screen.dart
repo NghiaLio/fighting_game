@@ -33,11 +33,11 @@ class CharacterSelectScreen extends StatelessWidget {
         playerCharacter: controller.selectedHero.type,
         enemyCharacter: switch (matchCtrl.currentLevel.value) {
           1 => CharacterType.skeletonWarrior,
-          2 => CharacterType.skeletonSpearman,
-          3 => CharacterType.skeletonArcher,
-          4 => CharacterType.knight2,
-          5 => CharacterType.samurai,
-          6 => CharacterType.lightningWizard,
+          2 => CharacterType.samurai,
+          3 => CharacterType.knight1,
+          4 => CharacterType.lightningWizard,
+          5 => CharacterType.fireWizard,
+          6 => CharacterType.samuraiCommander,
           _ => CharacterType.samuraiCommander,
         },
         level: matchCtrl.currentLevel.value,
@@ -60,7 +60,7 @@ class CharacterSelectScreen extends StatelessWidget {
           children: [
             // 1. Phông nền Dark Fantasy
             Image.asset(
-              AppAssets.bgHome,
+              AppAssets.bgHome2,
               fit: BoxFit.cover,
               width: double.infinity,
               height: double.infinity,

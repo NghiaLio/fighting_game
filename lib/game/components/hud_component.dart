@@ -74,16 +74,14 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
   String _characterName(CharacterType type) => switch (type) {
     CharacterType.fireWizard => 'FIRE WIZARD',
     CharacterType.lightningWizard => 'LIGHTNING WIZARD',
-    CharacterType.wandererMagician => 'WANDERER',
+
     CharacterType.skeletonWarrior => 'SKELETON WARRIOR',
-    CharacterType.skeletonArcher => 'SKELETON ARCHER',
-    CharacterType.skeletonSpearman => 'SKELETON SPEARMAN',
+
     CharacterType.samurai => 'SAMURAI',
-    CharacterType.samuraiArcher => 'SAMURAI ARCHER',
+
     CharacterType.samuraiCommander => 'SAMURAI COMMANDER',
     CharacterType.knight1 => 'KNIGHT',
-    CharacterType.knight2 => 'KNIGHT 2',
-    CharacterType.knight3 => 'KNIGHT 3',
+
   };
 
   @override

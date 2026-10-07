@@ -844,15 +844,7 @@ class CharacterComponent extends PositionComponent
       _spawnFireball();
     }
 
-    // Archer Special spawns a fast arrow projectile
-    if (_state == CharacterState.special &&
-        (characterType == CharacterType.skeletonArcher ||
-         characterType == CharacterType.samuraiArcher) &&
-        !_hasSpawnedProjectile &&
-        _attackTimer <= _currentAttackDuration * 0.5) {
-      _hasSpawnedProjectile = true;
-      _spawnArrow();
-    }
+
 
     // Trigger melee/sweep damage at the apex of attack
     if (!_hasDealtDamage && _attackTimer <= _currentAttackDuration / 2) {
@@ -920,9 +912,7 @@ class CharacterComponent extends PositionComponent
 
     // Fire Wizard special damage is dealt upon projectile impact
     if (_state == CharacterState.special &&
-        (characterType == CharacterType.fireWizard ||
-         characterType == CharacterType.skeletonArcher ||
-         characterType == CharacterType.samuraiArcher)) {
+        (characterType == CharacterType.fireWizard)) {
       return;
     }
 
