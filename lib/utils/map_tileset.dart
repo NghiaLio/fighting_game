@@ -386,13 +386,11 @@ class _MapStageNodeWidgetState extends State<MapStageNodeWidget> {
   bool _isHovered = false;
 
   void _onTapDown(TapDownDetails _) {
-    if (!widget.isUnlocked) return;
     setState(() => _isPressed = true);
     AudioService.playButtonClick(sfx: 'button_2.mp3');
   }
 
   void _onTapUp(TapUpDetails _) {
-    if (!widget.isUnlocked) return;
     setState(() => _isPressed = false);
     widget.onTap();
   }
@@ -403,14 +401,10 @@ class _MapStageNodeWidgetState extends State<MapStageNodeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final scale = widget.isUnlocked
-        ? (_isPressed ? 0.93 : (_isHovered || widget.isSelected ? 1.05 : 1.0))
-        : 0.95;
+    final scale = _isPressed ? 0.93 : (_isHovered || widget.isSelected ? 1.05 : 1.0);
 
     return MouseRegion(
-      cursor: widget.isUnlocked
-          ? SystemMouseCursors.click
-          : SystemMouseCursors.forbidden,
+      cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(

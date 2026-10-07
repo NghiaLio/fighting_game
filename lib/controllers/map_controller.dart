@@ -1,5 +1,6 @@
 import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
+import 'package:fighting_game/data/story_service.dart';
 import 'package:fighting_game/models/map_stage_data.dart';
 import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/home_screen.dart';
@@ -12,7 +13,8 @@ import 'package:get/get.dart';
 class MapController extends GetxController {
   static MapController get to => Get.find<MapController>();
 
-  final RxInt selectedStageIndex = 0.obs; // 0 = Pedestal xuất phát, 1..7 = Các màn chơi
+  final RxInt selectedStageIndex =
+      0.obs; // 0 = Pedestal xuất phát, 1..7 = Các màn chơi
 
   // Tọa độ vị trí bệ đá xuất phát của Tướng
   final Offset pedestalPos = const Offset(0.058, 0.745);
@@ -91,16 +93,18 @@ class MapController extends GetxController {
   ];
 
   List<MapStageData> get stages => stageDefinitions
-      .map((stage) => MapStageData(
-            stageNumber: stage.stageNumber,
-            title: stage.title,
-            tile: stage.tile,
-            relativePos: stage.relativePos,
-            stars: ProgressService.getStageStars(stage.stageNumber),
-            isUnlocked: stage.stageNumber <= ProgressService.highestUnlockedMap,
-            description: stage.description,
-            bossName: stage.bossName,
-          ))
+      .map(
+        (stage) => MapStageData(
+          stageNumber: stage.stageNumber,
+          title: stage.title,
+          tile: stage.tile,
+          relativePos: stage.relativePos,
+          stars: ProgressService.getStageStars(stage.stageNumber),
+          isUnlocked: stage.stageNumber <= ProgressService.highestUnlockedMap,
+          description: stage.description,
+          bossName: stage.bossName,
+        ),
+      )
       .toList(growable: false);
 
   int get totalEarnedStars => stages.fold(0, (sum, stage) => sum + stage.stars);
@@ -117,14 +121,103 @@ class MapController extends GetxController {
 
   void onOpenBookCodex() {
     AudioService.playButtonClick(sfx: 'button_2.mp3');
-    Get.snackbar(
-      AppStrings.mapBookTitle,
-      AppStrings.mapBookContent,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF1E100A),
-      colorText: const Color(0xFFFFD54F),
-      margin: const EdgeInsets.all(16),
-      icon: const Icon(Icons.menu_book_rounded, color: Colors.amber),
+    final story = StoryService.overallStory;
+    if (story == null) {
+      Get.snackbar(
+        'Sổ Tay',
+        'Chưa có dữ liệu cốt truyện.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF1E100A),
+        colorText: const Color(0xFFFFD54F),
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Stack(
+          // clipBehavior: Clip.hardEdge,
+          children: [
+            Positioned(
+              top: -10,
+              left: 20,
+              child: Image.asset(
+                'assets/images/Bg2/detail_map.png',
+                width: 670,
+                height: 420,
+                fit: BoxFit.fill,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 72, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    story.title.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFF3B2313),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  if (story.subtitle.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        story.subtitle,
+                        style: const TextStyle(
+                          color: Color(0xFF6B4E2A),
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Text(
+                        story.content,
+                        style: const TextStyle(
+                          color: Color(0xFF2C1A0E),
+                          fontSize: 13,
+                          height: 1.55,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: const Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'ĐÓNG',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 214, 118, 53),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -144,7 +237,7 @@ class MapController extends GetxController {
   void startStage(MapStageData stage) {
     Get.back(); // Đóng modal (nếu có modal đang mở)
     if (stage.stageNumber > ProgressService.highestUnlockedMap) return;
-    
+
     // Cập nhật level hiện tại trong GameMatchController
     GameMatchController.to.currentLevel.value = stage.stageNumber;
     ProgressService.setLevel(stage.stageNumber);

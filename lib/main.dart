@@ -3,6 +3,7 @@ import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/controllers/character_select_controller.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/controllers/settings_controller.dart';
+import 'package:fighting_game/data/story_service.dart';
 import 'package:fighting_game/screens/home_loading_screen.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/services/progress_service.dart';
@@ -17,6 +18,9 @@ void main()  async {
 
   // Khởi tạo Hive để lưu tiến trình campaign
   await ProgressService.init();
+
+  // Load cốt truyện từ JSON
+  await StoryService.load();
 
   // Khởi chạy preload audio sớm trong nền
   unawaited(AudioService.preloadAll());

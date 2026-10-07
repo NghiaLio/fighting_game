@@ -1,6 +1,6 @@
 import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/game_typography.dart';
-
+import 'package:fighting_game/data/story_service.dart';
 import 'package:fighting_game/utils/map_tileset.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:fighting_game/widgets/home_settings_dialog.dart';
@@ -45,19 +45,6 @@ class _MapScreenState extends State<MapScreen>
   void _onSelectStageNode(int index, MapStageData stage) {
     controller.onSelectStageNode(index);
     _showStageDetailsModal(context, stage);
-  }
-
-  void _onOpenSettings() {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => HomeSettingsDialog(
-        onResetConfirmed: () async {
-          await controller.onResetProgress();
-          if (mounted) Navigator.of(context).pop();
-        },
-      ),
-    );
   }
 
   @override
@@ -234,13 +221,6 @@ class _MapScreenState extends State<MapScreen>
                         height: 46,
                         onTap: controller.onOpenTrophyLeaderboard,
                       ),
-                      const SizedBox(width: 10),
-                      MapIconButton(
-                        tile: MapTile.buttonSettings,
-                        width: 58,
-                        height: 46,
-                        onTap: _onOpenSettings,
-                      ),
                     ],
                   ),
                 ),
@@ -407,7 +387,7 @@ class _MapScreenState extends State<MapScreen>
             child: Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(40, 20, 40, 36),
+                  padding: const EdgeInsets.fromLTRB(40, 16, 40, 24),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -432,22 +412,15 @@ class _MapScreenState extends State<MapScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Cột trái: Preview Map
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.4),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                stage.stageNumber <= 5
-                                    ? 'assets/images/Bg2/bg${stage.stageNumber}.png'
-                                    : 'assets/images/Backgrounds/bg${stage.stageNumber}.png',
-                                width: 130,
-                                height: 130,
-                                fit: BoxFit.cover,
-                              ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              stage.stageNumber <= 5
+                                  ? 'assets/images/Bg2/bg${stage.stageNumber}.png'
+                                  : 'assets/images/Backgrounds/bg${stage.stageNumber}.png',
+                              width: 130,
+                              height: 130,
+                              fit: BoxFit.cover,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -465,33 +438,27 @@ class _MapScreenState extends State<MapScreen>
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                Text(
-                                  stage.description,
-                                  style: const TextStyle(
-                                    color: Color.fromARGB(255, 17, 17, 17),
-                                    fontSize: 12,
-                                    height: 1.3,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
+                                // Cốt truyện địa điểm
+                                _buildStageStory(stage.stageNumber),
+                                const SizedBox(height: 10),
                                 // Yêu cầu 3 sao
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _buildObjectiveRow(
-                                      AppStrings.mapObjective1,
-                                      stage.stars >= 1,
-                                    ),
-                                    _buildObjectiveRow(
-                                      AppStrings.mapObjective2,
-                                      stage.stars >= 2,
-                                    ),
-                                    _buildObjectiveRow(
-                                      AppStrings.mapObjective3,
-                                      stage.stars >= 3,
-                                    ),
-                                  ],
-                                ),
+                                // Column(
+                                //   crossAxisAlignment: CrossAxisAlignment.start,
+                                //   children: [
+                                //     _buildObjectiveRow(
+                                //       AppStrings.mapObjective1,
+                                //       stage.stars >= 1,
+                                //     ),
+                                //     _buildObjectiveRow(
+                                //       AppStrings.mapObjective2,
+                                //       stage.stars >= 2,
+                                //     ),
+                                //     _buildObjectiveRow(
+                                //       AppStrings.mapObjective3,
+                                //       stage.stars >= 3,
+                                //     ),
+                                //   ],
+                                // ),
                               ],
                             ),
                           ),
@@ -500,16 +467,17 @@ class _MapScreenState extends State<MapScreen>
                       const SizedBox(height: 20),
 
                       // Nút Bắt Đầu Chiếm Đấu
-                      Center(
-                        child: GestureDetector(
-                          onTap: () => controller.startStage(stage),
-                          child: Image.asset(
-                            AppAssets.battleButton,
-                            height: 40,
-                            fit: BoxFit.contain,
+                      if (stage.isUnlocked)
+                        Center(
+                          child: GestureDetector(
+                            onTap: () => controller.startStage(stage),
+                            child: Image.asset(
+                              AppAssets.battleButton,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -552,6 +520,59 @@ class _MapScreenState extends State<MapScreen>
                   : const Color.fromARGB(255, 80, 78, 78),
               fontSize: 11,
               fontWeight: isAchieved ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStageStory(int stageNumber) {
+    final stageStory = StoryService.getStageStory(stageNumber);
+    if (stageStory == null || stageStory.story.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 130),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: const Color(0xFF8B6914).withOpacity(0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.menu_book_rounded,
+                size: 14,
+                color: Color(0xFFFFD54F),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'CỐT TRUYỆN',
+                style: TextStyle(
+                  color: const Color(0xFFFFD54F).withOpacity(0.8),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Text(
+                stageStory.story,
+                style: const TextStyle(
+                  color: Color(0xFFE8D5B7),
+                  fontSize: 12,
+                  height: 1.4,
+                ),
+              ),
             ),
           ),
         ],

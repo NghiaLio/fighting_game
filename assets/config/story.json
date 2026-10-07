@@ -1,0 +1,44 @@
+{
+  "overallStory": {
+    "title": "Lời Nguyền Hư Không",
+    "subtitle": "Cronicle of the Void Curse",
+    "content": "Hàng ngàn năm trước, Vương quốc Valdris tồn tại trong hòa bình dưới sự bảo vệ của 7 Ngọn Đá Linh Hồn. Mỗi ngọn đá chứa đựng một sức mạnh nguyên sơ: Lửa, Sét, Đất, Gió, Băng, Sấm và Bóng Tối.\n\nNhưng rồi, Thợ Săn Hư Không — Molcharis — kẻ từng là pháp sư mạnh nhất vương quốc, đã bị tham vọng腐蚀. Hắn tìm cách gộp cả 7 sức mạnh thành một, để mở cánh cổng Hư Không và tái sinh cõi chết.\n\nTrước khi bị phong ấn, Molcharis chia hồn mình thành 7 mảnh và giấu rải rác khắp 7 vùng đất. Mỗi mảnh hồn đều sinh ra một quái vật canh giữ — các Thủ Lãnh Ác Ma.\n\nGiờ đây, Ngọn Đá cuối cùng đã nứt vỡ. Ám ảnh đen ngòm lan rộng, và ngươi — người kế thừa Lưỡi Blade Ánh Sáng — là hy vọng cuối cùng của Valdris. Hành trình qua 7 vùng đất đang chờ đợi. Phá vỡ 7 mảnh hồn, đóng chặt cánh cổng Hư Không trước khi thiên hạ chìm trong bóng tối vĩnh hằng."
+  },
+  "stages": [
+    {
+      "stageNumber": 1,
+      "title": "Ancient Forest",
+      "story": "Rừng cổ Valdris từng là nơi trú ẩn của người Elf. Nhưng từ khi mảnh hồn đầu tiên của Molcharis rơi xuống, cây cối bị ô uế, và bộ tộc Goblin bị kích động trở thành lực lượng canh giữ.\n\nThủ Lãnh Goblin — Grukmash — đã nuốt chửng mảnh hồn và trở thành quái vật khổng lồ. Truyền thuyết nói rằng, chỉ có ai chứng tỏ được lòng can đảm trong rừng sâu mới có thể tiến lên phía trước.\n\nĐánh bại Grukmash để giải phóng mảnh hồn thứ nhất."
+    },
+    {
+      "stageNumber": 2,
+      "title": "Desert Canyon",
+      "story": "Hẻm núi sa mạc từng là con đường thương mại huyết mạch giữa các vương quốc. Giờ đây, cát nóng và gió sa mạc che khuất mọi lối đi.\n\nKẻ canh giữ mảnh hồn thứ hai là một kiếm sĩ mù — Vareth — người bị Molcharis đánh lừa rằng chỉ có chiến đấu mới mang lại ý nghĩa cho cuộc đời vô định của mình. Đôi kiếm của hắn sắc đến mức có thể cắt cả ánh sáng.\n\nĐánh bại Vareth để giải phóng mảnh hồn thứ hai và mở đường vào vùng đất lửa."
+    },
+    {
+      "stageNumber": 3,
+      "title": "Lava Abyss",
+      "story": "Dưới lòng đất, các dòng sông magma sôi sục từng là nguồn năng lượng nuôi sống cả vương quốc. Nhưng mảnh hồn thứ ba đã biến chúng thành bẫy chết người.\n\nPháp sư Lửa — Ignathar — từng là học trò của Molcharis. Hắn tin rằng sức mạnh của lửa có thể tiêu diệt chính thầy mình. Nhưng Molcharis đã chiếm lấy tâm trí hắn, biến hắn thành con rối thiêu đốt.\n\nĐánh bại Ignathar trước khi ngọn lửa nuốt chửng cả hầm nham thạch."
+    },
+    {
+      "stageNumber": 4,
+      "title": "Twilight Valley",
+      "story": "Thung lũng Hoàng Hôn luôn được che phủ bởi màn sương tím. Những phế tích ở đây thuộc về nền văn minh cổ xưa nhất — những người từng kiểm soát sức mạnh của Gió.\n\nCung thủ Du Mục — Kael — là hậu duệ cuối cùng của bộ tộc gió. Cô ta mang trong mình mảnh hồn thứ tư nhưng không biết cách kiểm soát nó. Mỗi mũi tên cô bắn đều mang theo sức mạnh hủy diệt.\n\nĐánh bại Kael — hoặc cứu rỗi cô — để giải phóng mảnh hồn thứ tư."
+    },
+    {
+      "stageNumber": 5,
+      "title": "Ancient Snow Peak",
+      "story": "Đỉnh núi tuyết vĩnh cửu là nơi lạnh nhất thế giới. Tại đây, thời gian dường như ngừng trôi. Mảnh hồn thứ năm đã biến nhiệt độ xuống mức mà không sinh vật nào có thể tồn tại.\n\nKỵ sĩ Băng — Frostmere — là một hiệp sĩ đã chết từ 500 năm trước. Molcharis đã giữ lại linh hồn hắn trong băng vĩnh cửu, biến thành người canh giữ bất tử. Gươm của hắn đông cứng không khí quanh mỗi nhát chém.\n\nĐánh bại Frostmere để phá vỡ xiềng xích băng giá và giải phóng mảnh hồn thứ năm."
+    },
+    {
+      "stageNumber": 6,
+      "title": "Stormy Peak",
+      "story": "Đỉnh Sấm luôn bị bao trùm bởi những cơn bão không bao giờ dứt. Mảnh hồn thứ sáu đã biến thời tiết thành vũ khí — sấm sét giáng xuống không ngừng.\n\nPháp sư Sấm — Tempestor — là kẻ cuồng tín tin rằng Hư Không là sự giải thoát. Hắn muốn mở cánh cổng bằng chính sức mạnh của trời đất. Mỗi lần hắn giơ tay, một cơn bão hình thành.\n\nĐánh bại Tempestor giữa cơn bão để giải phóng mảnh hồn thứ sáu."
+    },
+    {
+      "stageNumber": 7,
+      "title": "Ruined Temple",
+      "story": "Đền thờ廃墟 là nơi Molcharis bị phong ấn. Đây là tâm điểm của tất cả — nơi 6 mảnh hồn còn lại tụ hội để triệu hồi hắn.\n\nThủ Lĩnh Xương — Molcharis bản thân, trong hình hài bộ xương bất tử. Hắn đã chờ hàng ngàn năm. Giờ, khi 6 mảnh hồn đã được thu thập, hắn chỉ cần吞噬 mảnh cuối cùng — sức mạnh của chính ngươi.\n\nĐây là trận chiến cuối cùng. Đánh bại Molcharis, đóng chặt cánh cổng Hư Không, và mang lại hòa bình cho Valdris một lần nữa.\n\n...hoặc trở thành mảnh hồn thứ tám."
+    }
+  ]
+}
