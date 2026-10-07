@@ -20,11 +20,7 @@ class ContinuePromptOverlay extends StatelessWidget {
   final FightingGame game;
   final int level; // giữ lại để tương thích với route hiện tại
 
-  const ContinuePromptOverlay({
-    super.key,
-    required this.game,
-    this.level = 1,
-  });
+  const ContinuePromptOverlay({super.key, required this.game, this.level = 1});
 
   int get _nextRound => (game.currentRound + 1).clamp(1, 3).toInt();
   bool get _isFinalRound => game.currentRound >= 3;
@@ -36,7 +32,8 @@ class ContinuePromptOverlay extends StatelessWidget {
         final stars = game.computeStarRating();
         await ProgressService.saveStageStars(game.mapLevel, stars);
         await ProgressService.onWinLevel(game.mapLevel);
-        GameMatchController.to.currentLevel.value = ProgressService.currentLevel;
+        GameMatchController.to.currentLevel.value =
+            ProgressService.currentLevel;
         if (game.mapLevel >= 7) {
           Get.offAll(() => const HomeScreen());
         } else {
@@ -54,6 +51,11 @@ class ContinuePromptOverlay extends StatelessWidget {
   void _onExit() {
     AudioService.stopMatchEnd();
     Get.offAll(() => const MapScreen());
+  }
+
+  void _onHome() {
+    AudioService.stopMatchEnd();
+    Get.offAll(() => const HomeScreen());
   }
 
   @override
@@ -135,11 +137,11 @@ class ContinuePromptOverlay extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Text(
-                            isVictory
-                                ? (_isFinalRound
-                                    ? 'Map ${game.mapLevel} cleared: all 3 rounds won.'
-                                    : 'Round ${game.currentRound}/3 cleared. Mana carries over at 50%.')
-                                : 'Defeat in Round ${game.currentRound}/3. Retry or restart this map.',
+                              isVictory
+                                  ? (_isFinalRound
+                                        ? 'Map ${game.mapLevel} cleared: all 3 rounds won.'
+                                        : 'Round ${game.currentRound}/3 cleared. Mana carries over at 50%.')
+                                  : 'Defeat in Round ${game.currentRound}/3. Retry or restart this map.',
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -161,21 +163,23 @@ class ContinuePromptOverlay extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 9.0),
                                 child: PauseMenuActionButton.secondary(
-                                  label: isVictory ? 'MAP' : 'RESTART STAGE',
+                                  label: isVictory ? 'MAP' : 'HOME',
                                   icon: isVictory
                                       ? Icons.map_outlined
-                                      : Icons.restart_alt_rounded,
+                                      : Icons.home_rounded,
                                   width: 114,
                                   height: 38,
                                   fontSize: 10.5,
-                                  onTap: isVictory ? _onExit : game.restartStage,
+                                  onTap: isVictory ? _onExit : _onHome,
                                 ),
                               ),
 
                               // Nút CONTINUE / ROUND X
                               PauseMenuActionButton.resume(
                                 label: game.isVictory
-                                    ? (_isFinalRound ? 'CLEAR MAP' : 'ROUND $_nextRound')
+                                    ? (_isFinalRound
+                                          ? 'CLEAR MAP'
+                                          : 'ROUND $_nextRound')
                                     : 'RETRY ROUND',
                                 icon: Icons.play_arrow_rounded,
                                 width: 114,

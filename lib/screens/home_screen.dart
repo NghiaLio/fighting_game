@@ -2,6 +2,8 @@ import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/controllers/home_controller.dart';
+import 'package:fighting_game/controllers/game_match_controller.dart';
+import 'package:fighting_game/controllers/map_controller.dart';
 import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
@@ -178,11 +180,16 @@ class HomeScreen extends StatelessWidget {
                   child: GamePressable(
                     onTap: controller.openMap,
                     pressScale: 0.98,
-                    child: UiTileWidget(
-                      tile: UiTile.parchmentBoard,
+                    child: Container(
                       height: (size.height * 0.65).clamp(240.0, 320.0),
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(AppAssets.mapMenuBoard),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(36, 42, 36, 28),
+                        padding: const EdgeInsets.fromLTRB(40, 65, 36, 28),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -197,58 +204,60 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const Divider(
-                              color: Color(0xFF8D6E63),
-                              thickness: 1.5,
-                            ),
                             const SizedBox(height: 6),
-                            Text(
-                              AppStrings.currentStage,
-                              style: GameTypography.pixel(
-                                color: const Color(0xFF4E342E),
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              AppStrings.opponent,
-                              style: GameTypography.pixel(
-                                color: const Color(0xFF4E342E),
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              AppStrings.matchMode,
-                              style: GameTypography.pixel(
-                                color: const Color(0xFFB71C1C),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            const Spacer(),
-                            Center(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF4E342E),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  AppStrings.progressMaps,
-                                  style: GameTypography.pixel(
-                                    color: const Color(0xFFFFD54F),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                              ),
+                            Expanded(
+                              child: Obx(() {
+                                final currentLevel =
+                                    GameMatchController.to.currentLevel.value;
+                                final mapStage = MapController
+                                    .stageDefinitions[currentLevel - 1];
+                                final highestMap =
+                                    ProgressService.highestUnlockedMap;
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '• Stage: MAP $currentLevel (${mapStage.title})',
+                                      style: GameTypography.pixel(
+                                        color: const Color(0xFF4E342E),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '• Boss: ${mapStage.bossName}',
+                                      style: GameTypography.pixel(
+                                        color: const Color(0xFF4E342E),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '• Status: ${currentLevel < highestMap ? "CLEARED" : "IN PROGRESS"}',
+                                      style: GameTypography.pixel(
+                                        color: const Color(0xFFB71C1C),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Center(
+                                      child: Text(
+                                        'PROGRESS: $highestMap / 7 MAPS',
+                                        style: GameTypography.pixel(
+                                          color: const Color(0xFFB71C1C),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 1.2,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
                             ),
                           ],
                         ),
@@ -298,7 +307,6 @@ class HomeScreen extends StatelessWidget {
                                 UiTileButton(
                                   tile: UiTile.ornatePlaque,
                                   label: AppStrings.battleNow,
-                                  icon: Icons.sports_kabaddi_rounded,
                                   width: 290,
                                   height: 42,
                                   fontSize: 15,
@@ -312,7 +320,6 @@ class HomeScreen extends StatelessWidget {
                                 UiTileButton(
                                   tile: UiTile.longButton,
                                   label: AppStrings.heroesRoster,
-                                  icon: Icons.shield_rounded,
                                   width: 250,
                                   height: 36,
                                   fontSize: 12,
@@ -325,7 +332,6 @@ class HomeScreen extends StatelessWidget {
                                 UiTileButton(
                                   tile: UiTile.longButton,
                                   label: 'PvP qua mạng LAN',
-                                  icon: Icons.wifi_tethering_rounded,
                                   width: 250,
                                   height: 36,
                                   fontSize: 12,
@@ -338,7 +344,6 @@ class HomeScreen extends StatelessWidget {
                                 UiTileButton(
                                   tile: UiTile.longButton,
                                   label: 'ĐẤU NHANH VS AI',
-                                  icon: Icons.bolt_rounded,
                                   width: 250,
                                   height: 36,
                                   fontSize: 12,
@@ -351,7 +356,6 @@ class HomeScreen extends StatelessWidget {
                                 UiTileButton(
                                   tile: UiTile.longButton,
                                   label: 'TRAINING',
-                                  icon: Icons.fitness_center_rounded,
                                   width: 250,
                                   height: 36,
                                   fontSize: 12,

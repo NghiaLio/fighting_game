@@ -5,12 +5,15 @@ class AppAssets {
   // ==========================================
   // 1. GIAO DIỆN FLUTTER (Flutter UI Assets)
   // ==========================================
-  static const String bgHome = 'assets/images/Bg_homes/bg_home.png';
+  static const String bgHome = 'assets/images/Bg2/bg_home.png';
+  static const String mapMenuBoard = 'assets/images/Bg2/map_menu.png';
+  static const String homeMenuBoard = 'assets/images/Bg2/menu_home.png';
   static const String gameLogo = 'assets/images/Bg_homes/logo.png';
   static const String uiTileset = 'assets/images/Bg_homes/ui_tileset.png';
   static const String uiTileset2 = 'assets/images/Bg_homes/UI_tileset_2.png';
   static const String selectPer = 'assets/images/Bg_homes/select_per.png';
-  static const String boardSettings = 'assets/images/Bg_homes/board_settings.png';
+  static const String boardSettings =
+      'assets/images/Bg_homes/board_settings.png';
   static const String otherButton = 'assets/images/Bg_homes/other_button.png';
   static const String resumeButton = 'assets/images/Bg_homes/resume.png';
   static const String volumeIcon = 'assets/images/Bg_homes/volume.png';
@@ -18,6 +21,8 @@ class AppAssets {
   static const String imgWin = 'assets/images/sfx/win.png';
   static const String imgLose = 'assets/images/sfx/lose.png';
   static const String tileSetMap = 'assets/images/map/tile_set_map.png';
+  static const String mapDialogBg = 'assets/images/Bg2/detail_map.png';
+  static const String battleButton = 'assets/images/Bg2/battle.png';
   static const String backgroundMap = 'assets/images/map/background_map.png';
   // Round announcement images (Flutter asset path)
   static const String imgRound1Flutter = 'assets/images/sfx/round1.png';
@@ -114,8 +119,8 @@ class AppAssets {
       'Skeleton_Spearman',
       'Skeleton_Warrior',
     };
-    final resolvedState = stateFile == 'Jump.png' &&
-            noJumpSpriteFolders.contains(spriteFolder)
+    final resolvedState =
+        stateFile == 'Jump.png' && noJumpSpriteFolders.contains(spriteFolder)
         ? 'Idle.png'
         : stateFile;
     return '$spriteFolder/$resolvedState';

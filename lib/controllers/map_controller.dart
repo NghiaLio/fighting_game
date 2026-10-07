@@ -17,8 +17,7 @@ class MapController extends GetxController {
   // Tọa độ vị trí bệ đá xuất phát của Tướng
   final Offset pedestalPos = const Offset(0.058, 0.745);
 
-  // Danh sách các màn chơi hiển thị trên Bản Đồ
-  static const List<MapStageData> _stageDefinitions = [
+  static const List<MapStageData> stageDefinitions = [
     MapStageData(
       stageNumber: 1,
       title: AppStrings.mapStage1Title,
@@ -91,7 +90,7 @@ class MapController extends GetxController {
     ),
   ];
 
-  List<MapStageData> get stages => _stageDefinitions
+  List<MapStageData> get stages => stageDefinitions
       .map((stage) => MapStageData(
             stageNumber: stage.stageNumber,
             title: stage.title,
