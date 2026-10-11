@@ -218,7 +218,7 @@ class HomeScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '• Stage: MAP $currentLevel (${mapStage.title})',
+                                      '• Màn: MÀN $currentLevel (${mapStage.title})',
                                       style: GameTypography.pixel(
                                         color: const Color(0xFF4E342E),
                                         fontSize: 14,
@@ -227,7 +227,7 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '• Boss: ${mapStage.bossName}',
+                                      '• Thủ lĩnh: ${mapStage.bossName}',
                                       style: GameTypography.pixel(
                                         color: const Color(0xFF4E342E),
                                         fontSize: 14,
@@ -236,7 +236,7 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '• Status: ${currentLevel < highestMap ? "CLEARED" : "IN PROGRESS"}',
+                                      '• Trạng thái: ${currentLevel < highestMap ? "ĐÃ VƯỢT" : "ĐANG TIẾN HÀNH"}',
                                       style: GameTypography.pixel(
                                         color: const Color(0xFFB71C1C),
                                         fontSize: 14,
@@ -246,7 +246,7 @@ class HomeScreen extends StatelessWidget {
                                     const SizedBox(height: 4),
                                     Center(
                                       child: Text(
-                                        'PROGRESS: $highestMap / 7 MAPS',
+                                        'TIẾN TRÌNH: $highestMap / 7 MÀN',
                                         style: GameTypography.pixel(
                                           color: const Color(0xFFB71C1C),
                                           fontSize: 14,
@@ -328,10 +328,10 @@ class HomeScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 5),
 
-                                // Nút Cài Đặt
+                                // Nút Đấu Mạng LAN
                                 UiTileButton(
                                   tile: UiTile.longButton,
-                                  label: 'PvP qua mạng LAN',
+                                  label: 'ĐẤU MẠNG LAN (PvP)',
                                   width: 250,
                                   height: 36,
                                   fontSize: 12,
@@ -340,10 +340,10 @@ class HomeScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 5),
 
-                                // Nút Quick Versus
+                                // Nút Đấu Nhanh
                                 UiTileButton(
                                   tile: UiTile.longButton,
-                                  label: 'ĐẤU NHANH VS AI',
+                                  label: 'ĐẤU NHANH VỚI AI',
                                   width: 250,
                                   height: 36,
                                   fontSize: 12,
@@ -352,10 +352,10 @@ class HomeScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 5),
 
-                                // Nút Training
+                                // Nút Luyện Tập
                                 UiTileButton(
                                   tile: UiTile.longButton,
-                                  label: 'TRAINING',
+                                  label: 'LUYỆN TẬP',
                                   width: 250,
                                   height: 36,
                                   fontSize: 12,

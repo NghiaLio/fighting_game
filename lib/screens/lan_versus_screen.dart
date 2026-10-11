@@ -73,7 +73,7 @@ class LanVersusScreen extends StatelessWidget {
                     children: [
                       // Tiêu đề
                       const Text(
-                        'PVP LAN MATCH',
+                        'ĐẤU QUA MẠNG LAN',
                         style: TextStyle(
                           color: Color(0xFFFFD54F),
                           fontSize: 24,
@@ -115,7 +115,7 @@ class LanVersusScreen extends StatelessWidget {
                             const Icon(Icons.wifi, color: Colors.amber, size: 16),
                             const SizedBox(width: 8),
                             Text(
-                              'UDP RTT: ${controller.rttMs.value}ms',
+                              'ĐỘ TRỄ (RTT): ${controller.rttMs.value}ms',
                               style: const TextStyle(
                                 color: Colors.amber,
                                 fontSize: 11,
@@ -129,7 +129,7 @@ class LanVersusScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              controller.peerReady.value ? 'OPPONENT READY' : 'WAITING FOR OPPONENT',
+                              controller.peerReady.value ? 'ĐỐI THỦ ĐÃ SẴN SÀNG' : 'CHỜ ĐỐI THỦ SẴN SÀNG',
                               style: TextStyle(
                                 color: controller.peerReady.value ? Colors.greenAccent : Colors.orangeAccent,
                                 fontSize: 11,
@@ -154,7 +154,7 @@ class LanVersusScreen extends StatelessWidget {
                                 fontSize: 14,
                               ),
                               decoration: const InputDecoration(
-                                labelText: 'YOUR HERO',
+                                labelText: 'ANH HÙNG CỦA BẠN',
                                 labelStyle: TextStyle(
                                   color: Color(0xFFFFC107),
                                   fontSize: 12,
@@ -170,7 +170,7 @@ class LanVersusScreen extends StatelessWidget {
                               items: CharacterType.values.map((type) {
                                 return DropdownMenuItem(
                                   value: type,
-                                  child: Text(type.name.toUpperCase()),
+                                  child: Text(type.displayName.toUpperCase()),
                                 );
                               }).toList(),
                               onChanged: controller.roomEnded.value
@@ -200,8 +200,8 @@ class LanVersusScreen extends StatelessWidget {
                                   fontSize: 12,
                                 ),
                                 decoration: const InputDecoration(
-                                  labelText: 'HOST IPv4 (LAN)',
-                                  hintText: 'Enter Host IP',
+                                  labelText: 'ĐỊA CHỈ IP CHỦ PHÒNG (LAN)',
+                                  hintText: 'Nhập IPv4 của máy chủ',
                                   labelStyle: TextStyle(
                                     color: Color(0xFFFFC107),
                                     fontSize: 11,
@@ -245,7 +245,7 @@ class LanVersusScreen extends StatelessWidget {
                                     )
                                   : const Icon(Icons.wifi_find, size: 18),
                               label: Text(
-                                controller.scanning.value ? 'SCANNING' : 'SCAN IP',
+                                controller.scanning.value ? 'ĐANG QUÉT' : 'TÌM PHÒNG',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -265,21 +265,21 @@ class LanVersusScreen extends StatelessWidget {
                         children: [
                           if (!controller.connected.value && !controller.roomEnded.value)
                             _buildActionButton(
-                              title: 'CREATE ROOM',
+                              title: 'TẠO PHÒNG',
                               icon: Icons.add_moderator_rounded,
                               onPressed: controller.busy.value || controller.hosting.value ? null : controller.host,
                               isPrimary: true,
                             ),
                           if (!controller.connected.value && !controller.hosting.value && !controller.roomEnded.value)
                             _buildActionButton(
-                              title: 'JOIN MATCH',
+                              title: 'VÀO PHÒNG',
                               icon: Icons.login_rounded,
                               onPressed: controller.busy.value ? null : controller.join,
                               isPrimary: false,
                             ),
                           if (controller.connected.value && !controller.roomEnded.value)
                             _buildActionButton(
-                              title: controller.myReady.value ? 'CANCEL READY' : 'READY',
+                              title: controller.myReady.value ? 'HỦY SẴN SÀNG' : 'SẴN SÀNG',
                               icon: controller.myReady.value ? Icons.cancel_rounded : Icons.check_circle_rounded,
                               onPressed: controller.toggleReady,
                               isPrimary: !controller.myReady.value,
@@ -291,7 +291,7 @@ class LanVersusScreen extends StatelessWidget {
 
                       // Ghi chú
                       const Text(
-                        'Both devices must be on the same Wi-Fi/Hotspot.\nHost must allow application through firewall.',
+                        'Hai thiết bị cần kết nối chung một mạng Wi-Fi hoặc Điểm phát sóng.\nChủ phòng hãy đảm bảo cho phép ứng dụng đi qua Tường lửa (Firewall).',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white54,

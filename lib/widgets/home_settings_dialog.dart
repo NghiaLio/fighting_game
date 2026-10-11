@@ -70,7 +70,7 @@ class HomeSettingsDialog extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'ROUND $level / 3',
+                          'HIỆP $level / 3',
                           style: GameTypography.pixel(
                             color: const Color(0xFFFFD54F),
                             fontSize: 16,
@@ -87,7 +87,7 @@ class HomeSettingsDialog extends StatelessWidget {
                   children: [
                     UiTileButton(
                       tile: UiTile.shortButton,
-                      label: 'RESET',
+                      label: 'ĐẶT LẠI',
                       width: 120,
                       height: 42,
                       fontSize: 14,
@@ -163,7 +163,7 @@ class ResetProgressDialog extends StatelessWidget {
       backgroundColor: const Color(0xFF1A1A2E),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       title: Text(
-        'RESET?',
+        'ĐẶT LẠI TIẾN ĐỘ?',
         style: GameTypography.pixel(
           color: const Color(0xFFFF8A80),
           fontSize: 18,
@@ -172,7 +172,7 @@ class ResetProgressDialog extends StatelessWidget {
         textAlign: TextAlign.center,
       ),
       content: Text(
-        'Reset tiến trình về Round 1?',
+        'Bạn có chắc muốn đặt lại tiến trình về Hiệp 1?',
         style: GameTypography.pixel(color: Colors.white70, fontSize: 12),
         textAlign: TextAlign.center,
       ),
@@ -192,7 +192,7 @@ class ResetProgressDialog extends StatelessWidget {
         TextButton(
           onPressed: onConfirm,
           child: Text(
-            'RESET',
+            'ĐẶT LẠI',
             style: GameTypography.pixel(
               color: const Color(0xFFFF8A80),
               fontSize: 13,

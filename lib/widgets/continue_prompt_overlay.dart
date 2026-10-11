@@ -139,9 +139,9 @@ class ContinuePromptOverlay extends StatelessWidget {
                             child: Text(
                               isVictory
                                   ? (_isFinalRound
-                                        ? 'Map ${game.mapLevel} cleared: all 3 rounds won.'
-                                        : 'Round ${game.currentRound}/3 cleared. Mana carries over at 50%.')
-                                  : 'Defeat in Round ${game.currentRound}/3. Retry or restart this map.',
+                                        ? 'Vượt Màn ${game.mapLevel}: Toàn thắng cả 3 hiệp!'
+                                        : 'Vượt Hiệp ${game.currentRound}/3! Giữ lại 50% nội lực cho hiệp kế.')
+                                  : 'Thất bại ở Hiệp ${game.currentRound}/3. Hãy thử lại màn chơi.',
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -163,7 +163,7 @@ class ContinuePromptOverlay extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: PauseMenuActionButton.secondary(
-                                  label: isVictory ? 'MAP' : 'HOME',
+                                  label: isVictory ? 'BẢN ĐỒ' : 'TRANG CHỦ',
                                   // icon: isVictory
                                   //     ? Icons.map_outlined
                                   //     : Icons.home_rounded,
@@ -178,9 +178,9 @@ class ContinuePromptOverlay extends StatelessWidget {
                               PauseMenuActionButton.resume(
                                 label: game.isVictory
                                     ? (_isFinalRound
-                                          ? 'CLEAR MAP'
-                                          : 'ROUND $_nextRound')
-                                    : 'RETRY ROUND',
+                                          ? 'HOÀN THÀNH'
+                                          : 'HIỆP $_nextRound')
+                                    : 'ĐẤU LẠI',
                                 // icon: Icons.play_arrow_rounded,
                                 width: 114,
                                 height: 38,

@@ -445,14 +445,14 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
 
     // Check win condition (wait for death animation to fully finish)
     if (player.isDeadCompleted) {
-      _showWin(victory: false, msg: 'ENEMY WINS!');
+      _showWin(victory: false, msg: 'ĐỐI THỦ THẮNG!');
     } else if (enemy.isDeadCompleted) {
-      _showWin(victory: true, msg: 'YOU WIN!');
+      _showWin(victory: true, msg: 'BẠN CHIẾN THẮNG!');
     } else if (_matchTime <= 0) {
       if (player.hp > enemy.hp) {
-        _showWin(victory: true, msg: 'YOU WIN!');
+        _showWin(victory: true, msg: 'HẾT GIỜ - CHIẾN THẮNG!');
       } else {
-        _showWin(victory: false, msg: 'TIME OVER - DEFEAT!');
+        _showWin(victory: false, msg: 'HẾT GIỜ - THẤT BẠI!');
       }
     }
   }

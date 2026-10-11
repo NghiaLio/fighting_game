@@ -19,7 +19,7 @@ class LanVersusController extends GetxController {
   final character = CharacterType.fireWizard.obs;
   final opponentCharacter = CharacterType.knight1.obs;
   
-  final status = 'Create a room or enter Host IPv4 to join.'.obs;
+  final status = 'Tạo phòng hoặc nhập địa chỉ IPv4 máy chủ để tham gia.'.obs;
   final hosting = false.obs;
   final connected = false.obs;
   final peerReady = false.obs;
@@ -57,7 +57,7 @@ class LanVersusController extends GetxController {
         message.contains('Kết nối TCP lỗi') ||
         message.contains('mất kết nối');
         
-    status.value = disconnected ? 'Opponent has disconnected.' : message;
+    status.value = disconnected ? 'Đối thủ đã ngắt kết nối.' : message;
     
     if (disconnected) {
       connected.value = false;
@@ -99,7 +99,7 @@ class LanVersusController extends GetxController {
       case 'host_ready':
       case 'hello_ack':
         connected.value = true;
-        status.value = 'Connected. Waiting for room configuration...';
+        status.value = 'Đã kết nối. Đang chờ cấu hình phòng...';
         session.startHeartbeat();
         if (hosting.value) _sendRoomConfig();
         break;
@@ -107,7 +107,7 @@ class LanVersusController extends GetxController {
       case 'hello':
         if (hosting.value) {
           connected.value = true;
-          status.value = 'Opponent joined. Choose hero and ready up.';
+          status.value = 'Đối thủ đã tham gia phòng. Hãy chọn tướng và sẵn sàng.';
           _sendRoomConfig();
           session.startHeartbeat();
         }
@@ -119,7 +119,7 @@ class LanVersusController extends GetxController {
         if (!hosting.value && type.isNotEmpty) {
           opponentCharacter.value = type.first;
         }
-        status.value = 'Received config from Host. Ready up to confirm.';
+        status.value = 'Đã nhận cấu hình phòng. Bấm Sẵn sàng để xác nhận.';
         break;
         
       case 'player_config':
@@ -147,7 +147,7 @@ class LanVersusController extends GetxController {
         peerReady.value = false;
         myReady.value = false;
         roomEnded.value = true;
-        status.value = 'Opponent left the room.';
+        status.value = 'Đối thủ đã rời khỏi phòng.';
         unawaited(session.close());
         break;
         
@@ -201,36 +201,36 @@ class LanVersusController extends GetxController {
   Future<void> host() async {
     busy.value = true;
     hosting.value = true;
-    status.value = 'Opening LAN room...';
+    status.value = 'Đang mở phòng chơi mạng LAN...';
     
     try {
       await session.host();
       busy.value = false;
-      status.value = 'Waiting for opponent. TCP port ${LanMatchSession.tcpPort}.';
+      status.value = 'Đang chờ đối thủ kết nối. Cổng TCP ${LanMatchSession.tcpPort}.';
     } catch (error) {
       busy.value = false;
       hosting.value = false;
-      status.value = 'Failed to open room: $error';
+      status.value = 'Mở phòng thất bại: $error';
     }
   }
 
   Future<void> join() async {
     busy.value = true;
-    status.value = 'Connecting to Host...';
+    status.value = 'Đang kết nối tới máy chủ...';
     
     try {
       await session.join(ipController.text);
       busy.value = false;
-      status.value = 'Connected, synchronizing room...';
+      status.value = 'Đã kết nối, đang đồng bộ hóa phòng...';
     } catch (error) {
       busy.value = false;
-      status.value = 'Connection failed: $error';
+      status.value = 'Kết nối thất bại: $error';
     }
   }
 
   Future<void> scanForHost(BuildContext context) async {
     scanning.value = true;
-    status.value = 'Scanning for PvP rooms in the current Wi-Fi...';
+    status.value = 'Đang quét tìm phòng PvP trong mạng Wi-Fi...';
     
     try {
       final hosts = await LanMatchSession.scanForHosts();
@@ -238,7 +238,7 @@ class LanVersusController extends GetxController {
       
       if (hosts.isEmpty) {
         scanning.value = false;
-        status.value = 'No rooms found. Ensure Host created room on same Wi-Fi.';
+        status.value = 'Không tìm thấy phòng nào. Đảm bảo chủ phòng ở cùng Wi-Fi.';
         return;
       }
       
@@ -250,7 +250,7 @@ class LanVersusController extends GetxController {
                 context: context,
                 builder: (context) => AlertDialog(
                   backgroundColor: const Color(0xFF1E140E),
-                  title: const Text('Select a room', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
+                  title: const Text('Chọn một phòng', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: hosts
@@ -274,11 +274,11 @@ class LanVersusController extends GetxController {
       
       scanning.value = false;
       status.value = selected == null
-          ? 'Found ${hosts.length} rooms.'
-          : 'Filled Host IP: $selected';
+          ? 'Tìm thấy ${hosts.length} phòng.'
+          : 'Đã điền IP máy chủ: $selected';
     } catch (error) {
       scanning.value = false;
-      status.value = 'Failed to scan current network: $error';
+      status.value = 'Lỗi khi quét mạng nội bộ: $error';
     }
   }
 
@@ -295,7 +295,7 @@ class LanVersusController extends GetxController {
       if (!hosting.value) 'character': character.value.name,
     });
     
-    status.value = myReady.value ? 'You are ready.' : 'You are not ready.';
+    status.value = myReady.value ? 'Bạn đã sẵn sàng.' : 'Bạn chưa sẵn sàng.';
     
     if (hosting.value && myReady.value && peerReady.value) {
       _startNetworkMatch();

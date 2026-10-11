@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 /// Row 1: Mages & Knights
 /// Row 2: Samurais & Skeletons
 const List<HeroInfo> kHeroRoster = [
-  // --- ROW 1: MAGES & KNIGHTS ---
+  // --- DÒNG 1: PHÁP SƯ & HIỆP SĨ ---
   HeroInfo(
     type: CharacterType.fireWizard,
-    name: 'FIRE WIZARD',
-    title: 'Fire Dragon Lord (Ignis)',
-    role: 'Mage - Firepower',
+    name: 'PHÁP SƯ LỬA',
+    title: 'Hỏa Long Tôn Giả (Ignis)',
+    role: 'Pháp Sư - Hỏa Lực',
     pillarTile: SelectPerTile.pillarRed,
     badgeTile: SelectPerTile.badgeCrown,
     gemTile: SelectPerTile.gemRuby,
@@ -21,16 +21,16 @@ const List<HeroInfo> kHeroRoster = [
     defRating: 0.50,
     spdRating: 0.70,
     rngRating: 0.95,
-    ultimateName: 'Fire Dragon Burst',
+    ultimateName: 'Hỏa Long Bộc Phá',
     description:
-        'Channels primordial flames incinerating all defenses. Fireballs reach across the entire arena.',
+        'Tập trung ngọn lửa nguyên sơ thiêu rụi mọi phòng thủ. Cầu lửa có tầm bắn bao phủ toàn bộ đấu trường.',
     idleFrames: 7,
   ),
   HeroInfo(
     type: CharacterType.lightningWizard,
-    name: 'LIGHTNING MAGE',
-    title: 'Thunder Vanguard (Voltis)',
-    role: 'Mage - Crowd Control',
+    name: 'PHÁP SƯ SẤM SÉT',
+    title: 'Lôi Đình Tiên Phong (Voltis)',
+    role: 'Pháp Sư - Khống Chế',
     pillarTile: SelectPerTile.pillarBlue,
     badgeTile: SelectPerTile.badgeCrown,
     gemTile: SelectPerTile.gemSapphire,
@@ -39,9 +39,9 @@ const List<HeroInfo> kHeroRoster = [
     defRating: 0.55,
     spdRating: 0.85,
     rngRating: 0.88,
-    ultimateName: 'Heavenly Thunder',
+    ultimateName: 'Thiên Lôi Giáng Thế',
     description:
-        'Strikes at lightning speed, electrocuting and paralyzing enemies in an instant.',
+        'Tấn công với tốc độ ánh sáng, phóng điện gây tê liệt và áp chế kẻ thù trong chớp mắt.',
     idleFrames: 7,
     unlockLevel: 1,
     unlockPrice: 500,
@@ -49,9 +49,9 @@ const List<HeroInfo> kHeroRoster = [
 
   HeroInfo(
     type: CharacterType.knight1,
-    name: 'HOLY KNIGHT',
-    title: 'Knight of Radiance (Arthur)',
-    role: 'Tank - Guardian',
+    name: 'KỴ SĨ HOÀNG GIA',
+    title: 'Hiệp Sĩ Ánh Sáng (Arthur)',
+    role: 'Đỡ Đòn - Hộ Vệ',
     pillarTile: SelectPerTile.pillarRed,
     badgeTile: SelectPerTile.badgeShield,
     gemTile: SelectPerTile.gemRuby,
@@ -60,22 +60,20 @@ const List<HeroInfo> kHeroRoster = [
     defRating: 0.92,
     spdRating: 0.65,
     rngRating: 0.60,
-    ultimateName: 'Excalibur Judgment',
+    ultimateName: 'Phán Quyết Excalibur',
     description:
-        'Stout plate armor and a divine ward shield. Deals immense counter damage upon impact.',
+        'Bộ giáp sắt kiên cố cùng khiên thần thánh. Gây sát thương phản đòn cực lớn khi va chạm.',
     idleFrames: 4,
     unlockLevel: 2,
     unlockPrice: 1200,
   ),
 
-
-
-  // --- ROW 2: SAMURAIS & SKELETONS ---
+  // --- DÒNG 2: SAMURAI & CHIẾN BINH XƯƠNG ---
   HeroInfo(
     type: CharacterType.samurai,
-    name: 'LONE SAMURAI',
-    title: 'Windblade Master (Kenji)',
-    role: 'Assassin - Blade Tempest',
+    name: 'KIẾM KHÁCH SAMURAI',
+    title: 'Cuồng Phong Kiếm Tôn (Kenji)',
+    role: 'Sát Thủ - Bão Kiếm',
     pillarTile: SelectPerTile.pillarRed,
     badgeTile: SelectPerTile.badgeSwords,
     gemTile: SelectPerTile.gemRuby,
@@ -84,9 +82,9 @@ const List<HeroInfo> kHeroRoster = [
     defRating: 0.58,
     spdRating: 0.95,
     rngRating: 0.70,
-    ultimateName: 'Infinite Edge',
+    ultimateName: 'Vô Cực Trảm',
     description:
-        'Supernatural iaido cut at blinding speed. Rapid multi-slash combos decimate targets.',
+        'Đường kiếm Iaido siêu phàm với tốc độ xé gió. Chuỗi combo chém liên hoàn hủy diệt mục tiêu.',
     idleFrames: 6,
     unlockLevel: 2,
     unlockPrice: 2200,
@@ -94,9 +92,9 @@ const List<HeroInfo> kHeroRoster = [
 
   HeroInfo(
     type: CharacterType.samuraiCommander,
-    name: 'SAMURAI WARLORD',
-    title: 'Supreme Overlord (Nobunaga)',
-    role: 'Fighter - Warlord',
+    name: 'ĐẠI TƯỚNG SAMURAI',
+    title: 'Thống Lĩnh Bá Đạo (Nobunaga)',
+    role: 'Đấu Sĩ - Thống Lĩnh',
     pillarTile: SelectPerTile.pillarBlue,
     badgeTile: SelectPerTile.badgeSwords,
     gemTile: SelectPerTile.gemSapphire,
@@ -105,18 +103,18 @@ const List<HeroInfo> kHeroRoster = [
     defRating: 0.78,
     spdRating: 0.80,
     rngRating: 0.72,
-    ultimateName: 'Dominion Cleave',
+    ultimateName: 'Bá Vương Trảm',
     description:
-        'Grand battle captain possessing earth-shattering strikes that dictate the entire fight.',
+        'Đại tướng quân chiến trường sở hữu những nhát chém chấn động mặt đất, áp đảo toàn bộ cục diện.',
     idleFrames: 5,
     unlockLevel: 3,
     unlockPrice: 2800,
   ),
   HeroInfo(
     type: CharacterType.skeletonWarrior,
-    name: 'UNDEAD WARRIOR',
-    title: 'Risen Remains (Krag)',
-    role: 'Fighter - Immortal',
+    name: 'CHIẾN BINH XƯƠNG',
+    title: 'Tàn Tích Bất Tử (Krag)',
+    role: 'Đấu Sĩ - Bất Tử',
     pillarTile: SelectPerTile.pillarPurple,
     badgeTile: SelectPerTile.badgeSkull,
     gemTile: SelectPerTile.gemRuby,
@@ -125,13 +123,11 @@ const List<HeroInfo> kHeroRoster = [
     defRating: 0.75,
     spdRating: 0.75,
     rngRating: 0.65,
-    ultimateName: 'Spiteful Burst',
+    ultimateName: 'Oán Hồn Bộc Phát',
     description:
-        'Netherworld fighter oblivious to pain, relentless in cornering foes with heavy blade swings.',
+        'Chiến binh cõi âm không biết đau đớn, kiên cường dồn ép đối thủ bằng những nhát đao nặng trịch.',
     idleFrames: 7,
     unlockLevel: 3,
     unlockPrice: 3000,
   ),
-
-
 ];

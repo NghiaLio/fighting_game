@@ -43,7 +43,7 @@ class _HeroUnlockDialogState extends State<HeroUnlockDialog> {
 
     setState(() {
       _isUnlocking = false;
-      _message = 'NOT ENOUGH COINS';
+      _message = 'KHÔNG ĐỦ TIỀN VÀNG';
     });
   }
 
@@ -64,7 +64,7 @@ class _HeroUnlockDialogState extends State<HeroUnlockDialog> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'LOCKED: ${widget.hero.name}',
+                  'CHƯA MỞ KHÓA: ${widget.hero.name}',
                   textAlign: TextAlign.center,
                   style: GameTypography.pixel(
                     color: const Color(0xFFFFD54F),
@@ -77,8 +77,8 @@ class _HeroUnlockDialogState extends State<HeroUnlockDialog> {
                 const SizedBox(height: 12),
                 Text(
                   levelLocked
-                      ? 'REQUIRES LEVEL ${widget.hero.unlockLevel}'
-                      : 'LEVEL REQUIREMENT MET',
+                      ? 'YÊU CẦU ĐẠT CẤP ${widget.hero.unlockLevel}'
+                      : 'ĐÃ ĐẠT CẤP YÊU CẦU',
                   style: GameTypography.pixel(
                     color: levelLocked
                         ? Colors.orangeAccent
@@ -89,7 +89,7 @@ class _HeroUnlockDialogState extends State<HeroUnlockDialog> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'UNLOCK FOR ${widget.hero.unlockPrice} COINS',
+                  'MỞ KHÓA VỚI ${widget.hero.unlockPrice} VÀNG',
                   style: GameTypography.pixel(
                     color: Colors.white,
                     fontSize: 12,
@@ -98,7 +98,7 @@ class _HeroUnlockDialogState extends State<HeroUnlockDialog> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'YOUR COINS: ${widget.coins}',
+                  'VÀNG CỦA BẠN: ${widget.coins}',
                   style: GameTypography.pixel(
                     color: const Color(0xFFFFD54F),
                     fontSize: 11,
@@ -122,7 +122,7 @@ class _HeroUnlockDialogState extends State<HeroUnlockDialog> {
                   children: [
                     UiTileButton(
                       tile: UiTile.shortButton,
-                      label: 'CANCEL',
+                      label: 'HỦY',
                       width: 120,
                       height: 40,
                       fontSize: 11,
@@ -131,7 +131,7 @@ class _HeroUnlockDialogState extends State<HeroUnlockDialog> {
                     const SizedBox(width: 12),
                     UiTileButton(
                       tile: UiTile.shortButton,
-                      label: _isUnlocking ? '...' : 'UNLOCK',
+                      label: _isUnlocking ? '...' : 'MỞ KHÓA',
                       width: 120,
                       height: 40,
                       fontSize: 11,

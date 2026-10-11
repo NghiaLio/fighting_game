@@ -159,7 +159,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     if (session != null) {
       _networkSubscription = session.messages.listen(_onNetworkMessage);
       _networkErrorSubscription = session.errors.listen((_) {
-        if (!_networkEnded) onMatchEnd(victory: !networkHost, message: 'CONNECTION LOST');
+        if (!_networkEnded) onMatchEnd(victory: !networkHost, message: 'MẤT KẾT NỐI');
       });
       session.startHeartbeat();
     }
@@ -400,7 +400,7 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     _networkSendTimer -= dt;
     if (isNetworkMatch && !_networkEnded &&
         networkSession!.timeSinceLastPacket > const Duration(seconds: 2)) {
-      onMatchEnd(victory: !networkHost, message: 'OPPONENT LEFT');
+      onMatchEnd(victory: !networkHost, message: 'ĐỐI THỦ ĐÃ RỜI TRẬN');
     }
     if (_networkSendTimer <= 0) {
       _networkSendTimer = 1 / 30;
@@ -441,15 +441,15 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       }
     } else if (message['type'] == 'match_result' && !networkHost) {
       final hostWon = message['victory'] == true;
-      final isDraw = message['message'] == 'DRAW!';
+      final isDraw = message['message'] == 'DRAW!' || message['message'] == 'HÒA!';
       hud.showNetworkResult(
         victory: isDraw ? false : !hostWon,
         message: isDraw
-            ? 'DRAW!'
-            : hostWon ? 'YOU LOSE!' : 'YOU WIN!',
+            ? 'HÒA!'
+            : hostWon ? 'THẤT BẠI!' : 'CHIẾN THẮNG!',
       );
     } else if (message['type'] == 'room_left') {
-      onMatchEnd(victory: !networkHost, message: 'OPPONENT LEFT');
+      onMatchEnd(victory: !networkHost, message: 'ĐỐI THỦ ĐÃ RỜI TRẬN');
     }
   }
 

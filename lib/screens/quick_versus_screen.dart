@@ -23,9 +23,9 @@ class _QuickVersusScreenState extends State<QuickVersusScreen> {
   AiDifficulty _difficulty = AiDifficulty.normal;
 
   static const Map<AiDifficulty, String> _labels = {
-    AiDifficulty.easy: 'EASY',
-    AiDifficulty.normal: 'NORMAL',
-    AiDifficulty.hard: 'HARD',
+    AiDifficulty.easy: 'DỄ',
+    AiDifficulty.normal: 'VỪA',
+    AiDifficulty.hard: 'KHÓ',
   };
 
   static const Map<AiDifficulty, Color> _colors = {
@@ -60,7 +60,7 @@ class _QuickVersusScreenState extends State<QuickVersusScreen> {
     };
   }
 
-  String _charName(CharacterType type) => type.name;
+  String _charName(CharacterType type) => type.displayName;
 
   void _startFight() {
     final profile = _getAiProfile();
@@ -179,7 +179,7 @@ class _QuickVersusScreenState extends State<QuickVersusScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'QUICK VERSUS',
+                        'ĐẤU NHANH VỚI AI',
                         style: GameTypography.pixel(
                           color: const Color(0xFFFFD54F),
                           fontSize: 18,
@@ -196,19 +196,19 @@ class _QuickVersusScreenState extends State<QuickVersusScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildCharRow(
-                            title: 'YOUR CHARACTER',
+                            title: 'NHÂN VẬT CỦA BẠN',
                             selected: _playerChar,
                             onSelected: (c) => setState(() => _playerChar = c),
                           ),
                           const SizedBox(height: 20),
                           _buildCharRow(
-                            title: 'AI OPPONENT',
+                            title: 'ĐỐI THỦ AI',
                             selected: _enemyChar,
                             onSelected: (c) => setState(() => _enemyChar = c),
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            'AI DIFFICULTY',
+                            'ĐỘ KHÓ CỦA AI',
                             style: GameTypography.pixel(
                               color: const Color(0xFFFFD54F),
                               fontSize: 13,
@@ -277,7 +277,7 @@ class _QuickVersusScreenState extends State<QuickVersusScreen> {
                                         color: Colors.white, size: 22),
                                     const SizedBox(width: 10),
                                     Text(
-                                      'FIGHT',
+                                      'VÀO TRẬN',
                                       style: GameTypography.pixel(
                                         color: Colors.white,
                                         fontSize: 16,

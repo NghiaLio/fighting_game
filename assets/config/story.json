@@ -1,44 +1,44 @@
 {
   "overallStory": {
     "title": "Lời Nguyền Hư Không",
-    "subtitle": "Chronicle of the Void Curse",
+    "subtitle": "Biên Niên Sử Lời Nguyền Hư Không",
     "content": "Hàng ngàn năm trước, Vương quốc Valdris từng tồn tại trong phồn vinh dưới sự bảo hộ của 7 Ngọn Đá Linh Hồn. Mỗi ngọn đá chứa đựng một nguồn sức mạnh nguyên sơ của đất trời: Rừng Cổ, Sa Mạc, Nham Thạch, Mây Gió, Băng Tuyết, Lôi Đình và Bóng Tối.\n\nNhưng rồi, Molcharis — đại pháp sư tối cao của vương quốc — đã bị dã tâm nuốt chửng. Hắn tìm cách thâu tóm toàn bộ sức mạnh nguyên sơ để mở cánh cổng Hư Không, triệu hồi thế lực diệt vong và tái sinh cõi chết.\n\nTrước khi bị các vị thần phong ấn, Molcharis đã phân tách linh hồn mình thành 7 mảnh hồn ác ma và giấu rải rác khắp lục địa Valdris, sinh ra những thủ lĩnh quỷ quyệt canh giữ.\n\nGiờ đây, phong ấn ngàn năm đang dần rạn nứt. Ám khí Hư Không trỗi dậy đe dọa sinh mệnh toàn cõi. Ngươi — chiến binh kế thừa Lưỡi Kiếm Ánh Sáng — là niềm hy vọng cuối cùng của Valdris. Hãy tiến bước qua 7 vùng đất, đánh bại các thủ lĩnh tà ác, thu hồi 7 mảnh hồn và phong ấn vĩnh viễn cánh cổng Hư Không!"
   },
   "stages": [
     {
       "stageNumber": 1,
-      "title": "Ancient Forest - Rừng Cổ Valdris",
+      "title": "Rừng Cổ Valdris",
       "story": "Rừng cổ Valdris là vùng đất nguyên sinh ngàn năm, nơi dòng sông ngọc bích uốn lượn qua những ngôi làng gỗ yên bình nép mình dưới rặng thông xanh. Thế nhưng, mảnh hồn thứ nhất rơi xuống đã làm vấy bẩn linh khí nơi đây.\n\nĐội trưởng tuần tra hoàng gia đã bị tà khí thao túng tâm trí, trở thành Kỵ Sĩ Bóng Đêm ngăn cản bất kỳ ai bước chân qua rừng.\n\nHãy đánh bại Kỵ Sĩ Bóng Đêm để thanh tẩy khu rừng cổ và mở ra con đường tiến vào đại lục."
     },
     {
       "stageNumber": 2,
-      "title": "Desert Canyon - Hẻm Núi Sa Mạc",
+      "title": "Hẻm Núi Sa Mạc",
       "story": "Vượt khỏi rừng cổ, ngươi đặt chân lên cao nguyên sa mạc đá đỏ dưới ánh hoàng hôn vàng rực. Nơi đây cát bỏng gió rát và những hẻm núi cheo leo sẵn sàng chôn vùi kẻ lữ hành.\n\nMảnh hồn thứ hai thuộc về Kiếm Khách Sa Mạc — một bậc thầy song kiếm lang bạt bị ảo ảnh Hư Không cám dỗ, biến lưỡi kiếm thành nỗi khiếp sợ của cả vùng gió cát.\n\nHãy đánh bại Kiếm Khách Sa Mạc để đoạt lại mảnh hồn thứ hai và mở đường tiến vào vực lửa."
     },
     {
       "stageNumber": 3,
-      "title": "Lava Abyss - Vực Nham Thạch",
+      "title": "Vực Nham Thạch",
       "story": "Tại trung tâm đại lục là Vực Nham Thạch — miệng núi lửa khổng lồ sục sôi những dòng dung nham đỏ rực nghìn độ, nơi magma phun trào không ngừng từ lòng đất.\n\nMảnh hồn thứ ba ngự trị trong cơ thể của Pháp Sư Lửa. Ngọn lửa ma thuật của hắn đã biến thành hỏa ngục thiêu đốt mọi kẻ xâm nhập.\n\nHãy dập tắt ngọn lửa cuồng nộ của Pháp Sư Lửa trước khi biển nham thạch nuốt chửng cả thung lũng."
     },
     {
       "stageNumber": 4,
-      "title": "Twilight Valley - Thung Lũng Mây Ngàn",
+      "title": "Thung Lũng Mây Ngàn",
       "story": "Vượt qua miệng núi lửa là Thung Lũng Hoàng Hôn — vùng thánh địa bay lơ lửng giữa biển mây và những dòng thác nước cổ đại hùng vĩ tuôn trào từ thiên giới.\n\nKẻ canh giữ mảnh hồn thứ tư là Pháp Sư Sấm Sét, kẻ nắm giữ quyền năng lôi đình và những cơn bão cuồng phong giáng xuống từ mây trời.\n\nHãy vượt qua cơn bão sấm sét của Pháp Sư Sét để tiếp tục hành trình hướng về đỉnh núi tuyết trắng."
     },
     {
       "stageNumber": 5,
-      "title": "Ancient Snow Peak - Đỉnh Núi Băng Tuyết",
+      "title": "Đỉnh Núi Băng Tuyết",
       "story": "Sừng sững trên đỉnh trời phương bắc là rặng núi tuyết vĩnh cửu và tòa lâu đài băng huyền bí ngưng đọng dưới ánh trăng rằm. Giá lạnh nơi đây có thể đông cứng cả linh hồn.\n\nHiệp Sĩ Băng Giá khoác trên mình bộ giáp hàn băng bất hoại trấn giữ lối vào pháo đài. Mỗi nhát chém của hắn đều mang theo hàn khí buốt giá nghìn năm.\n\nHãy phá tan băng giáp của Hiệp Sĩ Băng Giá để giải phóng mảnh hồn thứ năm."
     },
     {
       "stageNumber": 6,
-      "title": "Stormy Peak - Đỉnh Bão Hắc Ám",
-      "story": "Trên đỉnh chóp đen ngòm của pháo đài đá hắc ám, bão tố cuồng nộ và mây đen nghìn tầng đang che khuất bầu trời. Đây là tiền đồn kiên cố nhất của đạo quân ác ma.\n\nĐại Tướng Samurai Hắc Ám — tướng lĩnh tối cao của Molcharis — đang thống lĩnh trận địa với sát thương hủy diệt và kiếm pháp tàn bạo nhất lục địa.\n\nHãy đánh bại Đại Tướng Samurai để mở toang lối vào Đền Thờ Cổ Tích."
+      "title": "Pháo Đài Bão Tím",
+      "story": "Trên đỉnh chóp của pháo đài núi lửa giữa bão tím, sấm sét cuồng nộ và mây đen nghìn tầng đang bao phủ bầu trời. Đây là tiền đồn kiên cố nhất của đạo quân ác ma.\n\nĐại Tướng Samurai Hắc Ám — tướng lĩnh tối cao của Molcharis — đang thống lĩnh trận địa với sát thương hủy diệt và kiếm pháp tàn bạo nhất lục địa.\n\nHãy đánh bại Đại Tướng Samurai để mở toang lối vào Đền Thờ Cổ Tích."
     },
     {
       "stageNumber": 7,
-      "title": "Ruined Temple - Đền Thờ Cổ Tích",
-      "story": "Ngôi đền đá cổ nghìn năm tọa lạc bên vách thác nước vĩ đại chính là nơi phong ấn cánh cổng Hư Không.\n\nMolcharis đích thân thức tỉnh trong hình hài Chúa Tể Xương Bất Tử. Toàn bộ tà thuật và oán niệm ngàn năm của hắn đều hội tụ trong trận chiến sinh tử định mệnh này.\n\nĐây là trận chiến cuối cùng! Hãy hạ gục Chúa Tể Xương Molcharis, phong ấn vĩnh viễn cánh cổng Hư Không và mang lại bình minh thanh bình cho vương quốc Valdris!"
+      "title": "Đền Cổ Thác Mây",
+      "story": "Đấu trường đền cổ nghìn năm tọa lạc giữa biển mây và thác nước vĩ đại chính là nơi phong ấn cánh cổng Hư Không.\n\nMolcharis đích thân thức tỉnh trong hình hài Chúa Tể Xương Bất Tử. Toàn bộ tà thuật và oán niệm ngàn năm của hắn đều hội tụ trong trận chiến sinh tử định mệnh này.\n\nĐây là trận chiến cuối cùng! Hãy hạ gục Chúa Tể Xương Molcharis, phong ấn vĩnh viễn cánh cổng Hư Không và mang lại bình minh thanh bình cho vương quốc Valdris!"
     }
   ]
 }
