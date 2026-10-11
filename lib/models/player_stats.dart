@@ -141,6 +141,23 @@ class PlayerStats {
       attack3Reach: 195, // Heavy 360 spin slash
       specialReach: 180, // Shield bash / counter
     ),
+    CharacterType.sonGoku => PlayerStats(
+      attack1Power: 2,
+      attack2Power: 3,
+      attack3Power: 4,
+      specialAttackPower: 6,
+      attackResistance: 1.05,
+      healthMultiplier: 1.10,
+      walkSpeed: 0.95,
+      runSpeed: 3.6,
+      jumpPower: 380,
+      jumpDistance: 220,
+      powerUpDuration: 12,
+      attack1Reach: 140, // Chuỗi đấm liên hoàn
+      attack2Reach: 170, // Đòn nội lực hất tung
+      attack3Reach: 280, // Sóng xung kích Kamehameha
+      specialReach: 500, // Kamehameha Siêu Cấp toàn màn hình
+    ),
   };
 
   double getAttackPower(CharacterState state) => switch (state) {

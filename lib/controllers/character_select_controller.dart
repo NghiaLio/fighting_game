@@ -25,7 +25,9 @@ class CharacterSelectController extends GetxController {
   }
 
   bool isHeroUnlocked(int index) {
-    return index == 0 || unlockedHeroIds.contains(kHeroRoster[index].type.name);
+    return index == 0 ||
+        kHeroRoster[index].unlockPrice == 0 ||
+        unlockedHeroIds.contains(kHeroRoster[index].type.name);
   }
 
   void selectHero(int index) {

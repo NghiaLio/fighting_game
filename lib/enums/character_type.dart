@@ -4,7 +4,8 @@ enum CharacterType {
   knight1('Knight_1'),
   samurai('Samurai'),
   samuraiCommander('Samurai_Commander'),
-  skeletonWarrior('Skeleton_Warrior');
+  skeletonWarrior('Skeleton_Warrior'),
+  sonGoku('Son_Goku');
 
   final String spritePath;
   const CharacterType(this.spritePath);
@@ -16,5 +17,6 @@ enum CharacterType {
     CharacterType.samurai => 'Kiếm Khách Samurai',
     CharacterType.samuraiCommander => 'Đại Tướng Samurai',
     CharacterType.skeletonWarrior => 'Chiến Binh Xương',
+    CharacterType.sonGoku => 'Son Goku',
   };
 }

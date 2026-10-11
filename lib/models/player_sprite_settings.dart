@@ -115,6 +115,18 @@ class PlayerSpriteSettings {
           special: StateSpriteSetting(0.1, Anchor.bottomLeft),
           walk: StateSpriteSetting(0.18, Anchor.bottomLeft),
         ),
+        CharacterType.sonGoku => PlayerSpriteSettings(
+          attack1: StateSpriteSetting(0.10, Anchor.bottomCenter),
+          attack2: StateSpriteSetting(0.10, Anchor.bottomCenter),
+          attack3: StateSpriteSetting(0.09, Anchor.bottomCenter),
+          dead: StateSpriteSetting(0.18, Anchor.bottomCenter),
+          hurt: StateSpriteSetting(0.15, Anchor.bottomCenter),
+          idle: StateSpriteSetting(0.20, Anchor.bottomCenter),
+          jump: StateSpriteSetting(0.12, Anchor.bottomCenter),
+          run: StateSpriteSetting(0.08, Anchor.bottomCenter),
+          special: StateSpriteSetting(0.10, Anchor.bottomCenter),
+          walk: StateSpriteSetting(0.12, Anchor.bottomCenter),
+        ),
       };
 }
 

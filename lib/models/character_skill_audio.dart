@@ -69,6 +69,12 @@ class CharacterSkillAudio {
             attack3: AppAssets.sfxAttack1,
             special: AppAssets.sfxAttack2,
           ),
+        CharacterType.sonGoku => const CharacterSkillAudio(
+            attack1: AppAssets.sfxAttack2,
+            attack2: AppAssets.sfxAttack1,
+            attack3: AppAssets.sfxFireWhoosh,
+            special: AppAssets.sfxFireballLaunch,
+          ),
 
         // Các tướng khác (sẽ bổ sung khi có sound):
         _ => null,
