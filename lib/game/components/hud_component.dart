@@ -82,6 +82,7 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     CharacterType.samuraiCommander => 'SAMURAI COMMANDER',
     CharacterType.knight1 => 'KNIGHT',
     CharacterType.sonGoku => 'SON GOKU',
+    CharacterType.wandererMagician => 'WANDERER MAGICIAN',
   };
 
   @override

@@ -5,6 +5,7 @@ import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/components/background_component.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/game/components/fireball_component.dart';
+import 'package:fighting_game/game/components/magic_orb_component.dart';
 import 'package:fighting_game/game/components/game_controls.dart';
 import 'package:fighting_game/game/components/hud_component.dart';
 import 'package:fighting_game/game/components/vfx_components.dart';
@@ -143,6 +144,10 @@ class FightingGame extends FlameGame with HasCollisionDetection {
     if (playerCharacter == CharacterType.fireWizard ||
         enemyCharacter == CharacterType.fireWizard) {
       toLoad.add(AppAssets.fireballProjectile);
+    }
+    if (playerCharacter == CharacterType.wandererMagician ||
+        enemyCharacter == CharacterType.wandererMagician) {
+      toLoad.add(AppAssets.wandererProjectile);
     }
 
     await Flame.images.loadAll(toLoad.toSet().toList());
@@ -431,13 +436,23 @@ class FightingGame extends FlameGame with HasCollisionDetection {
       final x = message['x'];
       final y = message['y'];
       if (x is num && y is num && enemy != null && player != null) {
-        stage.add(FireballComponent(
-          caster: enemy!,
-          target: player!,
-          startPos: Vector2(x.toDouble(), y.toDouble()),
-          facingRight: message['facingRight'] == true,
-          damage: 0,
-        ));
+        if (enemy!.characterType == CharacterType.wandererMagician) {
+          stage.add(MagicOrbComponent(
+            caster: enemy!,
+            target: player!,
+            startPos: Vector2(x.toDouble(), y.toDouble()),
+            facingRight: message['facingRight'] == true,
+            damage: 0,
+          ));
+        } else {
+          stage.add(FireballComponent(
+            caster: enemy!,
+            target: player!,
+            startPos: Vector2(x.toDouble(), y.toDouble()),
+            facingRight: message['facingRight'] == true,
+            damage: 0,
+          ));
+        }
       }
     } else if (message['type'] == 'match_result' && !networkHost) {
       final hostWon = message['victory'] == true;

@@ -57,6 +57,7 @@ class AppAssets {
   static const String hitSpark = 'sfx/hit_spark.png';
   static const String dustPuff = 'sfx/dust_puff.png';
   static const String fireballProjectile = 'Fire_Wizard/Projectile1.png';
+  static const String wandererProjectile = 'Wanderer_Magican/Projectile2.png';
   static const String round1 = 'sfx/round1.png';
   static const String round2 = 'sfx/round2.png';
   static const String round3 = 'sfx/round3.png';
@@ -90,6 +91,8 @@ class AppAssets {
   static const String sfxFireWhoosh = 'sfx_fire_whoosh.mp3';
   static const String sfxFireSpark = 'sfx_fire_spark.wav';
   static const String sfxFireballLaunch = 'sfx_fireball_launch_[cut_2sec].wav';
+  static const String sfxLightningStrike = 'sfx_lightning_strike.mp3';
+  static const String sfxLightningZap = 'sfx_lightning_zap.mp3';
   static const String sfxWin = 'win.mp3';
   static const String sfxLose = 'lose.mp3';
   static const String sfxRound1 = 'round_1.wav';

@@ -3,6 +3,7 @@ import 'package:fighting_game/enums/character_state.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/components/arrow_component.dart';
 import 'package:fighting_game/game/components/fireball_component.dart';
+import 'package:fighting_game/game/components/magic_orb_component.dart';
 import 'package:fighting_game/game/fighting_game.dart';
 import 'package:fighting_game/game/utils/character_sprite_animations.dart';
 import 'package:fighting_game/models/ai_profile.dart';
@@ -850,6 +851,9 @@ class CharacterComponent extends PositionComponent
       } else if (characterType == CharacterType.samurai) {
         _hasSpawnedProjectile = true;
         _spawnArrow();
+      } else if (characterType == CharacterType.wandererMagician) {
+        _hasSpawnedProjectile = true;
+        _spawnMagicOrb();
       }
     }
 
@@ -915,13 +919,37 @@ class CharacterComponent extends PositionComponent
     parent!.add(arrow);
   }
 
+  void _spawnMagicOrb() {
+    if (parent == null || opponent == null) return;
+    final spawnX = position.x + (facingRight ? 45.0 : -45.0);
+    final spawnY = position.y - 75.0;
+
+    final multiplier = !isPlayer && aiProfile != null
+        ? aiProfile!.damageMultiplier
+        : 1.0;
+
+    final orb = MagicOrbComponent(
+      caster: this,
+      target: opponent!,
+      startPos: Vector2(spawnX, spawnY),
+      facingRight: facingRight,
+      damage: stats.getAttackPower(CharacterState.special) * 7.5 * multiplier,
+    );
+    if (game.isNetworkMatch && game.networkHost) {
+      game.publishProjectile(x: spawnX, y: spawnY, facingRight: facingRight);
+    }
+    parent!.add(orb);
+  }
+
   void _tryDealDamage() {
     if (!game.canResolveCombat) return;
     if (opponent == null || opponent!.isDead) return;
 
-    // Fire Wizard & Samurai Archer special damage is dealt upon projectile impact
+    // Fire Wizard, Samurai Archer & Wanderer Magician special damage is dealt upon projectile impact
     if (_state == CharacterState.special &&
-        (characterType == CharacterType.fireWizard || characterType == CharacterType.samurai)) {
+        (characterType == CharacterType.fireWizard ||
+            characterType == CharacterType.samurai ||
+            characterType == CharacterType.wandererMagician)) {
       return;
     }
 

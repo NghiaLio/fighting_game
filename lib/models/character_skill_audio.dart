@@ -75,8 +75,17 @@ class CharacterSkillAudio {
             attack3: AppAssets.sfxFireWhoosh,
             special: AppAssets.sfxFireballLaunch,
           ),
-
-        // Các tướng khác (sẽ bổ sung khi có sound):
-        _ => null,
+        CharacterType.wandererMagician => const CharacterSkillAudio(
+            attack1: AppAssets.sfxAttack1,
+            attack2: AppAssets.sfxAttack2,
+            attack3: AppAssets.sfxFireWhoosh,
+            special: AppAssets.sfxFireballLaunch,
+          ),
+        CharacterType.lightningWizard => const CharacterSkillAudio(
+            attack1: AppAssets.sfxAttack1,
+            attack2: AppAssets.sfxAttack2,
+            attack3: AppAssets.sfxLightningZap,
+            special: AppAssets.sfxLightningStrike,
+          ),
       };
 }

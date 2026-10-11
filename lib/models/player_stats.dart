@@ -175,6 +175,25 @@ class PlayerStats {
       attack3Reach: 280,
       specialReach: 500, // Kamehameha Siêu Cấp
     ),
+
+    // 8. Wanderer Magician (Pháp Sư Lãng Khách): Khống chế tầm xa, cầu ma thuật ảo ảnh
+    CharacterType.wandererMagician => PlayerStats(
+      attack1Power: 2.2,
+      attack2Power: 2.6,
+      attack3Power: 3.8,
+      specialAttackPower: 5.2,
+      attackResistance: 0.98,
+      healthMultiplier: 1.0,
+      walkSpeed: 0.88,
+      runSpeed: 3.4,
+      jumpPower: 390,
+      jumpDistance: 200,
+      powerUpDuration: 10,
+      attack1Reach: 140,
+      attack2Reach: 165,
+      attack3Reach: 230,
+      specialReach: 500, // Cầu Ma Thuật tầm xa
+    ),
   };
 
   double getAttackPower(CharacterState state) => switch (state) {
