@@ -94,32 +94,32 @@ class AppStrings {
   static const String mapStagePrefix = 'STAGE';
   static const String mapOpponentPrefix = 'OPPONENT:';
 
-  // Tên màn chơi, boss và mô tả
+  // Tên màn chơi, boss và mô tả (Đồng bộ với bản đồ và cốt truyện)
   static const String mapStage1Title = 'Ancient Forest';
-  static const String mapStage1Desc = 'Dense primeval forest, home of the Goblin warriors.';
-  static const String mapStage1Boss = 'Goblin Chieftain';
+  static const String mapStage1Desc = 'Rừng sâu nguyên sinh ngàn năm, nơi khởi đầu hành trình phong ấn Hư Không.';
+  static const String mapStage1Boss = 'Shadow Knight';
   
   static const String mapStage2Title = 'Desert Canyon';
-  static const String mapStage2Desc = 'Barren land with harsh wind-swept cliffs.';
-  static const String mapStage2Boss = 'Dual-Blade Swordsman';
+  static const String mapStage2Desc = 'Cao nguyên sa mạc hoàng hôn với những hẻm núi đá đỏ cheo leo.';
+  static const String mapStage2Boss = 'Desert Samurai';
   
   static const String mapStage3Title = 'Lava Abyss';
-  static const String mapStage3Desc = 'Boiling lava rivers surging deep underground.';
-  static const String mapStage3Boss = 'Fire Mage';
+  static const String mapStage3Desc = 'Miệng núi lửa khổng lồ sục sôi những dòng dung nham đỏ rực nghìn độ.';
+  static const String mapStage3Boss = 'Fire Wizard';
 
   static const String mapStage4Title = 'Twilight Valley';
-  static const String mapStage4Desc = 'Valley bathed in twilight with ancient ruins.';
-  static const String mapStage4Boss = 'Nomad Archer';
+  static const String mapStage4Desc = 'Vùng thánh địa bay lơ lửng giữa biển mây và những dòng thác nước cổ đại.';
+  static const String mapStage4Boss = 'Lightning Mage';
 
   static const String mapStage5Title = 'Ancient Snow Peak';
-  static const String mapStage5Desc = 'Eternal snow-capped mountains with cruel winters.';
+  static const String mapStage5Desc = 'Đỉnh núi tuyết vĩnh cửu và lâu đài băng huyền bí ngưng đọng thời gian.';
   static const String mapStage5Boss = 'Frost Knight';
 
-  static const String mapStage6Title = 'Stormy Peak';
-  static const String mapStage6Desc = 'Towering peaks constantly engulfed in relentless thunderstorms.';
-  static const String mapStage6Boss = 'Thunder Mage';
+  static const String mapStage6Title = 'Storm Fortress';
+  static const String mapStage6Desc = 'Pháo đài núi lửa giữa cơn bão sấm sét tím cuồng nộ và bầu trời hắc ám.';
+  static const String mapStage6Boss = 'Samurai Commander';
 
-  static const String mapStage7Title = 'Ruined Temple';
-  static const String mapStage7Desc = 'Mysterious temple holding ancient evil powers.';
-  static const String mapStage7Boss = 'Skeleton Warrior';
+  static const String mapStage7Title = 'Ancient Cloud Temple';
+  static const String mapStage7Desc = 'Đấu trường đền cổ nghìn năm giữa thác mây canh giữ cánh cổng Hư Không.';
+  static const String mapStage7Boss = 'Skeleton Lord';
 }

@@ -16,15 +16,15 @@ class MapController extends GetxController {
   final RxInt selectedStageIndex =
       0.obs; // 0 = Pedestal xuất phát, 1..7 = Các màn chơi
 
-  // Tọa độ vị trí bệ đá xuất phát của Tướng
-  final Offset pedestalPos = const Offset(0.058, 0.745);
+  // Tọa độ vị trí bệ đá xuất phát của Tướng (Góc dưới bên trái)
+  final Offset pedestalPos = const Offset(0.075, 0.785);
 
   static const List<MapStageData> stageDefinitions = [
     MapStageData(
       stageNumber: 1,
       title: AppStrings.mapStage1Title,
       tile: MapTile.stage1Forest,
-      relativePos: Offset(0.155, 0.710),
+      relativePos: Offset(0.115, 0.485), // Làng rừng thông ven sông
       stars: 3,
       isUnlocked: true,
       description: AppStrings.mapStage1Desc,
@@ -34,7 +34,7 @@ class MapController extends GetxController {
       stageNumber: 2,
       title: AppStrings.mapStage2Title,
       tile: MapTile.stage2Desert,
-      relativePos: Offset(0.245, 0.585),
+      relativePos: Offset(0.285, 0.245), // Sa mạc cát vàng góc trên bên trái
       stars: 3,
       isUnlocked: true,
       description: AppStrings.mapStage2Desc,
@@ -44,7 +44,7 @@ class MapController extends GetxController {
       stageNumber: 3,
       title: AppStrings.mapStage3Title,
       tile: MapTile.stage3Lava,
-      relativePos: Offset(0.380, 0.490),
+      relativePos: Offset(0.445, 0.380), // Vực nham thạch miệng núi lửa ở trung tâm
       stars: 3,
       isUnlocked: true,
       description: AppStrings.mapStage3Desc,
@@ -54,7 +54,7 @@ class MapController extends GetxController {
       stageNumber: 4,
       title: AppStrings.mapStage4Title,
       tile: MapTile.stage4Jungle,
-      relativePos: Offset(0.525, 0.625),
+      relativePos: Offset(0.585, 0.520), // Đường đèo thung lũng dẫn qua vực thác
       stars: 3,
       isUnlocked: true,
       description: AppStrings.mapStage4Desc,
@@ -64,7 +64,7 @@ class MapController extends GetxController {
       stageNumber: 5,
       title: AppStrings.mapStage5Title,
       tile: MapTile.stage5Ice,
-      relativePos: Offset(0.648, 0.345),
+      relativePos: Offset(0.690, 0.225), // Đỉnh núi tuyết & Lâu đài băng góc trên phải
       stars: 2,
       isUnlocked: true,
       description: AppStrings.mapStage5Desc,
@@ -74,7 +74,7 @@ class MapController extends GetxController {
       stageNumber: 6,
       title: AppStrings.mapStage6Title,
       tile: MapTile.stage6DarkStone,
-      relativePos: Offset(0.772, 0.415),
+      relativePos: Offset(0.840, 0.220), // Pháo đài đá hắc ám góc trên cùng bên phải
       stars: 2,
       isUnlocked: true,
       description: AppStrings.mapStage6Desc,
@@ -84,7 +84,7 @@ class MapController extends GetxController {
       stageNumber: 7,
       title: AppStrings.mapStage7Title,
       tile: MapTile.stage7Dungeon,
-      relativePos: Offset(0.885, 0.565),
+      relativePos: Offset(0.885, 0.725), // Đền thờ đá cổ tích bên vách thác nước góc dưới phải
       stars: 2,
       isUnlocked: true,
       description: AppStrings.mapStage7Desc,

@@ -2,8 +2,6 @@ import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/data/story_service.dart';
 import 'package:fighting_game/utils/map_tileset.dart';
-import 'package:fighting_game/utils/ui_tileset.dart';
-import 'package:fighting_game/widgets/home_settings_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fighting_game/constants/app_strings.dart';
@@ -415,9 +413,15 @@ class _MapScreenState extends State<MapScreen>
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.asset(
-                              stage.stageNumber <= 5
-                                  ? 'assets/images/Bg2/bg${stage.stageNumber}.png'
-                                  : 'assets/images/Backgrounds/bg${stage.stageNumber}.png',
+                              switch (stage.stageNumber) {
+                                1 => 'assets/images/${AppAssets.arenaBg1}', // bg1: Greenwood / Sunset
+                                2 => 'assets/images/${AppAssets.arenaBg5}', // bg5: Desert Canyon
+                                3 => 'assets/images/${AppAssets.arenaBg3}', // bg3: Lava Abyss
+                                4 => 'assets/images/${AppAssets.arenaBg4}', // bg4: Sky & Waterfalls
+                                5 => 'assets/images/${AppAssets.arenaBg2}', // bg2: Snow Peak & Ice Castle
+                                6 => 'assets/images/${AppAssets.arenaBg6}', // bg6: Pháo đài bão tím / Storm Fortress
+                                _ => 'assets/images/${AppAssets.arenaBg7}', // bg7: Đền cổ thác mây / Ancient Cloud Temple
+                              },
                               width: 130,
                               height: 130,
                               fit: BoxFit.cover,

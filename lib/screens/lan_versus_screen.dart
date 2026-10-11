@@ -75,7 +75,6 @@ class LanVersusScreen extends StatelessWidget {
                       const Text(
                         'PVP LAN MATCH',
                         style: TextStyle(
-                          fontFamily: 'Pixel',
                           color: Color(0xFFFFD54F),
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
@@ -100,7 +99,6 @@ class LanVersusScreen extends StatelessWidget {
                           controller.status.value,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontFamily: 'Pixel',
                             color: Colors.white,
                             fontSize: 12,
                             height: 1.4,
@@ -119,7 +117,6 @@ class LanVersusScreen extends StatelessWidget {
                             Text(
                               'UDP RTT: ${controller.rttMs.value}ms',
                               style: const TextStyle(
-                                fontFamily: 'Pixel',
                                 color: Colors.amber,
                                 fontSize: 11,
                               ),
@@ -134,7 +131,6 @@ class LanVersusScreen extends StatelessWidget {
                             Text(
                               controller.peerReady.value ? 'OPPONENT READY' : 'WAITING FOR OPPONENT',
                               style: TextStyle(
-                                fontFamily: 'Pixel',
                                 color: controller.peerReady.value ? Colors.greenAccent : Colors.orangeAccent,
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
@@ -154,14 +150,12 @@ class LanVersusScreen extends StatelessWidget {
                               value: controller.character.value,
                               dropdownColor: const Color(0xFF28211B),
                               style: const TextStyle(
-                                fontFamily: 'Pixel',
                                 color: Colors.white,
                                 fontSize: 14,
                               ),
                               decoration: const InputDecoration(
                                 labelText: 'YOUR HERO',
                                 labelStyle: TextStyle(
-                                  fontFamily: 'Pixel',
                                   color: Color(0xFFFFC107),
                                   fontSize: 12,
                                 ),
@@ -202,7 +196,6 @@ class LanVersusScreen extends StatelessWidget {
                                 onChanged: (_) => controller.setIpEdited(),
                                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                 style: const TextStyle(
-                                  fontFamily: 'Pixel',
                                   color: Colors.white,
                                   fontSize: 12,
                                 ),
@@ -210,12 +203,10 @@ class LanVersusScreen extends StatelessWidget {
                                   labelText: 'HOST IPv4 (LAN)',
                                   hintText: 'Enter Host IP',
                                   labelStyle: TextStyle(
-                                    fontFamily: 'Pixel',
                                     color: Color(0xFFFFC107),
                                     fontSize: 11,
                                   ),
                                   hintStyle: TextStyle(
-                                    fontFamily: 'Pixel',
                                     color: Colors.white30,
                                     fontSize: 11,
                                   ),
@@ -256,7 +247,6 @@ class LanVersusScreen extends StatelessWidget {
                               label: Text(
                                 controller.scanning.value ? 'SCANNING' : 'SCAN IP',
                                 style: const TextStyle(
-                                  fontFamily: 'Pixel',
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -304,7 +294,6 @@ class LanVersusScreen extends StatelessWidget {
                         'Both devices must be on the same Wi-Fi/Hotspot.\nHost must allow application through firewall.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'Pixel',
                           color: Colors.white54,
                           fontSize: 10,
                           height: 1.5,
@@ -352,7 +341,6 @@ class LanVersusScreen extends StatelessWidget {
       label: Text(
         title,
         style: const TextStyle(
-          fontFamily: 'Pixel',
           fontSize: 14,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.2,

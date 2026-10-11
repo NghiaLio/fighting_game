@@ -250,7 +250,7 @@ class LanVersusController extends GetxController {
                 context: context,
                 builder: (context) => AlertDialog(
                   backgroundColor: const Color(0xFF1E140E),
-                  title: const Text('Select a room', style: TextStyle(color: Colors.amber, fontFamily: 'Pixel')),
+                  title: const Text('Select a room', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: hosts

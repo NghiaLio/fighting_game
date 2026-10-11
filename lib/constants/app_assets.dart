@@ -39,8 +39,8 @@ class AppAssets {
   static const String arenaBg3 = 'Bg2/bg3.png';
   static const String arenaBg4 = 'Bg2/bg4.png';
   static const String arenaBg5 = 'Bg2/bg5.png';
-  static const String arenaBg6 = 'Backgrounds/bg6.png';
-  static const String arenaBg7 = 'Backgrounds/bg7.png';
+  static const String arenaBg6 = 'Bg2/bg6.png';
+  static const String arenaBg7 = 'Bg2/bg7.png';
 
   // Hiệu ứng hình ảnh (VFX & HUD)
   static const String hitSpark = 'sfx/hit_spark.png';

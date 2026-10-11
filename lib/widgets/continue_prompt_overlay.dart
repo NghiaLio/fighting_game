@@ -161,12 +161,12 @@ class ContinuePromptOverlay extends StatelessWidget {
                             children: [
                               // Nút EXIT
                               Padding(
-                                padding: const EdgeInsets.only(top: 9.0),
+                                padding: const EdgeInsets.only(top: 8.0),
                                 child: PauseMenuActionButton.secondary(
                                   label: isVictory ? 'MAP' : 'HOME',
-                                  icon: isVictory
-                                      ? Icons.map_outlined
-                                      : Icons.home_rounded,
+                                  // icon: isVictory
+                                  //     ? Icons.map_outlined
+                                  //     : Icons.home_rounded,
                                   width: 114,
                                   height: 38,
                                   fontSize: 10.5,
@@ -181,7 +181,7 @@ class ContinuePromptOverlay extends StatelessWidget {
                                           ? 'CLEAR MAP'
                                           : 'ROUND $_nextRound')
                                     : 'RETRY ROUND',
-                                icon: Icons.play_arrow_rounded,
+                                // icon: Icons.play_arrow_rounded,
                                 width: 114,
                                 height: 38,
                                 fontSize: 10.5,

@@ -438,6 +438,9 @@ class CharacterComponent extends PositionComponent
         game.spawnHitSpark(Vector2(position.x, position.y - 75));
         game.spawnFloatingDamage(Vector2(position.x, position.y - 120), damage);
         game.triggerScreenShake(duration: 0.14, intensity: 3);
+        if (isPlayer) {
+          AudioService.playPunch();
+        }
       }
     }
     if (remoteMana is num) {
@@ -1020,6 +1023,11 @@ class CharacterComponent extends PositionComponent
           opState == CharacterState.special) {
         _recordOpponentPattern(opState);
       }
+    }
+
+    // Khi người chơi bị NPC tấn công: phát âm thanh đòn đánh khi chống đỡ hoặc mất máu
+    if (isPlayer) {
+      AudioService.playPunch(volumeMultiplier: _guarding ? 0.85 : 1.0);
     }
 
     if (_guarding) {

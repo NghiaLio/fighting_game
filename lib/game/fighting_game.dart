@@ -11,7 +11,6 @@ import 'package:fighting_game/game/components/vfx_components.dart';
 import 'package:fighting_game/controllers/game_match_controller.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/models/ai_profile.dart';
-import 'package:fighting_game/models/network/player_input.dart';
 import 'package:fighting_game/services/network/lan_match_session.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/components.dart';
@@ -86,13 +85,13 @@ class FightingGame extends FlameGame with HasCollisionDetection {
   Color backgroundColor() => const Color(0xFF1a1a2e);
 
   static const List<String> allBackgrounds = [
-    AppAssets.arenaBg1,
-    AppAssets.arenaBg2,
-    AppAssets.arenaBg3,
-    AppAssets.arenaBg4,
-    AppAssets.arenaBg5,
-    AppAssets.arenaBg6,
-    AppAssets.arenaBg7,
+    AppAssets.arenaBg1, // Màn 1: Rừng cổ / Greenwood (bg1.png)
+    AppAssets.arenaBg5, // Màn 2: Sa mạc / Desert Canyon (bg5.png)
+    AppAssets.arenaBg3, // Màn 3: Vực nham thạch / Lava Abyss (bg3.png)
+    AppAssets.arenaBg4, // Màn 4: Thung lũng mây thác nước / Twilight (bg4.png)
+    AppAssets.arenaBg2, // Màn 5: Đỉnh tuyết lâu đài băng / Snow Peak (bg2.png)
+    AppAssets.arenaBg6, // Màn 6: Pháo đài bão tím / Storm Fortress (bg6.png)
+    AppAssets.arenaBg7, // Màn 7: Đền cổ thác mây / Ancient Cloud Temple (bg7.png)
   ];
 
   String _getRandomBackground() {

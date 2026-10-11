@@ -32,13 +32,13 @@ class CharacterSelectScreen extends StatelessWidget {
       () => GamePlayScreen(
         playerCharacter: controller.selectedHero.type,
         enemyCharacter: switch (matchCtrl.currentLevel.value) {
-          1 => CharacterType.skeletonWarrior,
-          2 => CharacterType.samurai,
-          3 => CharacterType.knight1,
-          4 => CharacterType.lightningWizard,
-          5 => CharacterType.fireWizard,
-          6 => CharacterType.samuraiCommander,
-          _ => CharacterType.samuraiCommander,
+          1 => CharacterType.knight1, // Màn 1 (Rừng cổ): Kỵ sĩ bóng đêm
+          2 => CharacterType.samurai, // Màn 2 (Sa mạc): Kiếm khách sa mạc
+          3 => CharacterType.fireWizard, // Màn 3 (Vực nham thạch): Pháp sư lửa
+          4 => CharacterType.lightningWizard, // Màn 4 (Thung lũng mây): Pháp sư sét
+          5 => CharacterType.knight1, // Màn 5 (Đỉnh núi tuyết): Hiệp sĩ băng
+          6 => CharacterType.samuraiCommander, // Màn 6 (Đỉnh bão): Đại tướng samurai
+          _ => CharacterType.skeletonWarrior, // Màn 7 (Đền thờ cổ): Chúa tể xương Molcharis
         },
         level: matchCtrl.currentLevel.value,
       ),

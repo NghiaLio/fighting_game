@@ -153,7 +153,6 @@ class FloatingDamageComponent extends PositionComponent
         fontSize: fontSize,
         fontWeight: FontWeight.w900,
         foreground: strokePaint,
-        fontFamily: 'monospace',
       ),
     );
 
@@ -177,7 +176,6 @@ class FloatingDamageComponent extends PositionComponent
         fontSize: fontSize,
         fontWeight: FontWeight.w900,
         foreground: fillPaint,
-        fontFamily: 'monospace',
       ),
     );
 

@@ -75,8 +75,8 @@ class AudioService {
       try {
         _sfxPools[sfx] = await FlameAudio.createPool(
           sfx,
-          minPlayers: 1,
-          maxPlayers: 3,
+          minPlayers: sfx == AppAssets.sfxPunch ? 2 : 1,
+          maxPlayers: sfx == AppAssets.sfxPunch ? 4 : 3,
         );
       } catch (e) {
         if (kDebugMode) {
@@ -159,6 +159,28 @@ class AudioService {
       return () => player.stop();
     } catch (_) {
       return null;
+    }
+  }
+
+  /// Phát âm thanh khi bị trúng đòn hoặc chống đỡ (soraatwod-punch-416719.mp3)
+  static void playPunch({double volumeMultiplier = 1.0}) {
+    final effectiveVolume = (sfxVolume * volumeMultiplier).clamp(0.0, 1.0);
+    if (!soundEnabled || effectiveVolume <= 0) return;
+
+    final pool = _sfxPools[AppAssets.sfxPunch];
+    if (pool != null) {
+      try {
+        pool.start(volume: effectiveVolume);
+        return;
+      } catch (_) {}
+    }
+
+    try {
+      FlameAudio.play(AppAssets.sfxPunch, volume: effectiveVolume);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[AudioService] Play punch SFX error: $e');
+      }
     }
   }
 

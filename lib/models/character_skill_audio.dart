@@ -44,6 +44,32 @@ class CharacterSkillAudio {
             special: AppAssets.sfxFireballLaunch,
           ),
 
+        // Nhóm kiếm sĩ
+        CharacterType.knight1 => const CharacterSkillAudio(
+            attack1: AppAssets.sfxAttack1,
+            attack2: AppAssets.sfxAttack2,
+            attack3: AppAssets.sfxAttack1,
+            special: AppAssets.sfxAttack2,
+          ),
+        CharacterType.samurai => const CharacterSkillAudio(
+            attack1: AppAssets.sfxAttack1,
+            attack2: AppAssets.sfxAttack2,
+            attack3: AppAssets.sfxAttack1,
+            special: AppAssets.sfxAttack2,
+          ),
+        CharacterType.samuraiCommander => const CharacterSkillAudio(
+            attack1: AppAssets.sfxAttack1,
+            attack2: AppAssets.sfxAttack2,
+            attack3: AppAssets.sfxAttack1,
+            special: AppAssets.sfxAttack2,
+          ),
+        CharacterType.skeletonWarrior => const CharacterSkillAudio(
+            attack1: AppAssets.sfxAttack1,
+            attack2: AppAssets.sfxAttack2,
+            attack3: AppAssets.sfxAttack1,
+            special: AppAssets.sfxAttack2,
+          ),
+
         // Các tướng khác (sẽ bổ sung khi có sound):
         _ => null,
       };
