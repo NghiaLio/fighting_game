@@ -9,6 +9,7 @@ import 'package:fighting_game/screens/map_screen.dart';
 import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/widgets/pause_menu/pause_menu_action_button.dart';
+import 'package:fighting_game/widgets/star_rating_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -35,26 +36,37 @@ class ContinuePromptOverlay extends StatelessWidget {
         GameMatchController.to.currentLevel.value =
             ProgressService.currentLevel;
         if (game.mapLevel >= 7) {
+          AudioService.playEndingBgm();
           Get.offAll(() => const HomeScreen());
         } else {
+          AudioService.playTitleBgm();
           Get.offAll(() => const MapScreen());
         }
       } else {
+        // Tiếp tục round tiếp theo: nếu là round 3 quyết định, đẩy nhạc lên cao trào
+        if (_nextRound == 3) {
+          AudioService.playBgm(AppAssets.bgmBattle3);
+        } else {
+          AudioService.playStageBgm(game.mapLevel);
+        }
         game.startNextRound();
       }
     } else {
       // Thua → chơi lại cùng level
+      AudioService.playStageBgm(game.mapLevel);
       game.restartMatch();
     }
   }
 
   void _onExit() {
     AudioService.stopMatchEnd();
+    AudioService.playTitleBgm();
     Get.offAll(() => const MapScreen());
   }
 
   void _onHome() {
     AudioService.stopMatchEnd();
+    AudioService.playTitleBgm();
     Get.offAll(() => const HomeScreen());
   }
 
@@ -109,10 +121,17 @@ class ContinuePromptOverlay extends StatelessWidget {
                           // Banner đồ họa WIN / LOSE
                           Image.asset(
                             isVictory ? AppAssets.imgWin : AppAssets.imgLose,
-                            height: 60,
+                            height: 50,
                             fit: BoxFit.contain,
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: 4),
+
+                          // Animation sao + thưởng xu (chỉ khi thắng hiệp cuối)
+                          if (isVictory && _isFinalRound)
+                            StarRatingAnimation(
+                              stars: game.computeStarRating(),
+                              coinsEarned: 100 + (game.computeStarRating() >= 3 ? 50 : 0),
+                            ),
 
                           // Câu hỏi Arcade: CONTINUE?
                           Text(

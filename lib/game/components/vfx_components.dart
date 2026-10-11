@@ -187,3 +187,82 @@ class FloatingDamageComponent extends PositionComponent
     fillPainter.paint(canvas, offset);
   }
 }
+
+/// Text nổi hiệu ứng combat (BLOCKED!, GUARD BREAK!) — bay lên rồi mờ dần
+class CombatTextComponent extends PositionComponent
+    with HasGameReference<FightingGame> {
+  final String text;
+  final Color color;
+  final double fontSize;
+
+  static const double _lifetime = 0.8;
+  double _elapsed = 0;
+  final double _initialY;
+
+  CombatTextComponent({
+    required Vector2 position,
+    required this.text,
+    this.color = const Color(0xFF00E5FF),
+    this.fontSize = 16,
+  })  : _initialY = position.y,
+        super(position: position, anchor: Anchor.center, priority: 9);
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _elapsed += dt;
+    if (_elapsed >= _lifetime) {
+      removeFromParent();
+      return;
+    }
+    final progress = _elapsed / _lifetime;
+    position.y = _initialY - sin(progress * pi * 0.5) * 35.0;
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+    final progress = _elapsed / _lifetime;
+    final opacity = progress > 0.5 ? ((1.0 - progress) / 0.5).clamp(0.0, 1.0) : 1.0;
+
+    final strokePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.0
+      ..color = Colors.black.withValues(alpha: opacity);
+
+    final strokeSpan = TextSpan(
+      text: text,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1,
+        foreground: strokePaint,
+      ),
+    );
+    final strokePainter = TextPainter(
+      text: strokeSpan,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final offset = Offset(-strokePainter.width / 2, -strokePainter.height / 2);
+    strokePainter.paint(canvas, offset);
+
+    final fillPaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = color.withValues(alpha: opacity);
+
+    final fillSpan = TextSpan(
+      text: text,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1,
+        foreground: fillPaint,
+      ),
+    );
+    final fillPainter = TextPainter(
+      text: fillSpan,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    fillPainter.paint(canvas, offset);
+  }
+}

@@ -105,6 +105,22 @@ class AppAssets {
   static const String sfxRound = 'round.wav';
   static const String fight = 'fight.wav';
 
+  // ------------------------------------------
+  // Nhạc nền (BGM Assets - Looping tracks)
+  // ------------------------------------------
+  static const String bgmTitle = 'bgm_title.wav';
+  static const String bgmBattle1 = 'bgm_battle_1.wav';
+  static const String bgmBattle2 = 'bgm_battle_2.wav';
+  static const String bgmBattle3 = 'bgm_battle_3.wav';
+  static const String bgmEnding = 'bgm_ending.wav';
+
+  /// Lấy nhạc nền trận chiến phù hợp theo số màn chơi (1..7)
+  static String stageBgm(int stageNumber) => switch (stageNumber) {
+    1 || 2 || 3 => bgmBattle1,
+    4 || 5 => bgmBattle2,
+    _ => bgmBattle3,
+  };
+
   /// Danh sách tất cả âm thanh cần nạp trước vào bộ nhớ (preload)
   static const List<String> allAudio = [
     sfxButton,

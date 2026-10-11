@@ -4,6 +4,7 @@ import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/game/components/background_component.dart';
 import 'package:fighting_game/game/components/character_component.dart';
+import 'package:fighting_game/game/components/arrow_component.dart';
 import 'package:fighting_game/game/components/fireball_component.dart';
 import 'package:fighting_game/game/components/magic_orb_component.dart';
 import 'package:fighting_game/game/components/game_controls.dart';
@@ -394,6 +395,22 @@ class FightingGame extends FlameGame with HasCollisionDetection {
 
   void spawnFloatingDamage(Vector2 pos, double damage, {bool isCritical = false}) {
     stage.add(FloatingDamageComponent(position: pos, damage: damage, isCritical: isCritical));
+  }
+
+  void spawnCombatText(Vector2 pos, String text, {Color color = const Color(0xFF00E5FF), double fontSize = 16}) {
+    stage.add(CombatTextComponent(position: pos, text: text, color: color, fontSize: fontSize));
+  }
+
+  bool hasIncomingProjectileTo(Vector2 target, double range) {
+    for (final child in stage.children.toList()) {
+      if (child is PositionComponent) {
+        if (child is FireballComponent || child is ArrowComponent || child is MagicOrbComponent) {
+          final dist = (child.position.x - target.x).abs();
+          if (dist < range) return true;
+        }
+      }
+    }
+    return false;
   }
 
   @override

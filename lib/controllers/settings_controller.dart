@@ -13,7 +13,7 @@ class SettingsController extends GetxController {
   void setBgmVolume(double val) {
     final clamped = val.clamp(0.0, 1.0);
     bgmVolume.value = clamped;
-    AudioService.bgmVolume = clamped;
+    AudioService.setLiveBgmVolume(clamped);
   }
 
   void setSfxVolume(double val) {
@@ -25,6 +25,7 @@ class SettingsController extends GetxController {
   void toggleSound() {
     soundEnabled.toggle();
     AudioService.soundEnabled = soundEnabled.value;
+    AudioService.setLiveBgmVolume(soundEnabled.value ? bgmVolume.value : 0.0);
   }
 
   void toggleHaptic() {

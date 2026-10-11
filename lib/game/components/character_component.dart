@@ -148,8 +148,8 @@ class CharacterComponent extends PositionComponent
         position.x >= (game.mapWidth - threshold);
   }
 
-  // Scale for rendering the sprite: 128x128 pixel art scaled 2.5x -> 320x320
-  static const double _scale = 2.5;
+  // Scale for rendering the sprite: 128x128 pixel art scaled 1.75x -> 224x224
+  static const double _scale = 1.75;
 
   CharacterComponent({
     required this.characterType,
@@ -312,7 +312,8 @@ class CharacterComponent extends PositionComponent
     if (isDeadCompleted) return;
 
     if (!game.isNetworkMatch || game.networkHost) {
-      mana = (mana + 2 * dt).clamp(0, maxMana).toDouble();
+      final manaRate = game.isTrainingMode ? 6.0 : 2.0;
+      mana = (mana + manaRate * dt).clamp(0, maxMana).toDouble();
     }
     if (_comboWindowTimer > 0) {
       _comboWindowTimer -= dt;
@@ -681,6 +682,17 @@ class CharacterComponent extends PositionComponent
       _onGround = false;
       _switchState(CharacterState.jump);
       return;
+    }
+
+    // 2d. Projectile Evasion
+    if (game.hasIncomingProjectileTo(position, 180.0) && _onGround) {
+      final evadeChance = ai.jumpChance * 3.0 + 0.3;
+      if (_rng.nextDouble() < evadeChance) {
+        _velocityY = -stats.jumpPower * 1.0;
+        _onGround = false;
+        _switchState(CharacterState.jump);
+        return;
+      }
     }
 
     // Corner Pressure
@@ -1070,6 +1082,12 @@ class CharacterComponent extends PositionComponent
         final guardedDamage = dmg * 0.2 / stats.attackResistance;
         hp = (hp - guardedDamage).clamp(0, maxHp).toDouble();
         _velocityX = (facingRight ? -1 : 1) * 24;
+        game.spawnCombatText(
+          Vector2(position.x, position.y - 140),
+          'BLOCKED!',
+          color: const Color(0xFF00E5FF),
+          fontSize: 14,
+        );
         if (hp <= 0) {
           _guarding = false;
           _switchState(CharacterState.dead, forceReset: true);
@@ -1079,6 +1097,13 @@ class CharacterComponent extends PositionComponent
       _guarding = false;
       _guardHits = 0;
       _guardBreakTimer = 1.2;
+      game.spawnCombatText(
+        Vector2(position.x, position.y - 140),
+        'GUARD BREAK!',
+        color: const Color(0xFFFF5722),
+        fontSize: 18,
+      );
+      game.triggerScreenShake(duration: 0.25, intensity: 7.0);
     }
     dmg /= stats.attackResistance;
     
@@ -1100,6 +1125,13 @@ class CharacterComponent extends PositionComponent
 
     if (hp <= 0) {
       _isHurt = false;
+      game.triggerScreenShake(duration: 0.5, intensity: 10.0);
+      game.spawnCombatText(
+        Vector2(position.x, position.y - 160),
+        'K.O.!',
+        color: const Color(0xFFFF1744),
+        fontSize: 24,
+      );
       _switchState(CharacterState.dead, forceReset: true);
     } else {
       _switchState(CharacterState.hurt, forceReset: true);

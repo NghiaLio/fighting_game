@@ -1,6 +1,7 @@
 import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/constants/game_typography.dart';
 import 'package:fighting_game/data/story_service.dart';
+import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/utils/map_tileset.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,6 +26,7 @@ class _MapScreenState extends State<MapScreen>
   @override
   void initState() {
     super.initState();
+    AudioService.playTitleBgm();
     // Nạp trước bộ texture map tileset
     MapTileset.preload();
 

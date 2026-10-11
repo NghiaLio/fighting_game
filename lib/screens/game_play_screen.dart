@@ -8,6 +8,7 @@ import 'package:fighting_game/screens/home_screen.dart';
 import 'package:fighting_game/widgets/continue_prompt_overlay.dart';
 import 'package:fighting_game/widgets/game_pressable.dart';
 import 'package:fighting_game/widgets/pause_menu_overlay.dart';
+import 'package:fighting_game/services/audio_service.dart';
 import 'dart:async';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   @override
   void initState() {
     super.initState();
+    AudioService.playStageBgm(widget.level);
     GameMatchController.to.startMatch(
       player: widget.playerCharacter,
       enemy: widget.enemyCharacter,
@@ -180,6 +182,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   void dispose() {
     final session = widget.networkSession;
     if (session != null) unawaited(session.leaveRoom());
+    AudioService.playTitleBgm();
     super.dispose();
   }
 }

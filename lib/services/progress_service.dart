@@ -13,14 +13,14 @@ class ProgressService {
   static const String _keyStageStars = 'stage_stars';
 
   static Box? _box;
-  static final RxInt coinBalance = 9999.obs;
+  static final RxInt coinBalance = 100.obs;
 
   /// Khởi tạo Hive và mở box tiến trình
   static Future<void> init() async {
     await Hive.initFlutter();
     _box = await Hive.openBox(_boxName);
     coinBalance.value =
-        _box?.get(_keyCoins, defaultValue: 9999) as int? ?? 9999;
+        _box?.get(_keyCoins, defaultValue: 100) as int? ?? 100;
   }
 
   /// Selected campaign map (1..7). Defaults to the first map.
@@ -35,6 +35,21 @@ class ProgressService {
   }
 
   static int get coins => coinBalance.value;
+
+  static Future<void> addCoins(int amount) async {
+    final updated = coins + amount;
+    await _box?.put(_keyCoins, updated);
+    coinBalance.value = updated;
+  }
+
+  /// Thưởng +20 xu khi thắng 1 hiệp
+  static Future<void> onRoundWin() => addCoins(20);
+
+  /// Thưởng +100 xu khi vượt qua 1 ải, +50 bonus nếu 3 sao
+  static Future<void> onStageWin({int stars = 0}) async {
+    final reward = 100 + (stars >= 3 ? 50 : 0);
+    await addCoins(reward);
+  }
 
   static List<String> get unlockedHeroes {
     final values =

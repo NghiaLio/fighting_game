@@ -263,6 +263,33 @@ class HudComponent extends Component with HasGameReference<FightingGame> {
     _drawRoundBadges(canvas, left: gameSize.x - barPad - 42,
         wins: _enemyRoundResults.where((won) => won).length,
         color: const Color(0xFFEF5350));
+
+    // Training Mode: Combo hint ở đáy màn hình
+    if (game.isTrainingMode) {
+      final hintStyle = TextStyle(
+        color: Colors.white.withValues(alpha: 0.7),
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+      );
+      final hintText = TextSpan(
+        text: 'COMBO:  ',
+        style: hintStyle.copyWith(
+          color: const Color(0xFFFFD54F),
+          fontWeight: FontWeight.w900,
+        ),
+        children: const [
+          TextSpan(text: 'Atk 1 → Atk 2 → Atk 3 → Special   |   W/A/S/D: Di chuyển   J/K/L: Đánh   U: Special'),
+        ],
+      );
+      final painter = TextPainter(
+        text: hintText,
+        textDirection: TextDirection.ltr,
+      )..layout();
+      painter.paint(
+        canvas,
+        Offset((gameSize.x - painter.width) / 2, gameSize.y - 30),
+      );
+    }
   }
 
   void _drawManaBar(

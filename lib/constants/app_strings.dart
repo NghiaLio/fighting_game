@@ -20,7 +20,7 @@ class AppStrings {
   static const String progressMaps = 'TIẾN TRÌNH: 0 / 7 MÀN';
 
   static const String battleNow = 'XUẤT TRẬN';
-  static const String heroesRoster = 'ANH HÙNG (12)';
+  static const String heroesRoster = 'ANH HÙNG';
   static const String settings = 'CÀI ĐẶT';
 
   // ==========================================

@@ -4,6 +4,7 @@ import 'package:fighting_game/screens/game_play_screen.dart';
 import 'package:fighting_game/screens/map_screen.dart';
 import 'package:fighting_game/screens/lan_versus_screen.dart';
 import 'package:fighting_game/screens/quick_versus_screen.dart';
+import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/utils/ui_tileset.dart';
 import 'package:fighting_game/widgets/home_settings_dialog.dart';
@@ -21,6 +22,9 @@ class HomeController extends GetxController
   @override
   void onInit() {
     super.onInit();
+
+    // Phát nhạc nền Menu chính / Sảnh chờ
+    AudioService.playTitleBgm();
 
     // Tải trước texture tileset cho UI
     UiTileset.load();

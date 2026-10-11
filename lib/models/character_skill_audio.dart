@@ -70,22 +70,22 @@ class CharacterSkillAudio {
             special: AppAssets.sfxAttack2,
           ),
         CharacterType.sonGoku => const CharacterSkillAudio(
-            attack1: AppAssets.sfxAttack2,
-            attack2: AppAssets.sfxAttack1,
-            attack3: AppAssets.sfxFireWhoosh,
-            special: AppAssets.sfxFireballLaunch,
+            attack1: AppAssets.sfxPunch,
+            attack2: AppAssets.sfxPunch,
+            attack3: AppAssets.sfxShieldBash,
+            special: AppAssets.sfxFireWhoosh,
           ),
         CharacterType.wandererMagician => const CharacterSkillAudio(
             attack1: AppAssets.sfxAttack1,
             attack2: AppAssets.sfxAttack2,
-            attack3: AppAssets.sfxFireWhoosh,
+            attack3: AppAssets.sfxLightningZap,
             special: AppAssets.sfxFireballLaunch,
           ),
         CharacterType.lightningWizard => const CharacterSkillAudio(
-            attack1: AppAssets.sfxAttack1,
-            attack2: AppAssets.sfxAttack1,
-            attack3: AppAssets.sfxLightningZap,
-            special: AppAssets.sfxLightningStrike,
+            attack1: AppAssets.sfxLightningZap,
+            attack2: AppAssets.sfxLightningZap,
+            attack3: AppAssets.sfxLightningStrike,
+            special: AppAssets.sfxThunderStorm,
           ),
       };
 }

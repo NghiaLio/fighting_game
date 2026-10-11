@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:fighting_game/constants/app_strings.dart';
 import 'package:fighting_game/controllers/pause_menu_controller.dart';
 import 'package:fighting_game/controllers/settings_controller.dart';
 import 'package:fighting_game/game/fighting_game.dart';
@@ -46,7 +47,7 @@ class PauseMenuOverlay extends StatelessWidget {
             color: Colors.transparent,
             child: SizedBox(
               width: boardWidth,
-              height: boardHeight,
+              height: boardHeight + 40,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -61,14 +62,21 @@ class PauseMenuOverlay extends StatelessWidget {
                   // 2. Nội dung bố cục dọc bên trong khung đá
                   Positioned.fill(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(50, 48, 60, 28),
+                      padding: const EdgeInsets.fromLTRB(50, 16, 60, 20),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          // Tiêu đề PAUSED + tên ải
+                          PauseHeader(
+                            stageName: 'Ải ${game.mapLevel}',
+                          ),
+
+                          const SizedBox(height: 12),
+
                           // UI Component: Bảng điều chỉnh âm lượng
                           PauseAudioPanel(settingsCtrl: settingsCtrl),
 
-                          const SizedBox(height: 18),
+                          const SizedBox(height: 14),
 
                           // UI Component: Hàng nút bấm hành động
                           PauseActionButtons(controller: pauseCtrl),

@@ -1,5 +1,6 @@
 import 'package:fighting_game/constants/hero_roster_data.dart';
 import 'package:fighting_game/models/hero_info.dart';
+import 'package:fighting_game/services/audio_service.dart';
 import 'package:fighting_game/services/progress_service.dart';
 import 'package:fighting_game/screens/character_select/widgets/hero_unlock_dialog.dart';
 import 'package:fighting_game/utils/select_per_tileset.dart';
@@ -19,6 +20,7 @@ class CharacterSelectController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    AudioService.playTitleBgm();
     unlockedHeroIds.addAll(ProgressService.unlockedHeroes);
     // Nạp sẵn toàn bộ hình ảnh tileset vào bộ nhớ GPU để render tức thì
     SelectPerTileset.preload();

@@ -38,7 +38,18 @@ class PauseActionButtons extends StatelessWidget {
         ),
         const SizedBox(height: 10),
 
-        // 3. THOÁT (other_button.png)
+        // 3. BẢN ĐỒ (other_button.png)
+        PauseMenuActionButton.secondary(
+          label: 'BẢN ĐỒ',
+          icon: Icons.map_rounded,
+          width: btnWidth,
+          height: btnHeight,
+          textColor: const Color(0xFF81C784),
+          onTap: controller.quitToMap,
+        ),
+        const SizedBox(height: 10),
+
+        // 4. THOÁT (other_button.png)
         PauseMenuActionButton.secondary(
           label: AppStrings.pauseQuit,
           icon: Icons.home_rounded,

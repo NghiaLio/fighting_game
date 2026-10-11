@@ -17,7 +17,7 @@ class AudioService {
   AudioService._internal();
 
   // Volume settings (0.0 -> 1.0)
-  static double bgmVolume = 0.8;
+  static double bgmVolume = 0.55;
   static double sfxVolume = 0.9;
   static bool soundEnabled = true;
   static bool hapticEnabled = true;
@@ -27,6 +27,19 @@ class AudioService {
 
   /// Pool cho từng loại SFX chiêu thức — dùng thay FlameAudio.play() để tránh cold-start delay
   static final Map<String, AudioPool> _sfxPools = {};
+
+  /// Throttle chống chồng SFX: track thời gian phát cuối cùng cho từng file
+  static final Map<String, double> _lastPlayTime = {};
+  static const double _throttleInterval = 0.08;
+  static double _nowMs = 0;
+
+  static bool _shouldPlay(String sfxName) {
+    _nowMs = DateTime.now().millisecondsSinceEpoch / 1000.0;
+    final last = _lastPlayTime[sfxName];
+    if (last != null && (_nowMs - last) < _throttleInterval) return false;
+    _lastPlayTime[sfxName] = _nowMs;
+    return true;
+  }
 
   static bool _isPreloaded = false;
 
@@ -143,6 +156,7 @@ class AudioService {
   static Future<void Function()?> playSkillSfx(String sfxName, {double volumeMultiplier = 1.0}) async {
     final effectiveVolume = sfxVolume * volumeMultiplier;
     if (!soundEnabled || effectiveVolume <= 0) return null;
+    if (!_shouldPlay(sfxName)) return null;
 
     // Dùng pool pre-warmed nếu có (zero latency)
     final pool = _sfxPools[sfxName];
@@ -166,6 +180,7 @@ class AudioService {
   static void playPunch({double volumeMultiplier = 1.0}) {
     final effectiveVolume = (sfxVolume * volumeMultiplier).clamp(0.0, 1.0);
     if (!soundEnabled || effectiveVolume <= 0) return;
+    if (!_shouldPlay(AppAssets.sfxPunch)) return;
 
     final pool = _sfxPools[AppAssets.sfxPunch];
     if (pool != null) {
@@ -184,15 +199,48 @@ class AudioService {
     }
   }
 
+  static String? _currentBgm;
+
   /// Play looping background music (BGM)
   static Future<void> playBgm(String bgmName) async {
-    if (!soundEnabled || bgmVolume <= 0) return;
+    if (!soundEnabled || bgmVolume <= 0) {
+      _currentBgm = bgmName;
+      return;
+    }
+
+    // Tránh phát lại từ đầu nếu bài nhạc đang phát chính là bài này
+    if (_currentBgm == bgmName && FlameAudio.bgm.isPlaying) return;
 
     try {
+      _currentBgm = bgmName;
       await FlameAudio.bgm.play(bgmName, volume: bgmVolume);
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('[AudioService] BGM "$bgmName" not found in assets/audio/');
+        debugPrint('[AudioService] BGM "$bgmName" not found in assets/audio/: $e');
+      }
+    }
+  }
+
+  /// Phát nhạc nền Menu chính / Bản đồ / Chọn tướng
+  static Future<void> playTitleBgm() => playBgm(AppAssets.bgmTitle);
+
+  /// Phát nhạc nền trận chiến theo số màn chơi (1..7)
+  static Future<void> playStageBgm(int stageNumber) =>
+      playBgm(AppAssets.stageBgm(stageNumber));
+
+  /// Phát nhạc nền chiến thắng hoàn thành chiến dịch
+  static Future<void> playEndingBgm() => playBgm(AppAssets.bgmEnding);
+
+  /// Cập nhật ngay âm lượng BGM đang phát khi người chơi kéo slider
+  static void setLiveBgmVolume(double volume) {
+    bgmVolume = volume;
+    if (volume <= 0 || !soundEnabled) {
+      FlameAudio.bgm.stop().ignore();
+    } else {
+      if (FlameAudio.bgm.isPlaying) {
+        FlameAudio.bgm.audioPlayer.setVolume(volume).ignore();
+      } else if (_currentBgm != null) {
+        playBgm(_currentBgm!).ignore();
       }
     }
   }
@@ -233,6 +281,8 @@ class AudioService {
 
   /// Phát âm thanh kết thúc trận đấu (win.mp3 hoặc lose.mp3)
   static void playMatchEnd({required bool isVictory}) {
+    // Dừng BGM để âm thanh chiến thắng/thất bại nổi bật
+    stopBgm();
     if (isVictory) {
       playWin();
     } else {
@@ -251,6 +301,7 @@ class AudioService {
   /// Dừng nhạc nền
   static Future<void> stopBgm() async {
     try {
+      _currentBgm = null;
       await FlameAudio.bgm.stop();
     } catch (_) {}
   }

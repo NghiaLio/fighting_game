@@ -5,40 +5,59 @@ import 'package:flutter/material.dart';
 
 /// Component UI: Tiêu đề PAUSED kèm huy hiệu bánh răng gothic đối xứng
 class PauseHeader extends StatelessWidget {
-  const PauseHeader({super.key});
+  final String? stageName;
+
+  const PauseHeader({super.key, this.stageName});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(
-          PauseMenuAssets.settingButton,
-          width: 22,
-          height: 22,
-          fit: BoxFit.contain,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              PauseMenuAssets.settingButton,
+              width: 22,
+              height: 22,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              AppStrings.pauseTitle,
+              style: GameTypography.pixel(
+                color: const Color(0xFFFFD54F),
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2.2,
+                shadows: const [
+                  Shadow(color: Colors.black, blurRadius: 4, offset: Offset(1, 1)),
+                  Shadow(color: Color(0xFFE65100), blurRadius: 8),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Image.asset(
+              PauseMenuAssets.settingButton,
+              width: 22,
+              height: 22,
+              fit: BoxFit.contain,
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        Text(
-          AppStrings.pauseTitle,
-          style: GameTypography.pixel(
-            color: const Color(0xFFFFD54F),
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2.2,
-            shadows: const [
-              Shadow(color: Colors.black, blurRadius: 4, offset: Offset(1, 1)),
-              Shadow(color: Color(0xFFE65100), blurRadius: 8),
-            ],
+        if (stageName != null && stageName!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              stageName!,
+              style: GameTypography.pixel(
+                color: Colors.grey.shade300,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Image.asset(
-          PauseMenuAssets.settingButton,
-          width: 22,
-          height: 22,
-          fit: BoxFit.contain,
-        ),
       ],
     );
   }
