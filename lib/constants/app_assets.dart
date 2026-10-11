@@ -99,6 +99,10 @@ class AppAssets {
   static const String sfxRound2 = 'round_2.wav';
   static const String sfxRound3 = 'round_3.wav';
   static const String sfxPunch = 'soraatwod-punch-416719.mp3';
+  static const String sfxShieldBash = 'sfx_shield_bash.mp3';
+  static const String sfxThunderStorm = 'sfx_thunder_storm.mp3';
+  static const String sfxButtonWav = 'button.wav';
+  static const String sfxRound = 'round.wav';
   static const String fight = 'fight.wav';
 
   /// Danh sách tất cả âm thanh cần nạp trước vào bộ nhớ (preload)
@@ -116,6 +120,10 @@ class AppAssets {
     sfxRound3,
     fight,
     sfxPunch,
+    sfxShieldBash,
+    sfxThunderStorm,
+    sfxLightningStrike,
+    sfxLightningZap,
   ];
 
   // ==========================================

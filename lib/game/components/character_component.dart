@@ -710,7 +710,7 @@ class CharacterComponent extends PositionComponent
       } else if (_onGround) {
         _aiTimer = effMinDelay +
             _rng.nextDouble() * (effMaxDelay - effMinDelay);
-        if (opponent!._whiffPunishTimer > 0) {
+        if (opponent!._whiffPunishTimer > 0 && _rng.nextDouble() < 0.5) {
           _startAttack(CharacterState.attack1);
         } else if (favorsSpecialRange && dist <= specialReach &&
             _rng.nextDouble() < effSpecialChance) {

@@ -46,10 +46,10 @@ class CharacterSkillAudio {
 
         // Nhóm kiếm sĩ
         CharacterType.knight1 => const CharacterSkillAudio(
-            attack1: AppAssets.sfxAttack1,
-            attack2: AppAssets.sfxAttack2,
+            attack1: AppAssets.sfxAttack2,
+            attack2: AppAssets.sfxShieldBash,
             attack3: AppAssets.sfxAttack1,
-            special: AppAssets.sfxAttack2,
+            special: AppAssets.sfxFireballLaunch,
           ),
         CharacterType.samurai => const CharacterSkillAudio(
             attack1: AppAssets.sfxAttack1,
@@ -60,8 +60,8 @@ class CharacterSkillAudio {
         CharacterType.samuraiCommander => const CharacterSkillAudio(
             attack1: AppAssets.sfxAttack1,
             attack2: AppAssets.sfxAttack2,
-            attack3: AppAssets.sfxAttack1,
-            special: AppAssets.sfxAttack2,
+            attack3: AppAssets.sfxShieldBash,
+            special: AppAssets.sfxFireSpark,
           ),
         CharacterType.skeletonWarrior => const CharacterSkillAudio(
             attack1: AppAssets.sfxAttack1,
@@ -83,7 +83,7 @@ class CharacterSkillAudio {
           ),
         CharacterType.lightningWizard => const CharacterSkillAudio(
             attack1: AppAssets.sfxAttack1,
-            attack2: AppAssets.sfxAttack2,
+            attack2: AppAssets.sfxAttack1,
             attack3: AppAssets.sfxLightningZap,
             special: AppAssets.sfxLightningStrike,
           ),
