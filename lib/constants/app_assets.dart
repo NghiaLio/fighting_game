@@ -42,6 +42,17 @@ class AppAssets {
   static const String arenaBg6 = 'Bg2/bg6.png';
   static const String arenaBg7 = 'Bg2/bg7.png';
 
+  /// Lấy đường dẫn ảnh Flutter của hình nền màn chơi theo số màn (1..7)
+  static String stageBackground(int stageNumber) => switch (stageNumber) {
+    1 => 'assets/images/$arenaBg1',
+    2 => 'assets/images/$arenaBg5',
+    3 => 'assets/images/$arenaBg3',
+    4 => 'assets/images/$arenaBg4',
+    5 => 'assets/images/$arenaBg2',
+    6 => 'assets/images/$arenaBg6',
+    _ => 'assets/images/$arenaBg7',
+  };
+
   // Hiệu ứng hình ảnh (VFX & HUD)
   static const String hitSpark = 'sfx/hit_spark.png';
   static const String dustPuff = 'sfx/dust_puff.png';

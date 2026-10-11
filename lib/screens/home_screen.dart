@@ -340,18 +340,6 @@ class HomeScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 5),
 
-                                // Nút Đấu Nhanh
-                                UiTileButton(
-                                  tile: UiTile.longButton,
-                                  label: 'ĐẤU NHANH VỚI AI',
-                                  width: 250,
-                                  height: 36,
-                                  fontSize: 12,
-                                  textColor: Colors.cyanAccent,
-                                  onTap: controller.openQuickVersus,
-                                ),
-                                const SizedBox(height: 5),
-
                                 // Nút Luyện Tập
                                 UiTileButton(
                                   tile: UiTile.longButton,
@@ -359,8 +347,8 @@ class HomeScreen extends StatelessWidget {
                                   width: 250,
                                   height: 36,
                                   fontSize: 12,
-                                  textColor: Colors.tealAccent,
-                                  onTap: controller.openTraining,
+                                  textColor: Colors.cyanAccent,
+                                  onTap: controller.openQuickVersus,
                                 ),
                                 const SizedBox(height: 5),
 

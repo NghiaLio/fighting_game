@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fighting_game/constants/app_assets.dart';
 import 'package:fighting_game/game/components/character_component.dart';
 import 'package:fighting_game/models/network/player_input.dart';
@@ -13,15 +15,19 @@ class _MobaCircleButton extends PositionComponent
   final double radius;
   final Color borderColor;
   final Color activeColor;
-  final String label;
   final double iconSize;
   final VoidCallback? onTap;
   final ValueChanged<bool>? onHoldChanged;
   final ValueChanged<bool>? onDoubleTapChanged;
+  final bool Function()? isAvailableProvider;
+  final double manaCost;
+  final double Function()? currentManaProvider;
 
   bool _isPressed = false;
   DateTime _lastTapTime = DateTime.fromMillisecondsSinceEpoch(0);
   Sprite? _sprite;
+  double _pulseTimer = 0.0;
+  double _warningFlashTimer = 0.0;
 
   _MobaCircleButton({
     required this.imagePath,
@@ -29,11 +35,13 @@ class _MobaCircleButton extends PositionComponent
     required this.radius,
     required this.borderColor,
     required this.activeColor,
-    required this.label,
     required this.iconSize,
     this.onTap,
     this.onHoldChanged,
     this.onDoubleTapChanged,
+    this.isAvailableProvider,
+    this.manaCost = 0.0,
+    this.currentManaProvider,
   }) : super(
          position: position,
          size: Vector2.all(radius * 2),
@@ -47,7 +55,23 @@ class _MobaCircleButton extends PositionComponent
   }
 
   @override
+  void update(double dt) {
+    super.update(dt);
+    _pulseTimer += dt;
+    if (_warningFlashTimer > 0) {
+      _warningFlashTimer -= dt;
+      if (_warningFlashTimer < 0) _warningFlashTimer = 0;
+    }
+  }
+
+  @override
   void onTapDown(TapDownEvent event) {
+    final available = isAvailableProvider?.call() ?? true;
+    if (!available) {
+      _warningFlashTimer = 0.35;
+      return;
+    }
+
     _isPressed = true;
     scale = Vector2.all(0.88);
 
@@ -89,68 +113,113 @@ class _MobaCircleButton extends PositionComponent
     }
 
     final center = Offset(radius, radius);
+    final available = isAvailableProvider?.call() ?? true;
+    final isFlashingWarning = _warningFlashTimer > 0;
 
-    // 1. Dark frosted circular background + Contact Flash
-    final bgPaint = Paint()
-      ..color = _isPressed
-          ? activeColor.withValues(alpha: 0.45)
-          : const Color(0x44101424);
-    canvas.drawCircle(center, radius, bgPaint);
-
-    // 1b. Glow aura khi ấn xuống
-    if (_isPressed) {
+    if (available) {
+      // -----------------------------------------------------------
+      // KHẢ DỤNG: Sáng rực rỡ với hiệu ứng hào quang lấp lánh (Glow)
+      // -----------------------------------------------------------
+      final pulseFactor = 0.5 + 0.5 * sin(_pulseTimer * 3.5);
+      final glowAlpha = (_isPressed ? 0.45 : (0.20 + 0.16 * pulseFactor)).clamp(0.0, 1.0);
       final glowPaint = Paint()
-        ..color = activeColor.withValues(alpha: 0.25)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
-      canvas.drawCircle(center, radius - 2, glowPaint);
+        ..color = borderColor.withValues(alpha: glowAlpha)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, _isPressed ? 10 : 8);
+      canvas.drawCircle(center, radius + 2, glowPaint);
+
+      // Nền bán trong suốt ánh màu chủ đạo
+      final bgPaint = Paint()
+        ..color = _isPressed
+            ? activeColor.withValues(alpha: 0.50)
+            : borderColor.withValues(alpha: 0.22);
+      canvas.drawCircle(center, radius, bgPaint);
+
+      // Vòng viền ngoài phát sáng sắc nét
+      final outerRingPaint = Paint()
+        ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.95)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = _isPressed ? 2.8 : 2.2;
+      canvas.drawCircle(center, radius - 1, outerRingPaint);
+
+      // Vòng tròn điểm nhấn bên trong
+      final innerRingPaint = Paint()
+        ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.45)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0;
+      canvas.drawCircle(center, radius - 4.5, innerRingPaint);
+
+      // Icon sắc nét, sáng 100%
+      if (_sprite != null) {
+        final iconOffset = Offset(radius - iconSize / 2, radius - iconSize / 2);
+        final iconPaint = Paint()..color = const Color(0xFFFFFFFF);
+        _sprite!.render(
+          canvas,
+          position: Vector2(iconOffset.dx, iconOffset.dy),
+          size: Vector2.all(iconSize),
+          overridePaint: iconPaint,
+        );
+      }
+    } else {
+      // -----------------------------------------------------------
+      // CHƯA ĐỦ ĐIỀU KIỆN / THIẾU NĂNG LƯỢNG: Làm mờ đi rõ rệt
+      // -----------------------------------------------------------
+      // Nền tối mờ
+      final bgPaint = Paint()..color = const Color(0x66080B12);
+      canvas.drawCircle(center, radius, bgPaint);
+
+      // Vòng viền mờ nhạt (hoặc nhấp nháy đỏ cảnh báo khi bấm vào)
+      final ringColor = isFlashingWarning
+          ? Colors.redAccent.withValues(alpha: 0.85)
+          : Colors.white.withValues(alpha: 0.16);
+      final outerRingPaint = Paint()
+        ..color = ringColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = isFlashingWarning ? 2.2 : 1.2;
+      canvas.drawCircle(center, radius - 1, outerRingPaint);
+
+      // Vòng viền phụ mờ bên trong
+      final innerRingPaint = Paint()
+        ..color = Colors.white.withValues(alpha: 0.07)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.8;
+      canvas.drawCircle(center, radius - 4.5, innerRingPaint);
+
+      // Nếu có chi phí năng lượng: vẽ vòng cung nạp năng lượng đang tích lũy
+      if (manaCost > 0 && currentManaProvider != null) {
+        final currentMana = currentManaProvider!();
+        final progress = (currentMana / manaCost).clamp(0.0, 1.0);
+        if (progress > 0.0) {
+          final progressPaint = Paint()
+            ..color = borderColor.withValues(alpha: 0.60)
+            ..style = PaintingStyle.stroke
+            ..strokeCap = StrokeCap.round
+            ..strokeWidth = 2.0;
+          canvas.drawArc(
+            Rect.fromCircle(center: center, radius: radius - 1),
+            -pi / 2,
+            progress * 2 * pi,
+            false,
+            progressPaint,
+          );
+        }
+      }
+
+      // Icon bị làm mờ đi rõ rệt (~22% độ rõ nét)
+      if (_sprite != null) {
+        final iconOffset = Offset(radius - iconSize / 2, radius - iconSize / 2);
+        final iconPaint = Paint()..color = const Color(0x38FFFFFF);
+        _sprite!.render(
+          canvas,
+          position: Vector2(iconOffset.dx, iconOffset.dy),
+          size: Vector2.all(iconSize),
+          overridePaint: iconPaint,
+        );
+      }
+
+      // Lớp phủ tối đè lên chiêu thức chưa sẵn sàng
+      final darkVeilPaint = Paint()..color = const Color(0x40000000);
+      canvas.drawCircle(center, radius - 1, darkVeilPaint);
     }
-
-    // 2. Outer decorative ring
-    final outerRingPaint = Paint()
-      ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.5)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = _isPressed ? 2.8 : 2.0;
-    canvas.drawCircle(center, radius - 1, outerRingPaint);
-
-    // 3. Inner subtle accent circle
-    final innerRingPaint = Paint()
-      ..color = (_isPressed ? activeColor : borderColor).withValues(alpha: 0.3)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-    canvas.drawCircle(center, radius - 4.5, innerRingPaint);
-
-    // 4. Sharp, un-stretched centered icon
-    if (_sprite != null) {
-      final iconOffset = Offset(radius - iconSize / 2, radius - iconSize / 2);
-      final iconPaint = Paint()..color = const Color(0x99FFFFFF);
-      _sprite!.render(
-        canvas,
-        position: Vector2(iconOffset.dx, iconOffset.dy),
-        size: Vector2.all(iconSize),
-        overridePaint: iconPaint,
-      );
-    }
-
-    // 5. Small MOBA badge label
-    final tp = TextPainter(
-      text: TextSpan(
-        text: label,
-        style: TextStyle(
-          color: _isPressed ? Colors.white.withValues(alpha: 0.9) : Colors.white.withValues(alpha: 0.5),
-          fontSize: 9.0,
-          fontWeight: FontWeight.bold,
-          shadows: const [
-            Shadow(
-              color: Colors.black54,
-              blurRadius: 2,
-              offset: Offset(0, 1),
-            ),
-          ],
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    tp.paint(canvas, Offset(radius - tp.width / 2, radius * 2 - 12));
 
     canvas.restore();
   }
@@ -253,7 +322,6 @@ class GameControls extends Component with HasGameReference {
       radius: dpadRadius,
       borderColor: const Color(0xFF78909C),
       activeColor: const Color(0xFF90CAF9),
-      label: 'LEFT',
       iconSize: 28,
       onHoldChanged: (held) {
         _leftHeld = held;
@@ -271,7 +339,6 @@ class GameControls extends Component with HasGameReference {
       radius: dpadRadius,
       borderColor: const Color(0xFF78909C),
       activeColor: const Color(0xFF90CAF9),
-      label: 'RIGHT',
       iconSize: 28,
       onHoldChanged: (held) {
         _rightHeld = held;
@@ -289,8 +356,8 @@ class GameControls extends Component with HasGameReference {
       radius: dpadRadius,
       borderColor: const Color(0xFF66BB6A),
       activeColor: const Color(0xFFA5D6A7),
-      label: 'JUMP',
       iconSize: 28,
+      isAvailableProvider: () => !player.isDead,
       onTap: () => _pressAction(5),
     );
 
@@ -300,7 +367,6 @@ class GameControls extends Component with HasGameReference {
       radius: dpadRadius - 4,
       borderColor: const Color(0xFFFFA726),
       activeColor: const Color(0xFFFFCC80),
-      label: 'RUN',
       iconSize: 24,
       onHoldChanged: (held) {
         _runHeld = held;
@@ -321,8 +387,8 @@ class GameControls extends Component with HasGameReference {
       radius: mainRadius,
       borderColor: const Color(0xFFFFCA28), // Golden highlight
       activeColor: const Color(0xFFFFE082),
-      label: 'ATK 1',
       iconSize: 36,
+      isAvailableProvider: () => !player.isDead,
       onTap: () => _pressAction(1),
     );
 
@@ -333,32 +399,36 @@ class GameControls extends Component with HasGameReference {
       radius: 30.0,
       borderColor: const Color(0xFF26C6DA), // Cyan
       activeColor: const Color(0xFF80DEEA),
-      label: 'ATK 2',
       iconSize: 26,
+      isAvailableProvider: () => !player.isDead,
       onTap: () => _pressAction(2),
     );
 
-    // Skill 2 (ATK 3) - Positioned diagonally top-left
+    // Skill 2 (ATK 3) - Positioned diagonally top-left (Cost: 25 mana)
     _atk3Btn = _MobaCircleButton(
       imagePath: AppAssets.btnAttack,
       position: mainAtkCenter + Vector2(-70, -70),
       radius: 30.0,
       borderColor: const Color(0xFFFF7043), // Fiery Orange
       activeColor: const Color(0xFFFFAB91),
-      label: 'ATK 3 • 25',
       iconSize: 26,
+      manaCost: 25.0,
+      currentManaProvider: () => player.mana,
+      isAvailableProvider: () => !player.isDead && player.mana >= 25.0,
       onTap: () => _pressAction(3),
     );
 
-    // Skill 3 / Ultimate (Special) - Positioned directly above main attack
+    // Skill 3 / Ultimate (Special) - Positioned directly above main attack (Cost: 50 mana)
     _skillBtn = _MobaCircleButton(
       imagePath: AppAssets.btnSpecial,
       position: mainAtkCenter + Vector2(-10, -90),
       radius: 30.0,
       borderColor: const Color(0xFFAB47BC), // Arcane Purple
       activeColor: const Color(0xFFCE93D8),
-      label: 'ULT • 50',
       iconSize: 26,
+      manaCost: 50.0,
+      currentManaProvider: () => player.mana,
+      isAvailableProvider: () => !player.isDead && player.mana >= 50.0,
       onTap: () => _pressAction(4),
     );
   }

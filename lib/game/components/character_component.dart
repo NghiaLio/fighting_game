@@ -601,17 +601,19 @@ class CharacterComponent extends PositionComponent
     double effMaxDelay = ai.maxThinkDelay;
     double effComboChance = ai.comboChance;
     if (strategy == 3) {
-      effBlockChance = 0.0;
-      effSpecialChance = 1.0;
-      effMinDelay = 0.05;
-      effMaxDelay = 0.15;
+      // Khi AI dưới 20% máu: phản kháng quyết liệt nhưng không hack tốc độ vô lý
+      effBlockChance = (ai.blockChance * 0.5).clamp(0.0, 0.30);
+      effSpecialChance = (ai.specialChance + 0.20).clamp(0.0, 0.65);
+      effMinDelay = max(0.28, ai.minThinkDelay * 0.70);
+      effMaxDelay = max(0.48, ai.maxThinkDelay * 0.70);
     } else if (strategy == 2) {
-      effBlockChance = (ai.blockChance * 1.6).clamp(0.0, 1.0);
-      effSpecialChance = (ai.specialChance - 0.2).clamp(0.0, 1.0);
-      effMinDelay = ai.minThinkDelay + 0.2;
-      effMaxDelay = ai.maxThinkDelay + 0.2;
+      // Khi AI dưới 40% máu: cẩn trọng hơn một chút
+      effBlockChance = (ai.blockChance * 1.25).clamp(0.0, 0.45);
+      effSpecialChance = (ai.specialChance - 0.1).clamp(0.0, 0.55);
+      effMinDelay = ai.minThinkDelay + 0.15;
+      effMaxDelay = ai.maxThinkDelay + 0.15;
     } else if (strategy == 1) {
-      effBlockChance = (ai.blockChance + 0.15).clamp(0.0, 1.0);
+      effBlockChance = (ai.blockChance + 0.08).clamp(0.0, 0.40);
     }
 
     final favorsSpecialRange = mana >= 50 && effSpecialChance >= 0.35;
@@ -683,9 +685,9 @@ class CharacterComponent extends PositionComponent
     // Corner Pressure
     final opponentCornered = _isOpponentCornered();
     if (opponentCornered) {
-      effComboChance = (effComboChance + 0.25).clamp(0.0, 1.0);
-      effMinDelay *= 0.65;
-      effMaxDelay *= 0.65;
+      effComboChance = (effComboChance + 0.15).clamp(0.0, 1.0);
+      effMinDelay *= 0.80;
+      effMaxDelay *= 0.80;
     }
 
     // 3. Movement
@@ -838,13 +840,17 @@ class CharacterComponent extends PositionComponent
     if (!_isAttacking) return;
     _attackTimer -= dt;
 
-    // Fire Wizard Special spawns a real projectile at apex of cast
+    // Fire Wizard (Fireball) & Samurai Archer (Arrow) Special spawns a projectile at apex of cast
     if (_state == CharacterState.special &&
-        characterType == CharacterType.fireWizard &&
         !_hasSpawnedProjectile &&
         _attackTimer <= _currentAttackDuration * 0.55) {
-      _hasSpawnedProjectile = true;
-      _spawnFireball();
+      if (characterType == CharacterType.fireWizard) {
+        _hasSpawnedProjectile = true;
+        _spawnFireball();
+      } else if (characterType == CharacterType.samurai) {
+        _hasSpawnedProjectile = true;
+        _spawnArrow();
+      }
     }
 
 
@@ -913,9 +919,9 @@ class CharacterComponent extends PositionComponent
     if (!game.canResolveCombat) return;
     if (opponent == null || opponent!.isDead) return;
 
-    // Fire Wizard special damage is dealt upon projectile impact
+    // Fire Wizard & Samurai Archer special damage is dealt upon projectile impact
     if (_state == CharacterState.special &&
-        (characterType == CharacterType.fireWizard)) {
+        (characterType == CharacterType.fireWizard || characterType == CharacterType.samurai)) {
       return;
     }
 

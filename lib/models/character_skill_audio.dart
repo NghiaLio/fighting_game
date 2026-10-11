@@ -55,7 +55,7 @@ class CharacterSkillAudio {
             attack1: AppAssets.sfxAttack1,
             attack2: AppAssets.sfxAttack2,
             attack3: AppAssets.sfxAttack1,
-            special: AppAssets.sfxAttack2,
+            special: AppAssets.sfxFireballLaunch,
           ),
         CharacterType.samuraiCommander => const CharacterSkillAudio(
             attack1: AppAssets.sfxAttack1,

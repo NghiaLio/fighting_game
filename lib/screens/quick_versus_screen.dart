@@ -37,25 +37,25 @@ class _QuickVersusScreenState extends State<QuickVersusScreen> {
   AiProfile _getAiProfile() {
     return switch (_difficulty) {
       AiDifficulty.easy => AiProfile(
-          minThinkDelay: 1.5, maxThinkDelay: 2.0,
-          blockChance: 0.0, comboChance: 0.0,
+          minThinkDelay: 1.0, maxThinkDelay: 1.5,
+          blockChance: 0.0, comboChance: 0.05,
           jumpChance: 0.05, specialChance: 0.10,
-          runThreshold: 300,
-          hpMultiplier: 1.0, damageMultiplier: 1.0,
+          runThreshold: 260,
+          hpMultiplier: 0.85, damageMultiplier: 0.75,
         ),
       AiDifficulty.normal => AiProfile(
-          minThinkDelay: 0.7, maxThinkDelay: 1.0,
-          blockChance: 0.35, comboChance: 0.40,
-          jumpChance: 0.25, specialChance: 0.40,
-          runThreshold: 200,
-          hpMultiplier: 1.0, damageMultiplier: 1.0,
+          minThinkDelay: 0.60, maxThinkDelay: 0.95,
+          blockChance: 0.18, comboChance: 0.25,
+          jumpChance: 0.15, specialChance: 0.25,
+          runThreshold: 210,
+          hpMultiplier: 0.95, damageMultiplier: 0.90,
         ),
       AiDifficulty.hard => AiProfile(
-          minThinkDelay: 0.20, maxThinkDelay: 0.35,
-          blockChance: 0.70, comboChance: 0.80,
-          jumpChance: 0.50, specialChance: 0.75,
-          runThreshold: 150,
-          hpMultiplier: 1.0, damageMultiplier: 1.0,
+          minThinkDelay: 0.32, maxThinkDelay: 0.55,
+          blockChance: 0.42, comboChance: 0.50,
+          jumpChance: 0.30, specialChance: 0.50,
+          runThreshold: 170,
+          hpMultiplier: 1.08, damageMultiplier: 1.08,
         ),
     };
   }
@@ -179,7 +179,7 @@ class _QuickVersusScreenState extends State<QuickVersusScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'ĐẤU NHANH VỚI AI',
+                        'CHẾ ĐỘ LUYỆN TẬP',
                         style: GameTypography.pixel(
                           color: const Color(0xFFFFD54F),
                           fontSize: 18,
@@ -277,7 +277,7 @@ class _QuickVersusScreenState extends State<QuickVersusScreen> {
                                         color: Colors.white, size: 22),
                                     const SizedBox(width: 10),
                                     Text(
-                                      'VÀO TRẬN',
+                                      'BẮT ĐẦU LUYỆN TẬP',
                                       style: GameTypography.pixel(
                                         color: Colors.white,
                                         fontSize: 16,

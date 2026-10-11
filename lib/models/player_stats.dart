@@ -38,125 +38,142 @@ class PlayerStats {
     this.healthMultiplier = 1.0,
   });
 
+  /// Chỉ số cân bằng toàn diện:
+  /// - Máu (healthMultiplier) dao động trong khoảng hợp lý 0.94 -> 1.12 (không còn chênh lệch cực đoan 0.80 -> 1.30)
+  /// - Giáp (attackResistance) dao động 0.96 -> 1.08
+  /// - Sát thương các đòn được điều chỉnh tương xứng với tầm đánh và phong cách chiến đấu
   factory PlayerStats.fromPlayerType(CharacterType type) => switch (type) {
+    // 1. Fire Wizard (Pháp sư lửa): Tầm xa, đòn phép diện rộng, máu và thủ được nâng lên mức ổn định
     CharacterType.fireWizard => PlayerStats(
-      attack1Power: 2,
-      attack2Power: 2,
-      attack3Power: 3,
-      specialAttackPower: 5,
-      attackResistance: 0.85,
-      healthMultiplier: 0.80,
-      walkSpeed: 0.8,
-      runSpeed: 3,
-      jumpPower: 350,
+      attack1Power: 2.2,
+      attack2Power: 2.6,
+      attack3Power: 3.8,
+      specialAttackPower: 5.2,
+      attackResistance: 0.96,
+      healthMultiplier: 0.94,
+      walkSpeed: 0.82,
+      runSpeed: 3.2,
+      jumpPower: 360,
       jumpDistance: 200,
       powerUpDuration: 10,
-      attack1Reach: 130, // Light dagger strike
-      attack2Reach: 150, // Forward thrust
-      attack3Reach: 250, // Long-range flamethrower sweep
-      specialReach: 500, // Ranged fireball projectile
+      attack1Reach: 135,
+      attack2Reach: 155,
+      attack3Reach: 250, // Càn quét lửa tầm xa
+      specialReach: 500, // Cầu lửa bay toàn màn hình
     ),
+
+    // 2. Lightning Wizard (Pháp sư sét): Linh hoạt, nhảy cao, sốc sát thương sấm sét
     CharacterType.lightningWizard => PlayerStats(
-      attack1Power: 2,
-      attack2Power: 2,
-      attack3Power: 3,
-      specialAttackPower: 4,
-      attackResistance: 0.90,
-      healthMultiplier: 0.85,
-      walkSpeed: 0.9,
+      attack1Power: 2.2,
+      attack2Power: 2.7,
+      attack3Power: 3.9,
+      specialAttackPower: 5.2,
+      attackResistance: 0.98,
+      healthMultiplier: 0.96,
+      walkSpeed: 0.90,
       runSpeed: 3.5,
-      jumpPower: 260,
-      jumpDistance: 150,
+      jumpPower: 380, // Nâng từ 260 lên 380 để không bị thọt nhảy
+      jumpDistance: 180,
+      powerUpDuration: 10,
+      attack1Reach: 138,
+      attack2Reach: 165,
+      attack3Reach: 245,
+      specialReach: 480,
+    ),
+
+    // 3. Skeleton Warrior (Chiến binh xương): Đòn chém uy lực, sửa lỗi nhảy 100 thành 380
+    CharacterType.skeletonWarrior => PlayerStats(
+      attack1Power: 2.3,
+      attack2Power: 2.8,
+      attack3Power: 4.0,
+      specialAttackPower: 5.0,
+      attackResistance: 1.05,
+      healthMultiplier: 1.08,
+      walkSpeed: 0.82,
+      runSpeed: 3.4,
+      jumpPower: 380, // Sửa từ 100 lên 380 để nhảy linh hoạt bình thường
+      jumpDistance: 180,
       powerUpDuration: 10,
       attack1Reach: 135,
       attack2Reach: 160,
-      attack3Reach: 240,
-      specialReach: 480,
+      attack3Reach: 200,
+      specialReach: 230,
     ),
-    CharacterType.skeletonWarrior => PlayerStats(
-      attack1Power: 2,
-      attack2Power: 2,
-      attack3Power: 3,
-      specialAttackPower: 4,
-      attackResistance: 1.10,
-      healthMultiplier: 1.10,
-      walkSpeed: 0.8,
-      runSpeed: 3.5,
-      jumpPower: 100,
-      jumpDistance: 100,
-      powerUpDuration: 10,
-      attack1Reach: 130,
-      attack2Reach: 150,
-      attack3Reach: 180,
-      specialReach: 200,
-    ),
+
+    // 4. Samurai Archer (Xạ thủ Samurai): Cung thuật biến hóa, tên ma pháp tầm xa
     CharacterType.samurai => PlayerStats(
-      attack1Power: 2,
-      attack2Power: 2,
-      attack3Power: 3,
-      specialAttackPower: 4,
-      attackResistance: 1.0,
-      healthMultiplier: 1.0,
-      walkSpeed: 0.8,
+      attack1Power: 2.2,
+      attack2Power: 2.8,
+      attack3Power: 4.0,
+      specialAttackPower: 5.2,
+      attackResistance: 1.00,
+      healthMultiplier: 1.00,
+      walkSpeed: 0.85,
       runSpeed: 3.5,
-      jumpPower: 450,
+      jumpPower: 440,
       jumpDistance: 220,
       powerUpDuration: 10,
       attack1Reach: 140,
-      attack2Reach: 165,
-      attack3Reach: 220,
-      specialReach: 240,
+      attack2Reach: 175,
+      attack3Reach: 245,
+      specialReach: 520, // Bắn đại tiễn ma thuật xuyên màn hình
     ),
+
+    // 5. Samurai Commander (Đại tướng Samurai): Uy lực mạnh mẽ, phong thái thủ lĩnh
     CharacterType.samuraiCommander => PlayerStats(
-      attack1Power: 2,
-      attack2Power: 2,
-      attack3Power: 3,
-      specialAttackPower: 4,
-      attackResistance: 1,
-      healthMultiplier: 1.05,
-      walkSpeed: 0.8,
+      attack1Power: 2.3,
+      attack2Power: 2.9,
+      attack3Power: 4.1,
+      specialAttackPower: 5.4,
+      attackResistance: 1.02,
+      healthMultiplier: 1.04,
+      walkSpeed: 0.85,
       runSpeed: 3.5,
-      jumpPower: 450,
-      jumpDistance: 250,
+      jumpPower: 440,
+      jumpDistance: 240,
       powerUpDuration: 10,
       attack1Reach: 145,
-      attack2Reach: 170,
-      attack3Reach: 230,
-      specialReach: 260,
+      attack2Reach: 172,
+      attack3Reach: 232,
+      specialReach: 265,
     ),
+
+    // 6. Knight (Kỵ sĩ): Bền bỉ, giáp chắc nhưng không còn quá trâu bò làm mất cân bằng
     CharacterType.knight1 => PlayerStats(
-      attack1Power: 2,
-      attack2Power: 2,
-      attack3Power: 3,
-      specialAttackPower: 4,
-      attackResistance: 1.25,
-      healthMultiplier: 1.30,
-      walkSpeed: 0.72,
-      runSpeed: 2.8,
+      attack1Power: 2.3,
+      attack2Power: 2.7,
+      attack3Power: 3.8,
+      specialAttackPower: 5.0,
+      attackResistance: 1.08, // Giảm từ 1.25 xuống 1.08
+      healthMultiplier: 1.12, // Giảm từ 1.30 xuống 1.12
+      walkSpeed: 0.78,
+      runSpeed: 3.0,
       jumpPower: 400,
       jumpDistance: 200,
       powerUpDuration: 10,
-      attack1Reach: 135, // Diagonal slash
-      attack2Reach: 155, // Horizontal thrust
-      attack3Reach: 195, // Heavy 360 spin slash
-      specialReach: 180, // Shield bash / counter
+      attack1Reach: 138,
+      attack2Reach: 160,
+      attack3Reach: 200,
+      specialReach: 210,
     ),
+
+    // 7. Son Goku: Bậc thầy võ thuật, đòn thế biến hóa, được cân bằng hài hòa
     CharacterType.sonGoku => PlayerStats(
-      attack1Power: 2,
-      attack2Power: 3,
-      attack3Power: 4,
-      specialAttackPower: 6,
-      attackResistance: 1.05,
-      healthMultiplier: 1.10,
-      walkSpeed: 0.95,
+      attack1Power: 2.3,
+      attack2Power: 2.8,
+      attack3Power: 3.9,
+      specialAttackPower: 5.5,
+      attackResistance: 1.02,
+      healthMultiplier: 1.06,
+      walkSpeed: 0.92,
       runSpeed: 3.6,
-      jumpPower: 380,
+      jumpPower: 390,
       jumpDistance: 220,
-      powerUpDuration: 12,
-      attack1Reach: 140, // Chuỗi đấm liên hoàn
-      attack2Reach: 170, // Đòn nội lực hất tung
-      attack3Reach: 280, // Sóng xung kích Kamehameha
-      specialReach: 500, // Kamehameha Siêu Cấp toàn màn hình
+      powerUpDuration: 11,
+      attack1Reach: 142,
+      attack2Reach: 172,
+      attack3Reach: 280,
+      specialReach: 500, // Kamehameha Siêu Cấp
     ),
   };
 

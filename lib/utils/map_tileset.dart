@@ -463,9 +463,7 @@ class _MapStageNodeWidgetState extends State<MapStageNodeWidget> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Image.asset(
-                          widget.stageNumber <= 5
-                              ? 'assets/images/Bg2/bg${widget.stageNumber}.png'
-                              : 'assets/images/Backgrounds/bg${widget.stageNumber}.png',
+                          AppAssets.stageBackground(widget.stageNumber),
                           fit: BoxFit.cover,
                         ),
                       ),

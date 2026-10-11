@@ -1,5 +1,4 @@
 import 'package:fighting_game/controllers/game_match_controller.dart';
-import 'package:fighting_game/enums/character_type.dart';
 import 'package:fighting_game/screens/character_select_screen.dart';
 import 'package:fighting_game/screens/game_play_screen.dart';
 import 'package:fighting_game/screens/map_screen.dart';
@@ -79,13 +78,7 @@ class HomeController extends GetxController
   }
 
   void openTraining() {
-    Get.off(
-      () => GamePlayScreen(
-        playerCharacter: CharacterType.fireWizard,
-        enemyCharacter: CharacterType.knight1,
-        isTrainingMode: true,
-      ),
-    );
+    openQuickVersus();
   }
 
   @override

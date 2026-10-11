@@ -413,15 +413,7 @@ class _MapScreenState extends State<MapScreen>
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.asset(
-                              switch (stage.stageNumber) {
-                                1 => 'assets/images/${AppAssets.arenaBg1}', // bg1: Greenwood / Sunset
-                                2 => 'assets/images/${AppAssets.arenaBg5}', // bg5: Desert Canyon
-                                3 => 'assets/images/${AppAssets.arenaBg3}', // bg3: Lava Abyss
-                                4 => 'assets/images/${AppAssets.arenaBg4}', // bg4: Sky & Waterfalls
-                                5 => 'assets/images/${AppAssets.arenaBg2}', // bg2: Snow Peak & Ice Castle
-                                6 => 'assets/images/${AppAssets.arenaBg6}', // bg6: Pháo đài bão tím / Storm Fortress
-                                _ => 'assets/images/${AppAssets.arenaBg7}', // bg7: Đền cổ thác mây / Ancient Cloud Temple
-                              },
+                              AppAssets.stageBackground(stage.stageNumber),
                               width: 130,
                               height: 130,
                               fit: BoxFit.cover,
