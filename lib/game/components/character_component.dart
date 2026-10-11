@@ -967,6 +967,7 @@ class CharacterComponent extends PositionComponent
 
     final forwardDistance =
         (opponent!.position.x - position.x) * (facingRight ? 1 : -1);
+    final verticalDistance = (opponent!.position.y - position.y).abs();
 
     // Check reach dynamically per character archetype from PlayerStats
     final reach = stats.getAttackReach(_state);
@@ -989,7 +990,13 @@ class CharacterComponent extends PositionComponent
         break;
     }
 
-    if (forwardDistance >= -20 && forwardDistance <= reach) {
+    // Đòn đánh chỉ trúng khi:
+    // 1. Đối thủ ở phía trước mặt (forwardDistance >= 0, không đánh trúng sau lưng)
+    // 2. Nằm trong tầm với chuẩn hóa của chiêu thức (forwardDistance <= reach)
+    // 3. Chênh lệch độ cao theo trục dọc <= 65px (tránh đánh đất trúng người nhảy né trên cao)
+    if (forwardDistance >= 0 &&
+        forwardDistance <= reach &&
+        verticalDistance <= 65.0) {
       _hasDealtDamage = true;
       final normalHit = _state == CharacterState.attack1 ||
           _state == CharacterState.attack2 ||
